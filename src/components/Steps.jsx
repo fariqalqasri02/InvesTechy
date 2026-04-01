@@ -1,54 +1,59 @@
-import { FaPen, FaRocket, FaFileAlt } from "react-icons/fa";
+import { FaPen, FaRocket, FaLayers } from "react-icons/fa"; // FaLayers lebih mirip dengan icon ketiga di gambar
 import "./steps.css";
 
 export default function Steps() {
   return (
-    <section className="steps container">
-
-      <p className="steps-subtitle">
-        From uncertainty to clarity in
-      </p>
-
-      <h2>3 Simple Steps</h2>
-
-      
-      <div className="steps-grid">
-
-        {/* STEP 1 */}
-        <div className="step-item">
-          <div className="step-card">
-            <span className="icon">✏️</span>
-          </div>
-          <h3>Input Data</h3>
-          <p>
-            Enter your business profile, number of employees, revenue,
-            and investment preferences.
-          </p>
-        </div>
-
+    <section className="steps-section">
+      <div className="steps-container">
         
-        <div className="step-item">
-          <div className="step-card">
-            <span className="icon">🚀</span>
-          </div>
-          <h3>AI Process</h3>
-          <p>
-            Our AI engine analyzes your investment, estimating costs,
-            benefits, ROI, and potential risks.
-          </p>
-        </div>
+        {/* Judul Utama */}
+        <h2 className="steps-main-title">
+          From Uncertainty to Clarity in <br />
+          <span className="highlight">3 Simple Steps</span>
+        </h2>
 
-      
-        <div className="step-item">
-          <div className="step-card">
-            <span className="icon">📄</span>
+        <div className="steps-grid">
+          {/* STEP 1 */}
+          <div className="step-item">
+            <div className="icon-card">
+              <FaPen className="step-icon" />
+            </div>
+            <div className="step-content">
+              <h3>Input Data</h3>
+              <p>
+                Enter your business profile, number of employees, revenue,
+                and investment preferences.
+              </p>
+            </div>
           </div>
-          <h3>Get Your Report</h3>
-          <p>
-            Receive a complete recommendation.
-          </p>
-        </div>
 
+          {/* STEP 2 */}
+          <div className="step-item">
+            <div className="icon-card">
+              <FaRocket className="step-icon" />
+            </div>
+            <div className="step-content">
+              <h3>AI Process</h3>
+              <p>
+                Our AI engine analyzes your investment, estimating costs,
+                benefits, ROI, and potential risks.
+              </p>
+            </div>
+          </div>
+
+          {/* STEP 3 */}
+          <div className="step-item">
+            <div className="icon-card">
+              <FaLayers className="step-icon" />
+            </div>
+            <div className="step-content">
+              <h3>Get Your Report</h3>
+              <p>
+                Receive a complete recommendation.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
