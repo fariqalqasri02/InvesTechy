@@ -1,4 +1,3 @@
-import { FaPen, FaRocket, FaLayers } from "react-icons/fa"; // FaLayers lebih mirip dengan icon ketiga di gambar
 import "./steps.css";
 
 export default function Steps() {
