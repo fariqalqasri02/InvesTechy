@@ -3,55 +3,59 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 80px; /* Jarak atas-bawah dan kiri-kanan */
+  padding: 15px 80px;
   background-color: #ffffff;
-  font-family: 'Inter', sans-serif; /* Pastikan font ini terinstal */
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Tambahan: shadow halus agar lebih modern */
 }
 
-/* Styling Logo */
+/* --- PERBAIKAN LOGO --- */
 .nav-logo {
   display: flex;
-  flex-direction: column; /* Menyusun icon di atas teks */
-  align-items: center;
-  gap: 4px;
+  flex-direction: row; /* Berubah dari column ke row agar sejajar ke samping */
+  align-items: center; /* Menjaga logo dan teks tetap rata tengah secara vertikal */
+  gap: 12px; /* Jarak antara gambar logo dan tulisan */
+  cursor: pointer;
 }
 
 .logo-img {
-  height: 35px; /* Sesuaikan ukuran logo */
+  height: 40px; /* Ukuran yang lebih pas untuk logo navbar */
   width: auto;
+  object-fit: contain;
 }
 
 .logo-text {
   font-weight: 800;
   color: #1a3a32;
-  font-size: 14px;
-  letter-spacing: 0.5px;
+  font-size: 18px; /* Sedikit diperbesar agar proporsional dengan logo sampingnya */
+  letter-spacing: -0.5px;
 }
+/* ---------------------- */
 
 /* Styling Menu Navigasi */
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 40px; /* Jarak antar link */
+  gap: 40px;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #7a8b87; /* Warna abu-abu kehijauan sesuai gambar */
+  color: #7a8b87;
   font-weight: 500;
   font-size: 16px;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .nav-links a:hover {
-  color: #1a3a32; /* Berubah jadi hijau tua saat hover */
+  color: #1a3a32;
 }
 
 /* Bagian Tombol (Login & Register) */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 20px; /* Jarak antar tombol sedikit dirapatkan */
 }
 
 .btn-login {
@@ -61,38 +65,47 @@
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
-  padding: 8px;
+  padding: 8px 12px;
+  transition: opacity 0.2s;
+}
+
+.btn-login:hover {
+  opacity: 0.7;
 }
 
 .btn-register {
-  background-color: #2d4f46; /* Hijau gelap khas InvesTechy */
+  background-color: #2d4f46;
   color: #ffffff;
-  padding: 10px 24px;
+  padding: 12px 28px; /* Padding sedikit diperlebar agar tombol lebih elegan */
   border: none;
-  border-radius: 8px; /* Membuat sudut tumpul */
+  border-radius: 8px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-register:hover {
   background-color: #1a3a32;
+  box-shadow: 0 4px 15px rgba(45, 79, 70, 0.2); /* Efek hover bayangan */
 }
 
 /* Responsif untuk layar kecil */
 @media (max-width: 992px) {
   .navbar {
-    padding: 15px 30px;
+    padding: 15px 40px;
   }
   
   .nav-links {
-    gap: 20px;
+    gap: 25px;
   }
 }
 
 @media (max-width: 768px) {
   .nav-links {
-    display: none; /* Menyembunyikan menu di mobile (bisa diganti hamburger menu) */
+    display: none;
+  }
+  .navbar {
+    padding: 15px 20px;
   }
 }

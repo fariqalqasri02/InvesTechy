@@ -1,12 +1,15 @@
 import React from 'react';
 import './navbar.css';
+// 1. Import gambar secara eksplisit dari folder assets
+import logoInvesTechy from '../assets/InvesTechy.jpg'; 
 
 const Navbar = () => {
   return (
     <nav className="navbar">
       {/* Bagian Logo */}
       <div className="nav-logo">
-        <img src="/InvesTechy.png" alt="InvesTechy Logo" className="logo-img" />
+        {/* 2. Panggil variabel logoInvesTechy di sini */}
+        <img src={logoInvesTechy} alt="InvesTechy Logo" className="logo-img" />
         <span className="logo-text">InvesTechy</span>
       </div>
 
