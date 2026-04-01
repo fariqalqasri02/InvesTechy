@@ -1,0 +1,98 @@
+/* Container Utama Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 80px; /* Jarak atas-bawah dan kiri-kanan */
+  background-color: #ffffff;
+  font-family: 'Inter', sans-serif; /* Pastikan font ini terinstal */
+}
+
+/* Styling Logo */
+.nav-logo {
+  display: flex;
+  flex-direction: column; /* Menyusun icon di atas teks */
+  align-items: center;
+  gap: 4px;
+}
+
+.logo-img {
+  height: 35px; /* Sesuaikan ukuran logo */
+  width: auto;
+}
+
+.logo-text {
+  font-weight: 800;
+  color: #1a3a32;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* Styling Menu Navigasi */
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 40px; /* Jarak antar link */
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #7a8b87; /* Warna abu-abu kehijauan sesuai gambar */
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #1a3a32; /* Berubah jadi hijau tua saat hover */
+}
+
+/* Bagian Tombol (Login & Register) */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.btn-login {
+  background: none;
+  border: none;
+  color: #1a3a32;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.btn-register {
+  background-color: #2d4f46; /* Hijau gelap khas InvesTechy */
+  color: #ffffff;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px; /* Membuat sudut tumpul */
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-register:hover {
+  background-color: #1a3a32;
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 992px) {
+  .navbar {
+    padding: 15px 30px;
+  }
+  
+  .nav-links {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Menyembunyikan menu di mobile (bisa diganti hamburger menu) */
+  }
+}

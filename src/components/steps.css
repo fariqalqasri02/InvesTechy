@@ -1,0 +1,61 @@
+.steps {
+  text-align: center;
+  padding: 100px 0;
+}
+
+/* SUBTITLE */
+.steps-subtitle {
+  color: #6b7280;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+/* TITLE */
+.steps h2 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 60px;
+}
+
+/* GRID */
+.steps-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+/* ITEM */
+.step-item {
+  max-width: 260px;
+}
+
+/* CARD (ICON BOX) */
+.step-card {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: #ecfdf5; /* emerald light */
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ICON */
+.icon {
+  font-size: 32px;
+  color: #10b981; /* emerald */
+}
+
+/* TITLE STEP */
+.step-item h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* DESC */
+.step-item p {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}

@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif; /* Atau font yang kamu gunakan di Figma */
+}
+
+body {
+  background-color: #ffffff;
+}
+
+/* Navbar container agar sejajar dengan konten */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%;
+}
