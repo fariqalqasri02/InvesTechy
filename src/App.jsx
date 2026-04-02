@@ -5,29 +5,24 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import NewProject from './pages/NewProject';
+import Survey from './pages/Survey';
+
 import './App.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Halaman Utama */}
+        {/* Landing & Auth */}
         <Route path="/" element={<Home />} />
-        
-        {/* Halaman Login: akses via localhost:5173/login */}
         <Route path="/login" element={<Login />} />
-        
-        {/* Halaman Register: akses via localhost:5173/register */}
         <Route path="/register" element={<Register />} />
-
-        {/* Halaman Forgot Password: akses via localhost:5173/forgot-password */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Halaman Reset Password: akses via localhost:5173/reset-password */}
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Halaman New Project: akses via localhost:5173/new-project */}
+        {/* Alur Proyek Baru (Step 1 & Step 2) */}
         <Route path="/new-project" element={<NewProject />} />
+        <Route path="/new-project/survey" element={<Survey />} />
 
       </Routes>
     </Router>

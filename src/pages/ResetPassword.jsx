@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -11,6 +13,17 @@ const ResetPassword = () => {
 
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
+
+  const handleResetSubmit = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    // Logika API reset password di sini
+    console.log("Password updated!");
+    navigate('/login'); // Pindah ke login setelah sukses
+  };
 
   return (
     <div className="auth-body">
@@ -35,15 +48,15 @@ const ResetPassword = () => {
         {/* --- FORM KANAN --- */}
         <div className="auth-form-section">
           <div className="form-box">
-            <h2 style={{ color: '#053B29' }}>Confirm Your Email</h2>
-            <h3 style={{ color: '#D4AF37', fontWeight: '400', fontSize: '32px', marginTop: '-10px' }}>Forgot password</h3>
+            <h2 style={{ color: '#053B29' }}>Create New Password</h2>
+            <h3 style={{ color: '#D4AF37', fontWeight: '400', fontSize: '32px', marginTop: '-10px' }}>Reset password</h3>
             
             <p className="form-subtext" style={{ marginTop: '20px' }}>
-              Enter your email for the verification process, we will send <br/>
-              4 digits code to your email.
+              Please enter your new password to secure <br/>
+              your account.
             </p>
 
-            <form>
+            <form onSubmit={handleResetSubmit}>
               <div className="input-group">
                 <label>Enter New Password</label>
                 <div className="input-wrapper">

@@ -1,8 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
 
 const ForgotPassword = () => {
+  const navigate = useNavigate(); // 2. Inisialisasi navigate
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Di sini biasanya ada logika API untuk kirim email
+    // Setelah berhasil, pindah ke halaman reset-password
+    navigate('/reset-password'); 
+  };
+
   return (
     <div className="auth-body">
       <div className="auth-container">
@@ -30,10 +40,11 @@ const ForgotPassword = () => {
             <h3 style={{ color: '#D4AF37', fontWeight: '400', fontSize: '32px', marginTop: '-10px' }}>Forgot password</h3>
             
             <p className="form-subtext" style={{ marginTop: '20px' }}>
-              Enter your email for the verification process, we will send 4 digits code to your email.
+              Enter your email for the verification process, we will send <br/>
+              4 digits code to your email.
             </p>
 
-            <form>
+            <form onSubmit={handleSubmit}> {/* 3. Tambahkan onSubmit */}
               <div className="input-group">
                 <label>E-mail</label>
                 <input type="email" placeholder="Enter email" required />

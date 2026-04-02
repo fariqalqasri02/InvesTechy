@@ -1,25 +1,34 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
 
 const Register = () => {
-  // State untuk visibilitas password
+  const navigate = useNavigate(); // 2. Inisialisasi hook
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // State untuk memantau isi input agar ikon mata muncul saat ada teks
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Link Ikon dari Icons8
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
   const dropdownIcon = "https://img.icons8.com/?size=100&id=5jRysPx2JtDa&format=png&color=000000";
 
+  // 3. Fungsi untuk menangani submit
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    // Di sini nanti tempat memanggil API Register
+    alert("Registration Successful! Please login.");
+    navigate('/login'); // 4. Pindah ke halaman login
+  };
+
   return (
     <div className="auth-body">
       <div className="auth-container">
-        {/* --- BAGIAN KIRI: BANNER --- */}
         <div className="auth-banner">
           <div className="banner-content">
             <div className="banner-logo-container"> 
@@ -36,7 +45,6 @@ const Register = () => {
           </div>
         </div>
 
-        {/* --- BAGIAN KANAN: FORM --- */}
         <div className="auth-form-section">
           <div className="form-box">
             <h2>Register</h2>
@@ -44,7 +52,7 @@ const Register = () => {
               Already have an account? <a href="/login">Login</a>
             </p>
 
-            <form>
+            <form onSubmit={handleRegister}> {/* Tambahkan onSubmit */}
               <div className="input-group">
                 <label>Name</label>
                 <input type="text" placeholder="Your Name" required />
@@ -60,7 +68,6 @@ const Register = () => {
                 <input type="text" placeholder="Input Your Business Name" />
               </div>
 
-              {/* Password Input - Ikon muncul jika password.length > 0 */}
               <div className="input-group">
                 <label>Password</label>
                 <div className="input-wrapper">
@@ -79,7 +86,6 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Confirm Password Input - Ikon muncul jika confirmPassword.length > 0 */}
               <div className="input-group">
                 <label>Confirm Password</label>
                 <div className="input-wrapper">
@@ -98,7 +104,6 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Role Dropdown dengan Ikon Dropdown Reaktif */}
               <div className="input-group">
                 <label>Role</label>
                 <div className="input-wrapper">
@@ -113,7 +118,7 @@ const Register = () => {
 
               <div className="term-condition">
                 <input type="checkbox" required />
-                <label htmlFor="terms">
+                <label>
                     I agree to the <strong>Terms of Service</strong> and acknowledge the <strong>Privacy Policy</strong>.
                 </label>
               </div>

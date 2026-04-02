@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
-import { Link } from "react-router-dom";
 
 const Login = () => {
-  const [password, setPassword] = useState(''); // State baru untuk isi password
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
+
+  // Fungsi Login dibuat pasif tanpa reaksi apapun
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Dihentikan di sini tanpa alert, console, atau navigate
+  };
 
   return (
     <div className="auth-body">
@@ -38,7 +43,7 @@ const Login = () => {
               Don’t have an account? <a href="/register">Create Now</a>
             </p>
 
-            <form>
+            <form onSubmit={handleLogin}>
               <div className="input-group">
                 <label>E-mail</label>
                 <input type="email" placeholder="example@gmail.com" required />
@@ -56,11 +61,11 @@ const Login = () => {
                     type={showPassword ? "text" : "password"} 
                     placeholder="**********" 
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)} // Update state saat mengetik
+                    onChange={(e) => setPassword(e.target.value)}
                     required 
                   />
                   
-                  {/* LOGIKA: Ikon mata hanya muncul jika password.length > 0 */}
+                  {/* Ikon mata hanya muncul jika password sudah mulai diketik */}
                   {password.length > 0 && (
                     <span className="password-icon" onClick={() => setShowPassword(!showPassword)}>
                       <img src={showPassword ? eyeOpen : eyeClosed} alt="toggle view" />
