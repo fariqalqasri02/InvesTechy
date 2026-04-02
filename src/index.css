@@ -10,9 +10,8 @@ body {
 }
 
 /* Navbar container agar sejajar dengan konten */
-.navbar {
+/* .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 10%;
-}
+  padding: 20px 10%; */
