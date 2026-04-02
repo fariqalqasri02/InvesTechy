@@ -26,7 +26,6 @@ const InvesTechy = () => {
   ];
 
   return (
-    /* Menambahkan id="about-us" agar bisa diakses dari navbar */
     <div id="about-us" className="investechy-wrapper">
       <header className="investechy-header">
         <h1>Smarter IT Investment Decisions <br /> <span>Powered by AI</span></h1>

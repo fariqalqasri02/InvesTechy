@@ -4,7 +4,7 @@ import logo from '../assets/InvesTechy.jpg'; // Mengambil logo dari folder asset
 
 export default function Footer() {
   return (
-    <footer className="footer">
+    <footer id="contact"className="footer">
       <div className="footer-container">
         <div className="footer-wrapper">
 

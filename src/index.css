@@ -14,3 +14,15 @@ html {
 body {
   background-color: #ffffff;
 }
+
+/* Navbar container agar sejajar dengan konten */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%; 
+}
+
+html {
+  scroll-behavior: smooth;
+}
