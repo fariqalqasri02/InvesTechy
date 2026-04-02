@@ -6,22 +6,22 @@ const InvesTechy = () => {
     {
       title: "Decision Oriented",
       desc: "Designed to support better decision-making, not just data display. Get clear insights and practical recommendations you can act on.",
-      icon: "✏️" 
+      icon: "https://img.icons8.com/?size=50&id=4hGUZoWc6Eyu&format=png&color=FFFFFF" 
     },
     {
       title: "Market-Based Pricing",
       desc: "Built using realistic cost assumptions aligned with current market conditions. Helps you estimate investment value based on real-world scenarios.",
-      icon: "🛒"
+      icon: "https://img.icons8.com/?size=45&id=36409&format=png&color=ffffff"
     },
     {
       title: "UMKM Focused",
       desc: "Tailored specifically for small and medium-sized businesses. Simple, relevant, and aligned with real operational needs.",
-      icon: "👥"
+      icon: "https://img.icons8.com/?size=45&id=77133&format=png&color=ffffff"
     },
     {
       title: "Easy to Use",
       desc: "No technical expertise required. Just input your data and get insights quickly and effortlessly.",
-      icon: "⭐"
+      icon: "https://img.icons8.com/?size=50&id=7E1LwVS6HB4t&format=png&color=ffffff"
     }
   ];
 
@@ -43,7 +43,8 @@ const InvesTechy = () => {
             <div key={index} className="feature-item">
               <div className="icon-circle">
                 {/* Anda bisa ganti icon ini dengan SVG atau Image */}
-                <span>{item.icon}</span>
+                <img src={item.icon}>
+                </img>
               </div>
               <div className="text-content">
                 <h3>{item.title}</h3>

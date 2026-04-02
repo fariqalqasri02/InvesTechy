@@ -1,4 +1,5 @@
 import './navbar.css';
+import logo from '../assets/InvesTechy.jpg';
 // 1. Import gambar secara eksplisit dari folder assets
 
 const Navbar = () => {
@@ -6,7 +7,7 @@ const Navbar = () => {
     <nav className="navbar">
       {/* Bagian Logo */}
       <div className="nav-logo">
-        <img src="../assets/InvesTechy.jpg" alt="InvesTechy Logo" className="logo-img" />
+        <img src= {logo} alt="InvesTechy Logo" className="logo-img" />
         <span className="logo-text">InvesTechy</span>
       </div>
 

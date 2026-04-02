@@ -15,7 +15,7 @@ export default function Steps() {
           {/* STEP 1 */}
           <div className="step-item">
             <div className="icon-card">
-              <FaPen className="step-icon" />
+              <img src="https://img.icons8.com/?size=65&id=111456&format=png&color=00381E"></img>
             </div>
             <div className="step-content">
               <h3>Input Data</h3>
@@ -29,7 +29,8 @@ export default function Steps() {
           {/* STEP 2 */}
           <div className="step-item">
             <div className="icon-card">
-              <FaRocket className="step-icon" />
+              <img src="https://img.icons8.com/?size=65&id=qSNjZJRFEzLU&format=png&color=00381E">
+              </img>
             </div>
             <div className="step-content">
               <h3>AI Process</h3>
@@ -43,7 +44,8 @@ export default function Steps() {
           {/* STEP 3 */}
           <div className="step-item">
             <div className="icon-card">
-              <FaLayers className="step-icon" />
+              <img src="https://img.icons8.com/?size=65&id=57714&format=png&color=00381E">
+              </img>
             </div>
             <div className="step-content">
               <h3>Get Your Report</h3>

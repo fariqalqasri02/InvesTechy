@@ -1,43 +1,58 @@
+import React from 'react';
 import "./footer.css";
+import logo from '../assets/InvesTechy.jpg'; // Mengambil logo dari folder assets
 
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="container footer-wrapper">
+      <div className="footer-container">
+        <div className="footer-wrapper">
 
-        {/* LEFT */}
-        <div className="footer-left">
-          <h2>InvesTechy</h2>
-          <p>
-            Turning complex IT investment analysis into simple, actionable insight
-          </p>
-        </div>
-
-        {/* RIGHT */}
-        <div className="footer-right">
-
-          {/* LINKS */}
-          <div className="footer-section">
-            <h3>Links</h3>
-            <a href="#">About Us</a>
-            <a href="#">Our Services</a>
-            <a href="#">How It Works</a>
+          {/* BAGIAN KIRI: Logo & Tagline */}
+          <div className="footer-left">
+            <div className="footer-brand">
+              <img src={logo} alt="InvesTechy Logo" className="footer-logo" />
+              <h2 className="brand-name">InvesTechy</h2>
+            </div>
+            <p className="footer-description">
+              Turning complex IT investment analysis into simple, actionable insight.
+            </p>
           </div>
 
-          {/* CONTACT */}
-          <div className="footer-section">
-            <h3>Contact Us</h3>
-            <p>📧 email@example.com</p>
-            <p>📞 +62 812 3456 7890</p>
-            <p>📍 Indonesia</p>
+          {/* BAGIAN KANAN: Navigasi & Kontak */}
+          <div className="footer-right">
+            
+            {/* Navigasi Links */}
+            <div className="footer-column">
+              <h3 className="column-title">Links</h3>
+              <ul className="footer-links">
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#services">Our Services</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+              </ul>
+            </div>
+
+            {/* Informasi Kontak */}
+            <div className="footer-column">
+              <h3 className="column-title">Contact Us</h3>
+              <div className="contact-item">
+                <span>📧</span> <p>email@example.com</p>
+              </div>
+              <div className="contact-item">
+                <span>📞</span> <p>+62 812 3456 7890</p>
+              </div>
+              <div className="contact-item">
+                <span>📍</span> <p>Indonesia</p>
+              </div>
+            </div>
+
           </div>
-
         </div>
-      </div>
 
-      {/* BOTTOM */}
-      <div className="footer-bottom">
-        <p>© 2026 InvesTechy. All rights reserved.</p>
+        {/* BAGIAN BAWAH: Copyright */}
+        <div className="footer-bottom">
+          <p>© 2026 InvesTechy. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   );

@@ -3,7 +3,7 @@ import './hero.css'; // Mengimpor file CSS eksternal
 
 // Pastikan Anda menempatkan file gambar ilustrasi Anda di folder 'public'
 // Contoh: public/investment-illustration.png
-const heroIllustration = '/investment-illustration.png';
+import heroIllustration from '../assets/market-analysing 1.png';
 
 const HeroSection = () => {
   return (
@@ -29,8 +29,7 @@ const HeroSection = () => {
 
         {/* Kolom Ilustrasi (Kanan) */}
         <div className="hero-image-container">
-          <img 
-            src={heroIllustration} 
+          <img src={heroIllustration} 
             alt="Investment Data Analysis Illustration" 
             className="hero-image"
           />
