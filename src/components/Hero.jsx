@@ -21,10 +21,6 @@ const HeroSection = () => {
             Make smarter digital investment decisions in minutes
             no complexity, just data-driven insights.
           </p>
-          
-          <button className="get-started-btn">
-            Get Started &gt;
-          </button>
         </div>
 
         {/* Kolom Ilustrasi (Kanan) */}

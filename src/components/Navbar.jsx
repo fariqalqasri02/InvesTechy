@@ -12,10 +12,31 @@ const Navbar = () => {
       </div>
 
       {/* Bagian Menu Tengah */}
-      <ul className="nav-links">  
-        <li><a href="#get-started">Get Started</a></li>
-        <li><a href="#about-us">About Us</a></li>
-        <li><a href="#contact">Contact</a></li>
+       {/* MENU */}
+      <ul className="nav-links">
+        <li>
+          <a
+            href="#about-us"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("about-us").scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            About Us
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Contact
+          </a>
+        </li>
       </ul>
 
       {/* Bagian Tombol Aksi (Kanan) */}

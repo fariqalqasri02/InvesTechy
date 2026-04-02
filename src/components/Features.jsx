@@ -26,7 +26,7 @@ const InvesTechy = () => {
   ];
 
   return (
-    <div className="investechy-wrapper">
+    <div id="about-us" className="investechy-wrapper">
       <header className="investechy-header">
         <h1>Smarter IT Investment Decisions <br /> <span>Powered by AI</span></h1>
         <p>
