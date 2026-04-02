@@ -39,6 +39,7 @@
   gap: 40px;
 }
 
+
 .nav-links a {
   text-decoration: none;
   color: #7a8b87;
@@ -58,7 +59,7 @@
   gap: 20px; /* Jarak antar tombol sedikit dirapatkan */
 }
 
-.btn-login {
+.login-btn {
   background: none;
   border: none;
   color: #1a3a32;
@@ -67,13 +68,20 @@
   cursor: pointer;
   padding: 8px 12px;
   transition: opacity 0.2s;
+} */
+
+.login-link {
+  text-decoration: none;
+  color: #2f5d50;
+  font-weight: 500;
+  font-size: 16px;
 }
 
 .btn-login:hover {
   opacity: 0.7;
 }
 
-.btn-register {
+ .register-btn {
   background-color: #2d4f46;
   color: #ffffff;
   padding: 12px 28px; /* Padding sedikit diperlebar agar tombol lebih elegan */
@@ -83,9 +91,17 @@
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
+} 
+
+.login-btn {
+  text-decoration: none;
+  color: #2f5d50;
+  font-weight: 500;
+  font-size: 16px;
 }
 
-.btn-register:hover {
+
+.register-btn:hover{
   background-color: #1a3a32;
   box-shadow: 0 4px 15px rgba(45, 79, 70, 0.2); /* Efek hover bayangan */
 }

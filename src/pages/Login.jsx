@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [password, setPassword] = useState(''); // State baru untuk isi password
@@ -34,7 +35,7 @@ const Login = () => {
           <div className="form-box">
             <h2>Login</h2>
             <p className="form-subtext">
-              Don’t have an account? <a href="/register">Create now</a>
+              Don’t have an account? <a href="/register">Create Now</a>
             </p>
 
             <form>

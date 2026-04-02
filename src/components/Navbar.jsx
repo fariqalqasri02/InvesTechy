@@ -1,6 +1,6 @@
 import './navbar.css';
 import logo from '../assets/InvesTechy.jpg';
-// 1. Import gambar secara eksplisit dari folder assets
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -12,7 +12,7 @@ const Navbar = () => {
       </div>
 
       {/* Bagian Menu Tengah */}
-      <ul className="nav-links">
+      <ul className="nav-links">  
         <li><a href="#get-started">Get Started</a></li>
         <li><a href="#about-us">About Us</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -20,8 +20,8 @@ const Navbar = () => {
 
       {/* Bagian Tombol Aksi (Kanan) */}
       <div className="nav-actions">
-        <button className="btn-login">Log In</button>
-        <button className="btn-register">Register</button>
+        <Link to="/login"className="login-btn">Login</Link>
+        <Link to="/register" className="register-btn">Register</Link>
       </div>
     </nav>
   );

@@ -26,7 +26,8 @@ const InvesTechy = () => {
   ];
 
   return (
-    <div className="investechy-wrapper">
+    /* Menambahkan id="about-us" agar bisa diakses dari navbar */
+    <div id="about-us" className="investechy-wrapper">
       <header className="investechy-header">
         <h1>Smarter IT Investment Decisions <br /> <span>Powered by AI</span></h1>
         <p>
@@ -42,9 +43,7 @@ const InvesTechy = () => {
           {data.map((item, index) => (
             <div key={index} className="feature-item">
               <div className="icon-circle">
-                {/* Anda bisa ganti icon ini dengan SVG atau Image */}
-                <img src={item.icon}>
-                </img>
+                <img src={item.icon} alt={item.title} />
               </div>
               <div className="text-content">
                 <h3>{item.title}</h3>
