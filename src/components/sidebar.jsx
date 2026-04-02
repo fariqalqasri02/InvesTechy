@@ -6,33 +6,34 @@ const Sidebar = ({ activeMenu }) => {
   const menus = [
     { 
       name: 'Dashboard', 
-      icon: "https://img.icons8.com/material-outlined/24/ffffff/grid-3.png",
-      activeIcon: "https://img.icons8.com/material-outlined/24/053B29/grid-3.png"
+      icon: "https://img.icons8.com/?size=100&id=sUJRwjfnGwbJ&format=png&color=FFFFFF",
+      activeIcon: "https://img.icons8.com/?size=100&id=sUJRwjfnGwbJ&format=png&color=053B29"
     },
     { 
       name: 'New Project', 
-      icon: "https://img.icons8.com/material-outlined/24/ffffff/add-property.png",
-      activeIcon: "https://img.icons8.com/material-outlined/24/053B29/add-property.png"
+      icon: "https://img.icons8.com/?size=100&id=gxFxowCaQoBQ&format=png&color=FFFFFF",
+      activeIcon: "https://img.icons8.com/?size=100&id=gxFxowCaQoBQ&format=png&color=053B29"
     },
     { 
       name: 'Project List', 
-      icon: "https://img.icons8.com/material-outlined/24/ffffff/wallet.png",
-      activeIcon: "https://img.icons8.com/material-outlined/24/053B29/wallet.png"
+      icon: "https://img.icons8.com/?size=100&id=aslXiAMR2V7S&format=png&color=FFFFFF",
+      activeIcon: "https://img.icons8.com/?size=100&id=aslXiAMR2V7S&format=png&color=053B29"
     },
     { 
       name: 'Report List', 
-      icon: "https://img.icons8.com/material-outlined/24/ffffff/document.png",
-      activeIcon: "https://img.icons8.com/material-outlined/24/053B29/document.png"
+      icon: "https://img.icons8.com/?size=100&id=Ss9HzIp5VFDD&format=png&color=FFFFFF",
+      activeIcon: "https://img.icons8.com/?size=100&id=Ss9HzIp5VFDD&format=png&color=053B29"
     },
     { 
       name: 'Consult', 
-      icon: "https://img.icons8.com/material-outlined/24/ffffff/comments.png",
-      activeIcon: "https://img.icons8.com/material-outlined/24/053B29/comments.png"
+      icon: "https://img.icons8.com/?size=100&id=8kHOhdrNngb3&format=png&color=FFFFFF",
+      activeIcon: "https://img.icons8.com/?size=100&id=8kHOhdrNngb3&format=png&color=053B29"
     },
     { 
       name: 'Settings', 
-      icon: "https://img.icons8.com/material-outlined/24/ffffff/settings.png",
-      activeIcon: "https://img.icons8.com/material-outlined/24/053B29/settings.png"
+      // Menggunakan ID ikon baru: CcpTg57jVuhI
+      icon: "https://img.icons8.com/?size=100&id=CcpTg57jVuhI&format=png&color=FFFFFF",
+      activeIcon: "https://img.icons8.com/?size=100&id=CcpTg57jVuhI&format=png&color=053B29"
     }
   ];
 
@@ -46,10 +47,7 @@ const Sidebar = ({ activeMenu }) => {
         {menus.map((menu) => {
           const isActive = activeMenu === menu.name;
           return (
-            <div 
-              key={menu.name} 
-              className={`nav-item ${isActive ? 'active' : ''}`}
-            >
+            <div key={menu.name} className={`nav-item ${isActive ? 'active' : ''}`}>
               <img 
                 src={isActive ? menu.activeIcon : menu.icon} 
                 alt={menu.name} 
@@ -60,9 +58,6 @@ const Sidebar = ({ activeMenu }) => {
           );
         })}
       </nav>
-      
-      {/* Garis dekoratif bawah sesuai gambar referensi */}
-      <div className="sidebar-footer-line"></div>
     </div>
   );
 };
