@@ -2,24 +2,19 @@ import React, { useState } from 'react';
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
 
-const Register = () => {
-  // State untuk visibilitas password
+const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // State untuk memantau isi input agar ikon mata muncul saat ada teks
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Link Ikon dari Icons8
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
-  const dropdownIcon = "https://img.icons8.com/?size=100&id=5jRysPx2JtDa&format=png&color=000000";
 
   return (
     <div className="auth-body">
       <div className="auth-container">
-        {/* --- BAGIAN KIRI: BANNER --- */}
+        {/* --- BANNER KIRI --- */}
         <div className="auth-banner">
           <div className="banner-content">
             <div className="banner-logo-container"> 
@@ -36,37 +31,24 @@ const Register = () => {
           </div>
         </div>
 
-        {/* --- BAGIAN KANAN: FORM --- */}
+        {/* --- FORM KANAN --- */}
         <div className="auth-form-section">
           <div className="form-box">
-            <h2>Register</h2>
-            <p className="form-subtext">
-              Already have an account? <a href="/login">Login</a>
+            <h2 style={{ color: '#053B29' }}>Confirm Your Email</h2>
+            <h3 style={{ color: '#D4AF37', fontWeight: '400', fontSize: '32px', marginTop: '-10px' }}>Forgot password</h3>
+            
+            <p className="form-subtext" style={{ marginTop: '20px' }}>
+              Enter your email for the verification process, we will send <br/>
+              4 digits code to your email.
             </p>
 
             <form>
               <div className="input-group">
-                <label>Name</label>
-                <input type="text" placeholder="Your Name" required />
-              </div>
-
-              <div className="input-group">
-                <label>E-mail</label>
-                <input type="email" placeholder="example@gmail.com" required />
-              </div>
-
-              <div className="input-group">
-                <label>Business Name</label>
-                <input type="text" placeholder="Input Your Business Name" />
-              </div>
-
-              {/* Password Input - Ikon muncul jika password.length > 0 */}
-              <div className="input-group">
-                <label>Password</label>
+                <label>Enter New Password</label>
                 <div className="input-wrapper">
                   <input 
                     type={showPassword ? "text" : "password"} 
-                    placeholder="**********" 
+                    placeholder="Enter New Password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required 
@@ -79,13 +61,12 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Confirm Password Input - Ikon muncul jika confirmPassword.length > 0 */}
               <div className="input-group">
-                <label>Confirm Password</label>
+                <label>Confirm New Password</label>
                 <div className="input-wrapper">
                   <input 
                     type={showConfirmPassword ? "text" : "password"} 
-                    placeholder="**********" 
+                    placeholder="Confirm New Password" 
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required 
@@ -98,27 +79,9 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Role Dropdown dengan Ikon Dropdown Reaktif */}
-              <div className="input-group">
-                <label>Role</label>
-                <div className="input-wrapper">
-                  <select defaultValue="" required>
-                    <option value="" disabled>Choose Your Role</option>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <img src={dropdownIcon} alt="dropdown" className="dropdown-icon-img" />
-                </div>
-              </div>
-
-              <div className="term-condition">
-                <input type="checkbox" required />
-                <label htmlFor="terms">
-                    I agree to the <strong>Terms of Service</strong> and acknowledge the <strong>Privacy Policy</strong>.
-                </label>
-              </div>
-
-              <button type="submit" className="btn-auth-primary">Register</button>
+              <button type="submit" className="btn-auth-primary" style={{ marginTop: '10px' }}>
+                Continue
+              </button>
             </form>
           </div>
         </div>
@@ -127,4 +90,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ResetPassword;

@@ -3,12 +3,16 @@ import '../components/auth.css';
 import logoImg from '../assets/InvesTechy.jpg'; 
 
 const Login = () => {
+  const [password, setPassword] = useState(''); // State baru untuk isi password
   const [showPassword, setShowPassword] = useState(false);
+
+  const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
+  const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
 
   return (
     <div className="auth-body">
       <div className="auth-container">
-        {/* --- BAGIAN KIRI: BANNER --- */}
+        {/* --- BANNER KIRI --- */}
         <div className="auth-banner">
           <div className="banner-content">
             <div className="banner-logo-container"> 
@@ -19,12 +23,13 @@ const Login = () => {
               <span className="highlight">Starts Here</span>
             </h1>
             <p className="banner-subtitle">
-              Make smarter digital investment decisions in minutes no complexity, just data-driven insights.
+              Make smarter digital investment decisions in minutes <br/>
+              no complexity, just data-driven insights.
             </p>
           </div>
         </div>
 
-        {/* --- BAGIAN KANAN: FORM LOGIN --- */}
+        {/* --- FORM KANAN --- */}
         <div className="auth-form-section">
           <div className="form-box">
             <h2>Login</h2>
@@ -33,17 +38,15 @@ const Login = () => {
             </p>
 
             <form>
-              {/* E-mail Input */}
               <div className="input-group">
                 <label>E-mail</label>
                 <input type="email" placeholder="example@gmail.com" required />
               </div>
 
-              {/* Password Input dengan Toggle */}
               <div className="input-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <label>Password</label>
-                  <a href="/forgot-password" style={{ fontSize: '12px', color: '#053B29', fontWeight: 'bold' }}>
+                  <a href="/forgot-password" style={{ fontSize: '12px', color: '#053B29', fontWeight: 'bold', textDecoration: 'none' }}>
                     Forgot Password?
                   </a>
                 </div>
@@ -51,44 +54,39 @@ const Login = () => {
                   <input 
                     type={showPassword ? "text" : "password"} 
                     placeholder="**********" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)} // Update state saat mengetik
                     required 
                   />
-                  <span className="password-icon" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? '👁️' : '👁️‍🗨️'}
-                  </span>
+                  
+                  {/* LOGIKA: Ikon mata hanya muncul jika password.length > 0 */}
+                  {password.length > 0 && (
+                    <span className="password-icon" onClick={() => setShowPassword(!showPassword)}>
+                      <img src={showPassword ? eyeOpen : eyeClosed} alt="toggle view" />
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Remember Me Checkbox */}
-              <div className="term-condition" style={{ marginBottom: '20px' }}>
-                <input type="checkbox" id="remember" />
-                <label htmlFor="remember">Remember me</label>
+              <div className="term-condition" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+                <input type="checkbox" id="remember" style={{ margin: '0 10px 0 0' }} />
+                <label htmlFor="remember" style={{ cursor: 'pointer', fontSize: '14px' }}>Remember me</label>
               </div>
 
-              {/* Login Button */}
               <button type="submit" className="btn-auth-primary">Login</button>
               
-              {/* Optional: Separator OR */}
-              <div style={{ textAlign: 'center', margin: '20px 0', color: '#718096', fontSize: '14px' }}>
-                <hr style={{ border: '0.5px solid #E2E8F0', marginBottom: '-10px' }} />
-                <span style={{ background: '#FDFBFA', padding: '0 10px' }}>OR</span>
+              <div className="divider" style={{ textAlign: 'center', margin: '20px 0', display: 'flex', alignItems: 'center' }}>
+                <span style={{ flex: 1, height: '1px', background: '#E2E8F0' }}></span>
+                <span style={{ padding: '0 10px', color: '#718096', fontSize: '14px' }}>OR</span>
+                <span style={{ flex: 1, height: '1px', background: '#E2E8F0' }}></span>
               </div>
 
-              {/* Optional: Continue with Google (Sesuai gambar referensi Anda) */}
-              <button type="button" className="btn-auth-google" style={{ 
-                width: '100%', 
-                padding: '12px', 
-                border: '1px solid #E2E8F0', 
-                borderRadius: '8px', 
-                background: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-                cursor: 'pointer'
+              <button type="button" className="btn-google" style={{ 
+                width: '100%', padding: '12px', border: '1px solid #E2E8F0', borderRadius: '8px', 
+                background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
               }}>
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" />
-                Continue with Google
+                <span style={{ fontWeight: '600', color: '#4A5568' }}>Continue with Google</span>
               </button>
             </form>
           </div>

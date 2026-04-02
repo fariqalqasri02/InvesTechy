@@ -1,0 +1,121 @@
+.dashboard-layout { 
+  display: flex; 
+  background-color: #F8F9FA; 
+  min-height: 100vh; 
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 260px;
+  padding: 60px 80px;
+  box-sizing: border-box;
+}
+
+.page-title { 
+  font-size: 32px; 
+  font-weight: 800; 
+  color: #053B29; 
+  margin: 0; 
+}
+
+.page-subtitle { 
+  font-size: 14px; 
+  color: #718096; 
+  margin-top: 5px; 
+  margin-bottom: 30px; 
+}
+
+.content-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.form-row { 
+  display: flex; 
+  gap: 30px; 
+  margin-bottom: 25px; 
+}
+
+.form-group { 
+  flex: 1; 
+  position: relative; 
+}
+
+.form-group label { 
+  display: block; 
+  font-weight: 700; 
+  color: #053B29; 
+  margin-bottom: 10px; 
+  font-size: 14px; 
+}
+
+/* --- Input & Select Styling --- */
+.form-group input, 
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+  box-sizing: border-box;
+  transition: all 0.3s ease; /* Efek transisi warna & bayangan */
+}
+
+/* LOGIKA REAKTIF: Textbox & Dropdown menghitam/menebal saat diklik (Focus) */
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #053B29;
+  box-shadow: 0 0 0 1px #053B29; /* Efek border tegas */
+}
+
+/* Khusus Dropdown: Hilangkan panah asli */
+.form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 40px;
+}
+
+/* Ikon Panah Kustom */
+.dropdown-icon {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  transition: transform 0.3s ease; /* Animasi putar */
+}
+
+/* Putar ikon saat select aktif */
+.form-group select:focus + .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* Hilangkan spin button pada input number */
+.form-group input[type=number]::-webkit-inner-spin-button, 
+.form-group input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.btn-next {
+  background-color: #1D4337;
+  color: white;
+  padding: 14px 80px;
+  border: none;
+  border-radius: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  float: right;
+  margin-top: 20px;
+  transition: background 0.3s;
+}
+
+.btn-next:hover {
+  background-color: #053B29;
+}
