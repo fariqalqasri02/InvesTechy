@@ -1,0 +1,318 @@
+/* --- Global Reset untuk Halaman Auth --- */
+.auth-body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: #FDFBFA;
+}
+
+/* --- Container Utama (Split Screen) --- */
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* =========================================
+   BAGIAN KIRI: Banner Hijau Tua
+   ========================================= */
+.auth-banner {
+  flex: 1;
+  background-color: #053B29;
+  display: flex;
+  justify-content: center;
+  /* REVISI: Mengubah posisi dari center ke flex-start agar konten naik ke atas */
+  align-items: flex-start; 
+  /* REVISI: Padding top 100px memberikan jarak dari atas layar. 
+     Ubah angka ini (misal ke 80px) jika ingin lebih naik lagi */
+  padding: 100px 60px 60px 60px; 
+  color: white;
+}
+
+.banner-content {
+  max-width: 480px;
+  text-align: left;
+  /* Menghilangkan margin otomatis agar posisi terkendali oleh padding container */
+  margin-top: 0; 
+}
+
+.banner-logo-container {
+  display: inline-block;
+  padding: 10px;
+  /* REVISI: Mengurangi margin bawah agar teks judul lebih rapat ke logo dan ikut naik */
+  margin-bottom: 40px; 
+}
+
+.banner-logo {
+  height: 60px;
+  width: auto;
+}
+
+.banner-title {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 20px 0;
+  letter-spacing: -1px;
+}
+
+.banner-title .highlight {
+  color: #C1FF72;
+}
+
+.banner-subtitle {
+  font-size: 16px;
+  color: #A3BFB6;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* =========================================
+   BAGIAN KANAN: Form Section
+   ========================================= */
+.auth-form-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.form-box h2 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin: 0 0 10px 0;
+}
+
+.form-subtext {
+  font-size: 14px;
+  color: #718096;
+  margin: 0 0 40px 0;
+}
+
+.form-subtext a {
+  color: #1A1A1A;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* --- Styling Input Field --- */
+.input-group {
+  margin-bottom: 25px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4A5568;
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 14px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background-color: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #1A1A1A;
+}
+
+.input-group input::placeholder {
+  color: #A0AEC0;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #053B29;
+  box-shadow: 0 0 0 3px rgba(5, 59, 41, 0.1);
+}
+
+/* Memberi ruang di kanan agar teks tidak tertutup ikon mata */
+.input-wrapper input[type="password"],
+.input-wrapper input[type="text"] {
+  padding-right: 45px;
+}
+
+.password-icon {
+  position: absolute;
+  right: 15px;
+  color: #A0AEC0;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.input-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23A0AEC0'%3Y%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3Y%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 18px;
+}
+
+/* --- Options (Remember Me & Forgot Pwd) --- */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 30px;
+  color: #718096;
+}
+
+.form-options label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.form-options input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #053B29;
+}
+
+.forgot-pwd {
+  color: #1A1A1A;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* --- T&C Checkbox (Register) --- */
+.term-condition {
+  display: flex;
+  align-items: flex-start;
+  font-size: 12px;
+  color: #718096;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.term-condition input {
+  margin-top: 3px;
+  margin-right: 10px;
+  accent-color: #053B29;
+}
+
+.term-condition a {
+  color: #1A1A1A;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* --- Buttons --- */
+.btn-auth-primary {
+  width: 100%;
+  padding: 16px;
+  background-color: #1D4337;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-auth-primary:hover {
+  background-color: #053B29;
+}
+
+/* --- Divider "or" --- */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 30px 0;
+  color: #A0AEC0;
+  font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 15px;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 15px;
+}
+
+/* --- Google Button --- */
+.btn-google {
+  width: 100%;
+  padding: 14px;
+  background-color: white;
+  color: #4A5568;
+  border: 1px solid #E2E8F0;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-google:hover {
+  background-color: #F7FAFC;
+}
+
+.google-icon {
+  height: 20px;
+  width: auto;
+}
+
+/* =========================================
+   RESPONSIVE: Layar Tablet/HP
+   ========================================= */
+@media (max-width: 992px) {
+  .auth-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .auth-banner {
+    padding: 60px 30px;
+    align-items: center; /* Kembali ke center untuk tampilan mobile agar rapi */
+  }
+
+  .banner-logo-container {
+    margin-bottom: 40px;
+  }
+
+  .banner-title {
+    font-size: 32px;
+  }
+
+  .auth-form-section {
+    padding: 60px 20px;
+  }
+}
