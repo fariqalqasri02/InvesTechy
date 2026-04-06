@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import NewProject from './pages/NewProject';
 import Survey from './pages/Survey';
+import Profile from './pages/profile'; 
 
 import './App.css';
 
@@ -21,12 +22,13 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        
+
+        {/* 2. Tambahkan Route Profile */}
+        <Route path="/profile" element={<Profile />} />
 
         {/* Alur Proyek Baru (Step 1 & Step 2) */}
         <Route path="/new-project" element={<NewProject />} />
         <Route path="/new-project/survey" element={<Survey />} />
-
       </Routes>
     </Router>
   );
