@@ -41,7 +41,7 @@ const ForgotPassword = () => {
             
             <p className="form-subtext" style={{ marginTop: '20px' }}>
               Enter your email for the verification process, we will send <br/>
-              4 digits code to your email.
+              a password reset link to your email.
             </p>
 
             <form onSubmit={handleSubmit}> {/* 3. Tambahkan onSubmit */}

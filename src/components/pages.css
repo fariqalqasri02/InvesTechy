@@ -141,35 +141,147 @@
 /* BUTTON */
 /* ============================= */
 
-.btn-next, 
+.history-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #053B29;
+  margin-bottom: 25px;
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.project-table th {
+  text-align: left;
+  padding: 15px;
+  background-color: #F4F7FE;
+  color: #8A92A6;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.project-table td {
+  padding: 20px 15px;
+  border-bottom: 1px solid #EDF2F7;
+  font-size: 14px;
+  color: #2D3748;
+}
+
+.status-badge {
+  background-color: #C6F6D5;
+  color: #22543D;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.btn-detail {
+  background-color: white;
+  border: 1px solid #E2E8F0;
+  color: #718096;
+  padding: 8px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* --- Survey / Radio Question Styling --- */
+.survey-section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #053B29;
+  margin: 40px 0 20px 0;
+  border-left: 5px solid #053B29;
+  padding-left: 15px;
+}
+
+.survey-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #F0F0F0;
+}
+
+.question-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #053B29;
+  margin-bottom: 20px;
+  display: block;
+  line-height: 1.5;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #4A5568;
+  line-height: 1.5;
+  transition: all 0.2s;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.option-label:hover {
+  background-color: #F8F9FA;
+  color: #053B29;
+}
+
+.option-label input[type="radio"] {
+  accent-color: #053B29;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+/* --- Navigation & Buttons --- */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40px;
+  margin-bottom: 60px;
+  gap: 15px;
+}
+
+/* Base style for submit button */
 .btn-submit {
   background-color: #1D4337;
   color: white;
-  padding: 14px 80px;
+  padding: 16px 100px;
   border: none;
-  border-radius: 30px;
+  border-radius: 12px;
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.btn-submit {
-  border-radius: 12px;
-  padding: 16px 100px;
-}
-
-.btn-next:hover, 
 .btn-submit:hover {
   background-color: #053B29;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
-/* ============================= */
-/* UTIL */
-/* ============================= */
-
+/* Utilities */
 .text-right {
   text-align: right;
 }
