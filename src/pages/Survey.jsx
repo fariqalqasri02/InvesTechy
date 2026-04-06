@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Pastikan react-router-dom sudah terinstall
 import Sidebar from '../components/sidebar.jsx';
 import '../components/pages.css';
 
 const Survey = () => {
+  const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.classList.remove("page-exit"); // ✅ Reset class animasi saat masuk halaman survey
+    document.body.classList.remove("page-exit"); 
   }, []);
 
   const [answers, setAnswers] = useState({});
@@ -202,11 +204,24 @@ const Survey = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const baseData = JSON.parse(sessionStorage.getItem('temp_project_base') || '{}');
-    const finalData = { ...baseData, surveyAnswers: answers };
-    
-    console.log("LOGIC CHECK - Final Data to API:", finalData);
-    alert("Analysis submitted successfully!");
+
+    // Munculkan konfirmasi bawaan browser
+    const isConfirmed = window.confirm("Apakah Anda yakin ingin mengirim analisis ini?");
+
+    if (isConfirmed) {
+      // Logic penggabungan data
+      const baseData = JSON.parse(sessionStorage.getItem('temp_project_base') || '{}');
+      const finalData = { 
+        ...baseData, 
+        surveyAnswers: answers,
+        submittedAt: new Date().toISOString() 
+      };
+      
+      console.log("Submitting data...", finalData);
+      
+      // Langsung arahkan ke halaman project list tanpa alert tambahan
+      navigate('/project-list');
+    }
   };
 
   return (

@@ -1,23 +1,30 @@
-.profile-container {
+/* Layout Utama */
+.profile-layout {
   display: flex;
-  background-color: #F8F9FA;
+  background-color: #F8FBF9; /* Background kontras dengan sidebar */
   min-height: 100vh;
 }
 
-.profile-content {
-  margin-left: 260px; /* Lebar sidebar */
+.profile-main-content {
+  margin-left: 260px; /* Jarak agar tidak tertutup sidebar */
   flex-grow: 1;
-  padding: 40px 60px;
+  padding: 60px;
 }
 
+.profile-inner-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Header Profil */
 .profile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
-.profile-info-top {
+.user-profile-info {
   display: flex;
   align-items: center;
   gap: 25px;
@@ -27,15 +34,16 @@
   position: relative;
 }
 
-.profile-avatar {
-  width: 120px;
-  height: 120px;
+.profile-avatar-img {
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
-.edit-avatar-btn {
+.edit-photo-badge {
   position: absolute;
   bottom: 5px;
   right: 5px;
@@ -43,66 +51,124 @@
   color: white;
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-}
-
-.profile-actions .btn-save {
-  padding: 10px 25px;
-  border-radius: 10px;
-  border: 1px solid #053B29;
-  background: white;
-  color: #053B29;
-  margin-right: 15px;
-}
-
-.profile-actions .btn-edit {
-  padding: 10px 25px;
-  border-radius: 10px;
-  border: none;
-  background: #053B29;
-  color: white;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 25px;
-  margin-bottom: 40px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #555;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  background: #fdfdfd;
-}
-
-.readonly-input {
-  background-color: #f0f0f0 !important;
-}
-
-.logout-section {
   display: flex;
   justify-content: center;
-  margin-top: 50px;
+  align-items: center;
+  font-size: 16px;
 }
 
-.btn-logout {
-  padding: 12px 60px;
-  border: 1px solid #FF4D4D;
-  background: white;
-  color: #FF4D4D;
-  border-radius: 15px;
-  font-weight: bold;
+.user-display-name {
+  font-size: 36px;
+  color: #053B29;
+  font-weight: 800;
+}
+
+/* Tombol Header */
+.profile-header-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-action-save {
+  background-color: white;
+  color: #053B29;
+  border: 1.5px solid #053B29;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-action-save.is-disabled {
+  border-color: #ddd;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+.btn-action-edit {
+  background-color: #053B29;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-action-edit:hover {
+  background-color: #042e20;
+}
+
+/* Grid Form */
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.form-input-group label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #444;
+  font-size: 14px;
+}
+
+.form-input-group input {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #EAEAEA;
+  background-color: #FFFFFF;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Input saat AKTIF diedit */
+.form-input-group input:not(:disabled) {
+  border-color: #053B29;
+  box-shadow: 0 0 0 3px rgba(5, 59, 41, 0.05);
+}
+
+/* Input saat DISABLED biasa */
+.form-input-group input:disabled {
+  background-color: #F5F5F5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Input yang LOCK SELAMANYA (Email & Role) */
+.input-locked {
+  background-color: #EDEDED !important;
+  border: 1px dashed #CCC !important;
+}
+
+/* Footer & Logout */
+.profile-footer {
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-profile-logout {
+  background: transparent;
+  color: #E63946;
+  border: 1.5px solid #E63946;
+  padding: 14px 70px;
+  border-radius: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-profile-logout:hover {
+  background-color: #E63946;
+  color: white;
+  box-shadow: 0 6px 20px rgba(230, 57, 70, 0.25);
 }

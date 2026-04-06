@@ -1,60 +1,148 @@
 import React, { useState } from 'react';
-import Sidebar from '../components/sidebar.jsx';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/sidebar';
 import '../components/profile.css';
 
 const Profile = () => {
-  // Simulasi data dari registrasi/database
+  const navigate = useNavigate();
+
+  // State untuk mengontrol mode edit
+  const [isEditing, setIsEditing] = useState(false);
+
+  // State data user (Idealnya diambil dari localStorage/Context saat login)
   const [userData, setUserData] = useState({
     name: "Mas Rusdi",
-    email: "rusdi@example.com",
-    businessName: "Rusdi Tech",
+    email: "rusdi.pro@example.com", 
+    businessName: "Rusdi Tech Solution",
     role: "UMKM Owner",
-    profilePic: "https://via.placeholder.com/150" // Ganti dengan path avatar Anda
+    profilePic: "https://via.placeholder.com/150" 
   });
 
-  return (
-    <div className="profile-container">
-      <Sidebar activeMenu="Settings" /> {/* Sesuaikan menu aktifnya */}
-      
-      <main className="profile-content">
-        <header className="profile-header">
-          <div className="profile-info-top">
-            <div className="avatar-wrapper">
-              <img src={userData.profilePic} alt="User Avatar" className="profile-avatar" />
-              <button className="edit-avatar-btn">✎</button>
-            </div>
-            <h1>{userData.name}</h1>
-          </div>
-          <div className="profile-actions">
-            <button className="btn-save">Save Changes</button>
-            <button className="btn-edit">Edit Profile</button>
-          </div>
-        </header>
+  // Handle perubahan input
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+  };
 
-        <form className="profile-form">
-          <div className="form-grid">
-            <div className="form-group">
-              <label>Name</label>
-              <input type="text" value={userData.name} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input type="email" value={userData.email} className="readonly-input" readOnly />
-            </div>
-            <div className="form-group">
-              <label>Business Name</label>
-              <input type="text" value={userData.businessName} readOnly />
-            </div>
-            <div className="form-group">
-              <label>Role</label>
-              <input type="text" value={userData.role} readOnly />
-            </div>
-          </div>
+  // Simpan perubahan
+  const handleSave = () => {
+    // Logic API update data bisa ditaruh di sini
+    console.log("Saving data...", userData);
+    setIsEditing(false);
+    alert("Profile updated successfully!");
+  };
+
+  // Fungsi Log Out
+  const handleLogout = () => {
+    // Bersihkan session/token jika ada
+    // localStorage.clear(); 
+    navigate('/login');
+  };
+
+  return (
+    <div className="profile-layout">
+      {/* Sidebar tanpa menu aktif */}
+      <Sidebar activeMenu="" />
+
+      <main className="profile-main-content">
+        <div className="profile-inner-container">
           
-          <div className="logout-section">
-            <button type="button" className="btn-logout">Log Out</button>
-          </div>
-        </form>
+          {/* Header Section */}
+          <header className="profile-header">
+            <div className="user-profile-info">
+              <div className="avatar-wrapper">
+                <img src={userData.profilePic} alt="User Avatar" className="profile-avatar-img" />
+                {isEditing && (
+                  <button className="edit-photo-badge" title="Change Photo">
+                    ✎
+                  </button>
+                )}
+              </div>
+              <h1 className="user-display-name">{userData.name}</h1>
+            </div>
+
+            <div className="profile-header-actions">
+              <button 
+                className={`btn-action-save ${!isEditing ? 'is-disabled' : ''}`}
+                onClick={handleSave}
+                disabled={!isEditing}
+              >
+                Save Changes
+              </button>
+              <button 
+                className="btn-action-edit"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Profile
+              </button>
+            </div>
+          </header>
+
+          {/* Form Section */}
+          <section className="profile-form-card">
+            <div className="profile-form-grid">
+              
+              {/* Name Group */}
+              <div className="form-input-group">
+                <label>Name</label>
+                <input 
+                  type="text" 
+                  name="name"
+                  value={userData.name}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Your Name"
+                />
+              </div>
+
+              {/* Email Group - Locked */}
+              <div className="form-input-group">
+                <label>Email</label>
+                <input 
+                  type="email" 
+                  value={userData.email}
+                  disabled={true} 
+                  className="input-locked"
+                  placeholder="Registered Email"
+                />
+              </div>
+
+              {/* Business Name Group */}
+              <div className="form-input-group">
+                <label>Business Name</label>
+                <input 
+                  type="text" 
+                  name="businessName"
+                  value={userData.businessName}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Your Business Name"
+                />
+              </div>
+
+              {/* Role Group - Locked */}
+              <div className="form-input-group">
+                <label>Role</label>
+                <input 
+                  type="text" 
+                  value={userData.role}
+                  disabled={true}
+                  className="input-locked"
+                  placeholder="Ur Role"
+                />
+              </div>
+
+            </div>
+
+            {/* Logout Section */}
+            <div className="profile-footer">
+              <button className="btn-profile-logout" onClick={handleLogout}>
+                Log Out
+              </button>
+            </div>
+          </section>
+
+        </div>
       </main>
     </div>
   );
