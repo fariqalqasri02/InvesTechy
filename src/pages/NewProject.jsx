@@ -6,11 +6,11 @@ import '../components/pages.css';
 const NewProject = () => {
   const navigate = useNavigate();
 
-  const [animate, setAnimate] = useState(false);
+  // const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    setAnimate(true); // ✅ trigger animasi masuk
-    console.log("a")
+    // setAnimate(true);
+    document.body.classList.remove("page-exit"); // ✅ Pastikan animasi exit sebelumnya dihapus
   }, []);
 
   const [formData, setFormData] = useState({

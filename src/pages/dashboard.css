@@ -20,7 +20,7 @@
   overflow-y: auto;
 
   /* 🔥 ANIMASI MASUK */
-  /* animation: pageEnter 0.3s ease; */
+   animation: pageEnter 0.3s ease;
 }
 
 /* Wrapper biar konten rapi di tengah */
@@ -31,12 +31,12 @@
 }
 
 /* 🔥 ANIMASI KELUAR */
-/* body.page-exit .main-content {
+body.page-exit .main-content {
   animation: pageExit 0.25s ease forwards;
-} */
+} 
 
 /* ANIMASI MASUK */
-/* @keyframes pageEnter {
+@keyframes pageEnter {
   from {
     opacity: 0;
     transform: translateX(40px) scale(0.98);
@@ -45,10 +45,10 @@
     opacity: 1;
     transform: translateX(0) scale(1);
   }
-} */
+} 
 
 /* ANIMASI KELUAR */
-/* @keyframes pageExit {
+ @keyframes pageExit {
   from {
     opacity: 1;
     transform: translateX(0);
@@ -57,7 +57,7 @@
     opacity: 0;
     transform: translateX(-40px);
   }
-} */
+}
 
 /* Header */
 .top-bar {

@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar.jsx';
 import '../components/pages.css';
 
 const Survey = () => {
+
+  useEffect(() => {
+    document.body.classList.remove("page-exit"); // ✅ Reset class animasi saat masuk halaman survey
+  }, []);
+
   const [answers, setAnswers] = useState({});
 
   const surveySections = [
