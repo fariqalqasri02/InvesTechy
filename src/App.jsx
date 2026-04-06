@@ -8,6 +8,9 @@ import ResetPassword from './pages/ResetPassword';
 import NewProject from './pages/NewProject';
 import Survey from './pages/Survey';
 import Profile from './pages/profile'; 
+import ProjectList from "./pages/ProjectList";
+import Consult from "./pages/Consult";
+import Settings from "./pages/Settings";
 // 1. Import halaman Report
 import Report from './pages/report'; 
 
@@ -34,6 +37,9 @@ function App() {
         {/* Alur Proyek Baru (Step 1 & Step 2) */}
         <Route path="/new-project" element={<NewProject />} />
         <Route path="/new-project/survey" element={<Survey />} />
+        <Route path="/project-list" element={<ProjectList />} />
+        <Route path="/consult" element={<Consult />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
   );
