@@ -10,7 +10,6 @@ const NewProject = () => {
 
   useEffect(() => {
     setAnimate(true); // ✅ trigger animasi masuk
-    console.log("a")
   }, []);
 
   const [formData, setFormData] = useState({
