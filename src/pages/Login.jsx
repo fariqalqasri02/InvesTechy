@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import '../components/auth.css'; 
 import logoImg from '../assets/InvesTechy.jpg'; 
+// Tambahkan Link di sini untuk navigasi yang lebih cepat
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Inisialisasi navigate di sini
+  const navigate = useNavigate();
+
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
 
-  // Fungsi Login dibuat pasif tanpa reaksi apapun
   const handleLogin = (e) => {
     e.preventDefault();
-    // Dihentikan di sini tanpa alert, console, atau navigate
+    // Simulasi login berhasil, lalu pindah ke dashboard
+    navigate("/dashboard");
   };
 
   return (
@@ -40,7 +45,8 @@ const Login = () => {
           <div className="form-box">
             <h2>Login</h2>
             <p className="form-subtext">
-              Don’t have an account? <a href="/register">Create Now</a>
+              {/* Menggunakan Link agar tidak refresh halaman */}
+              Don’t have an account? <Link to="/register">Create Now</Link>
             </p>
 
             <form onSubmit={handleLogin}>
@@ -52,9 +58,9 @@ const Login = () => {
               <div className="input-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <label>Password</label>
-                  <a href="/forgot-password" style={{ fontSize: '12px', color: '#053B29', fontWeight: 'bold', textDecoration: 'none' }}>
+                  <Link to="/forgot-password" style={{ fontSize: '12px', color: '#053B29', fontWeight: 'bold', textDecoration: 'none' }}>
                     Forgot Password?
-                  </a>
+                  </Link>
                 </div>
                 <div className="input-wrapper">
                   <input 
@@ -65,7 +71,6 @@ const Login = () => {
                     required 
                   />
                   
-                  {/* Ikon mata hanya muncul jika password sudah mulai diketik */}
                   {password.length > 0 && (
                     <span className="password-icon" onClick={() => setShowPassword(!showPassword)}>
                       <img src={showPassword ? eyeOpen : eyeClosed} alt="toggle view" />

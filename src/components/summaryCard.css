@@ -1,0 +1,29 @@
+.card {
+  background: white;
+  padding: 24px; /* Padding sedikit diperlebar agar tidak sesak */
+  border-radius: 16px; /* Lebih bulat sesuai desain modern */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Shadow lebih lembut */
+  border: 1px solid #f0f0f0; /* Garis tepi tipis agar kartu lebih tegas */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease; /* Efek saat kursor di atasnya */
+}
+
+.card:hover {
+  transform: translateY(-4px); /* Efek melayang kecil */
+}
+
+.card-title {
+  color: #718096; /* Warna abu-abu yang lebih soft */
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  color: #053B29; /* Warna hijau tua khas InvesTechy */
+  font-size: 24px; /* Sedikit lebih besar untuk penekanan angka */
+  font-weight: 700;
+  margin: 0;
+}

@@ -1,0 +1,104 @@
+.chart-container {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  width: 100%;
+  margin-left: 0;
+}
+
+.chart-left {
+  flex: 2.5;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.chart-header .subtitle {
+  color: #94a3b8;
+  font-size: 14px;
+  display: block;
+}
+
+.chart-header .chart-title {
+  color: #053B29;
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 4px;
+  margin-bottom: 30px;
+}
+
+.chart-content {
+  display: flex; /* IDR dan Bar sejajar kiri-kanan */
+  gap: 15px;
+  height: 300px;
+}
+
+/* Sumbu Y */
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #94a3b8;
+  font-size: 11px;
+  text-align: right;
+  padding-bottom: 25px; /* Sesuaikan dengan tinggi x-label */
+}
+
+.chart-main {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Garis Grid */
+.chart-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 25px); /* Jangan sampai kena x-label */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1;
+}
+
+.grid-line {
+  border-bottom: 1px dashed #e2e8f0;
+  width: 100%;
+}
+
+/* Batang Grafik */
+.chart-bars {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 100%;
+  width: 100%;
+}
+
+.bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 15%;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  background-color: #053B29; /* Hijau Tua Figma */
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  transition: height 0.5s ease;
+}
+
+/* Sumbu X */
+.x-label {
+  margin-top: 10px;
+  color: #94a3b8;
+  font-size: 12px;
+  white-space: nowrap;
+}
