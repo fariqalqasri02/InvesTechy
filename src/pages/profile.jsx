@@ -1,147 +1,189 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/sidebar';
 import '../components/profile.css';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const menuRef = useRef(null);
 
-  // State untuk mengontrol mode edit
+  const defaultAvatar = "https://img.icons8.com/?size=100&id=bC0O28EGsK5f&format=png&color=00381e";
+
   const [isEditing, setIsEditing] = useState(false);
+  const [showPhotoMenu, setShowPhotoMenu] = useState(false);
 
-  // State data user (Idealnya diambil dari localStorage/Context saat login)
-  const [userData, setUserData] = useState({
+  const [savedData, setSavedData] = useState({
     name: "Mas Rusdi",
     email: "rusdi.pro@example.com", 
     businessName: "Rusdi Tech Solution",
     role: "UMKM Owner",
-    profilePic: "https://via.placeholder.com/150" 
+    profilePic: null 
   });
 
-  // Handle perubahan input
+  const [formData, setFormData] = useState({ ...savedData });
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowPhotoMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Simpan perubahan
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, profilePic: reader.result });
+        setShowPhotoMenu(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDeletePhoto = () => {
+    setFormData({ ...formData, profilePic: null });
+    setShowPhotoMenu(false);
+  };
+
   const handleSave = () => {
-    // Logic API update data bisa ditaruh di sini
-    console.log("Saving data...", userData);
+    setSavedData({ ...formData });
     setIsEditing(false);
-    alert("Profile updated successfully!");
   };
 
-  // Fungsi Log Out
-  const handleLogout = () => {
-    // Bersihkan session/token jika ada
-    // localStorage.clear(); 
-    navigate('/login');
+  const handleCancel = () => {
+    setFormData({ ...savedData });
+    setIsEditing(false);
+    setShowPhotoMenu(false);
   };
 
   return (
     <div className="profile-layout">
-      {/* Sidebar tanpa menu aktif */}
       <Sidebar activeMenu="" />
 
       <main className="profile-main-content">
         <div className="profile-inner-container">
           
-          {/* Header Section */}
           <header className="profile-header">
             <div className="user-profile-info">
               <div className="avatar-wrapper">
-                <img src={userData.profilePic} alt="User Avatar" className="profile-avatar-img" />
+                <img 
+                  src={formData.profilePic || defaultAvatar} 
+                  alt="User Avatar" 
+                  className="profile-avatar-img" 
+                />
+                
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleImageChange} 
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
+
                 {isEditing && (
-                  <button className="edit-photo-badge" title="Change Photo">
-                    ✎
-                  </button>
+                  <div className="edit-photo-container" ref={menuRef}>
+                    <button 
+                      className="edit-photo-badge" 
+                      onClick={() => setShowPhotoMenu(!showPhotoMenu)}
+                      type="button"
+                    >
+                      ✎
+                    </button>
+
+                    {showPhotoMenu && (
+                      <div className="photo-options-menu">
+                        <button type="button" onClick={() => fileInputRef.current.click()}>
+                          Upload Photo
+                        </button>
+                        <button type="button" className="delete-btn" onClick={handleDeletePhoto}>
+                          Delete Photo
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-              <h1 className="user-display-name">{userData.name}</h1>
+              <h1 className="user-display-name">{formData.name}</h1>
             </div>
 
             <div className="profile-header-actions">
-              <button 
-                className={`btn-action-save ${!isEditing ? 'is-disabled' : ''}`}
-                onClick={handleSave}
-                disabled={!isEditing}
-              >
-                Save Changes
-              </button>
-              <button 
-                className="btn-action-edit"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit Profile
-              </button>
+              {isEditing ? (
+                <>
+                  <button className="btn-action-cancel" onClick={handleCancel}>
+                    Cancel
+                  </button>
+                  <button className="btn-action-save" onClick={handleSave}>
+                    Save Changes
+                  </button>
+                </>
+              ) : (
+                <button className="btn-action-edit" onClick={() => setIsEditing(true)}>
+                  Edit Profile
+                </button>
+              )}
             </div>
           </header>
 
-          {/* Form Section */}
           <section className="profile-form-card">
             <div className="profile-form-grid">
-              
-              {/* Name Group */}
               <div className="form-input-group">
                 <label>Name</label>
                 <input 
                   type="text" 
-                  name="name"
-                  value={userData.name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  placeholder="Your Name"
+                  name="name" 
+                  value={formData.name} 
+                  onChange={handleChange} 
+                  disabled={!isEditing} 
                 />
               </div>
-
-              {/* Email Group - Locked */}
               <div className="form-input-group">
                 <label>Email</label>
                 <input 
                   type="email" 
-                  value={userData.email}
-                  disabled={true} 
-                  className="input-locked"
-                  placeholder="Registered Email"
+                  value={formData.email} 
+                  disabled 
+                  className="input-locked" 
                 />
               </div>
-
-              {/* Business Name Group */}
               <div className="form-input-group">
                 <label>Business Name</label>
                 <input 
                   type="text" 
-                  name="businessName"
-                  value={userData.businessName}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  placeholder="Your Business Name"
+                  name="businessName" 
+                  value={formData.businessName} 
+                  onChange={handleChange} 
+                  disabled={!isEditing} 
                 />
               </div>
-
-              {/* Role Group - Locked */}
               <div className="form-input-group">
                 <label>Role</label>
                 <input 
                   type="text" 
-                  value={userData.role}
-                  disabled={true}
-                  className="input-locked"
-                  placeholder="Ur Role"
+                  value={formData.role} 
+                  disabled 
+                  className="input-locked" 
                 />
               </div>
-
             </div>
 
-            {/* Logout Section */}
-            <div className="profile-footer">
-              <button className="btn-profile-logout" onClick={handleLogout}>
-                Log Out
-              </button>
-            </div>
+            {!isEditing && (
+              <div className="profile-footer">
+                <button className="btn-profile-logout" onClick={() => navigate('/login')}>
+                  Log Out
+                </button>
+              </div>
+            )}
           </section>
-
         </div>
       </main>
     </div>

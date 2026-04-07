@@ -4,12 +4,27 @@
   background-color: #F8F9FA;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
 .report-content {
   margin-left: 260px;
   padding: 40px 50px;
   flex-grow: 1;
+  opacity: 0; /* Awalnya tidak terlihat untuk animasi */
+  transform: translateY(20px);
+}
+
+/* Page Transition Animation */
+.page-fade-in {
+  animation: pageEnter 0.6s ease-out forwards;
+}
+
+@keyframes pageEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .report-title {
@@ -31,25 +46,23 @@
 }
 
 .dropdown-btn {
-  border: 1.5px solid #D1D5DB; /* Border lebih tegas */
+  border: 1.5px solid #D1D5DB;
   border-radius: 12px;
   padding: 12px 20px;
   background-color: #FFFFFF;
-  color: #4B5563; /* Teks lebih gelap agar terbaca */
+  color: #4B5563;
   width: 220px;
   font-size: 14px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dropdown-btn:hover {
-  border-color: #053B29;
-}
+.dropdown-btn:hover { border-color: #053B29; }
 
-/* Panah yang Lebih Terlihat */
+/* Panah yang Terlihat & Berputar */
 .arrow-icon-visible {
   width: 12px;
   height: 8px;
@@ -57,15 +70,13 @@
   background-repeat: no-repeat;
   background-size: contain;
   transition: transform 0.3s ease;
-  opacity: 0.8;
 }
 
 .dropdown-btn.active .arrow-icon-visible {
   transform: rotate(180deg);
-  stroke: #053B29;
 }
 
-/* Windows Style Menu Items */
+/* Animasi Muncul Menu Dropdown */
 .dropdown-content {
   position: absolute;
   top: 55px;
@@ -79,12 +90,23 @@
   border: 1px solid #E5E7EB;
 }
 
+.dropdown-animate {
+  animation: slideDownFade 0.2s ease-out;
+  transform-origin: top;
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; transform: scaleY(0.95); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
 .menu-item {
   padding: 10px 15px 10px 40px;
   font-size: 14px;
   cursor: pointer;
   position: relative;
   color: #374151;
+  transition: background 0.2s;
 }
 
 .menu-item:hover { background-color: #F3F4F6; }
@@ -97,13 +119,7 @@
   font-size: 10px;
 }
 
-.menu-divider {
-  height: 1px;
-  background-color: #F3F4F6;
-  margin: 5px 0;
-}
-
-/* Tabel & Card */
+/* Card & Table */
 .report-card {
   background: #FFFFFF;
   border-radius: 15px;
@@ -113,7 +129,7 @@
 
 .card-subtitle {
   color: #2D2D5E;
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 25px;
 }
 
@@ -139,10 +155,20 @@
   color: #4B5563;
 }
 
+/* Animasi Baris Tabel */
+.row-animate {
+  animation: rowEnter 0.4s ease-out backwards;
+}
+
+@keyframes rowEnter {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 .text-left { text-align: left !important; }
 .report-name-cell { text-align: left !important; font-weight: 500; color: #111827; }
 
-/* Status Badges */
+/* Status Badges - Accurate Colors */
 .roi-tag {
   background-color: #E5E7EB;
   color: #374151;
@@ -164,7 +190,7 @@
 .not-recommended { background-color: #FEE2E2; color: #991B1B; }
 .error { background-color: #B91C1C; color: #FFFFFF; }
 
-/* Action Buttons Baru */
+/* Action Buttons */
 .btn-open {
   background: none;
   border: 1px solid #D1D5DB;
@@ -173,12 +199,13 @@
   font-size: 12px;
   cursor: pointer;
   color: #374151;
-  transition: 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-open:hover {
   background-color: #F9FAFB;
   border-color: #9CA3AF;
+  transform: translateY(-1px);
 }
 
 .btn-delete-text {

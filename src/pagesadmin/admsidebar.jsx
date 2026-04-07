@@ -31,6 +31,7 @@ const SidebarAdmin = ({ activeMenu }) => {
     },
   ];
 
+<<<<<<< HEAD
   useEffect(() => {
     document.body.classList.toggle("sidebar-open", isOpen);
 
@@ -90,6 +91,51 @@ const SidebarAdmin = ({ activeMenu }) => {
         <div className="sidebar-footer-line" />
       </aside>
     </>
+=======
+  const handleLogout = () => {
+    console.log("Admin Logged Out");
+    navigate('/login');
+  };
+
+  return (
+    <div className="sidebar">
+      <div className="sidebar-logo">
+        <img src={logo} alt="InvesTechy Admin" />
+      </div>
+      
+      <nav className="sidebar-nav">
+        {menus.map((menu) => {
+          const isActive = activeMenu === menu.name;
+          return (
+            <div
+              key={menu.name}
+              className={`nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => navigate(menu.path)}
+            >
+              <img 
+                src={isActive ? menu.activeIcon : menu.icon} 
+                alt={menu.name} 
+                className="sidebar-icon-img"
+              />
+              <span className="menu-text">{menu.name}</span>
+            </div>
+          );
+        })}
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-footer-line"></div>
+        <div className="nav-item logout-item" onClick={handleLogout}>
+          <img 
+            src="https://img.icons8.com/?size=100&id=2445&format=png&color=FFFFFF" 
+            alt="Logout" 
+            className="sidebar-icon-img"
+          />
+          <span className="menu-text">Log Out</span>
+        </div>
+      </div>
+    </div>
+>>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
   );
 };
 

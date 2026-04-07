@@ -17,7 +17,45 @@ export default function Consult() {
     dispatch(fetchConsultants());
   }, [dispatch]);
 
+<<<<<<< HEAD
   const goToDetail = (consultantId) => {
+=======
+  const consultants = [
+    {
+      name: "Audelia Nainggolan",
+      role: "UI/UX, Front End Dev, UMKM IT, ERP",
+      price: "IDR. 150.000 / Session",
+      rating: 5,
+    },
+    {
+      name: "Eriza Aminato",
+      role: "Back End, Data Scientist, UMKM IT, ERP",
+      price: "IDR. 150.000 / Session",
+      rating: 5,
+    },
+    {
+      name: "M. Fariq Al Qasri",
+      role: "UI/UX, Front End Dev, UMKM IT, ERP",
+      price: "IDR. 150.000 / Session",
+      rating: 5,
+    },
+    {
+      name: "Irvana Sania Rusadi",
+      role: "AI Engineer, Back End, ERP, UMKM IT",
+      price: "IDR. 150.000 / Session",
+      rating: 5,
+    },
+    {
+      name: "Muhammad Wijaya",
+      role: "Back End, UMKM IT, ERP",
+      price: "IDR. 150.000 / Session",
+      rating: 5,
+    },
+  ];
+
+  // 🔥 OPTIONAL: contoh kalau mau ke detail page
+  const goToDetail = (name) => {
+>>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
     document.body.classList.add("page-exit");
     setTimeout(() => {
       navigate("/consult-detail", { state: { consultantId } });

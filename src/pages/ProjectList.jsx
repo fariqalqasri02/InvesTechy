@@ -118,10 +118,22 @@ export default function ProjectList() {
                     </button>
                   </div>
                 </div>
+<<<<<<< HEAD
               ))
             )}
           </div>
         )}
+=======
+
+                <button className="btn-detail"onClick={() => navigate(`/edit-data/${item.id}`)}>
+                  View Detail
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+>>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
       </main>
     </div>
   );

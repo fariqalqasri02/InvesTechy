@@ -1,4 +1,9 @@
 import { useEffect } from "react";
+<<<<<<< HEAD
+=======
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom"; // TAMBAHAN: Import Link
+>>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
 import Sidebar from "../components/sidebar";
 import SummaryCard from "../components/SummaryCard";
 import ChartSection from "../components/CharSection";
@@ -30,14 +35,31 @@ export default function Dashboard() {
               </div>
 
               <div className="profile-info">
+<<<<<<< HEAD
                 <span className="notif">Alerts</span>
                 <div className="user-profile">
                   <img src="./assets/AkUnpad.png" alt="Avatar" className="avatar" />
+=======
+                <span className="notif">🔔</span>
+                
+                {/* LINK MENUJU PROFILE (GAMBAR 2) */}
+                <Link 
+                  to="/profile" 
+                  className="user-profile" 
+                  style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                >
+                  <img 
+                    src="./assets/AkUnpad.png" 
+                    alt="Avatar" 
+                    className="avatar" 
+                  />
+>>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
                   <div className="user-detail">
                     <span className="user-name">Mas Rusdi</span>
                     <span className="user-role">UMKM Owner</span>
                   </div>
-                </div>
+                </Link>
+
               </div>
             </div>
           </header>

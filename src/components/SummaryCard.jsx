@@ -1,13 +1,15 @@
-import "./summaryCard.css";
+import React from "react";
 
 export default function SummaryCard({ title, value, icon }) {
   return (
-    <div className="card">
-      <div className="card-header-flex">
-        {icon && <span className="card-icon">{icon}</span>}
-        <p className="card-title">{title}</p>
+    <div className="summary-card">
+      <div className="card-icon-bg">
+        <img src={icon} alt={title} className="card-icon-img" />
       </div>
-      <h2 className="card-value">{value}</h2>
+      <div className="card-details">
+        <span className="card-title">{title}</span>
+        <h3 className="card-value">{value}</h3>
+      </div>
     </div>
   );
 }

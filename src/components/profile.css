@@ -1,12 +1,12 @@
 /* Layout Utama */
 .profile-layout {
   display: flex;
-  background-color: #F8FBF9; /* Background kontras dengan sidebar */
+  background-color: #F8FBF9;
   min-height: 100vh;
 }
 
 .profile-main-content {
-  margin-left: 260px; /* Jarak agar tidak tertutup sidebar */
+  margin-left: 260px;
   flex-grow: 1;
   padding: 60px;
 }
@@ -16,7 +16,7 @@
   margin: 0 auto;
 }
 
-/* Header Profil */
+/* Header & Avatar */
 .profile-header {
   display: flex;
   justify-content: space-between;
@@ -32,47 +32,90 @@
 
 .avatar-wrapper {
   position: relative;
+  width: 110px;
+  height: 110px;
 }
 
 .profile-avatar-img {
-  width: 110px;
-  height: 110px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #fff;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  background-color: #fff;
+}
+
+/* Opsi Foto Menu */
+.edit-photo-container {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  z-index: 20;
 }
 
 .edit-photo-badge {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
   background: #053B29;
   color: white;
-  border: none;
+  border: 3px solid #fff;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
-.user-display-name {
-  font-size: 36px;
-  color: #053B29;
-  font-weight: 800;
+.edit-photo-badge:hover {
+  background-color: #0a5a40;
+  transform: scale(1.1);
 }
 
-/* Tombol Header */
+.photo-options-menu {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+
+.photo-options-menu button {
+  padding: 12px 15px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.photo-options-menu button:hover {
+  background-color: #f5f5f5;
+}
+
+.photo-options-menu .delete-btn {
+  color: #E63946;
+  border-top: 1px solid #eee;
+}
+
+/* Tombol Actions */
 .profile-header-actions {
   display: flex;
-  gap: 15px;
+  gap: 12px;
 }
 
-.btn-action-save {
+/* Tombol Edit Profile: Perubahan Warna */
+.btn-action-edit {
   background-color: white;
   color: #053B29;
   border: 1.5px solid #053B29;
@@ -80,16 +123,16 @@
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
-.btn-action-save.is-disabled {
-  border-color: #ddd;
-  color: #bbb;
-  cursor: not-allowed;
+.btn-action-edit:hover {
+  background-color: #053B29;
+  color: white;
 }
 
-.btn-action-edit {
+/* Tombol Save & Cancel: Gerak & Shadow */
+.btn-action-save {
   background-color: #053B29;
   color: white;
   border: none;
@@ -97,14 +140,33 @@
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
-.btn-action-edit:hover {
-  background-color: #042e20;
+.btn-action-save:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(5, 59, 41, 0.3);
+  background-color: #0a5a40;
 }
 
-/* Grid Form */
+.btn-action-cancel {
+  color: #666;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-action-cancel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+/* Form Grid */
 .profile-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -116,7 +178,6 @@
   font-weight: 700;
   margin-bottom: 12px;
   color: #444;
-  font-size: 14px;
 }
 
 .form-input-group input {
@@ -124,32 +185,15 @@
   padding: 16px;
   border-radius: 12px;
   border: 1px solid #EAEAEA;
-  background-color: #FFFFFF;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-/* Input saat AKTIF diedit */
-.form-input-group input:not(:disabled) {
-  border-color: #053B29;
-  box-shadow: 0 0 0 3px rgba(5, 59, 41, 0.05);
-}
-
-/* Input saat DISABLED biasa */
-.form-input-group input:disabled {
-  background-color: #F5F5F5;
-  color: #999;
-  cursor: not-allowed;
-}
-
-/* Input yang LOCK SELAMANYA (Email & Role) */
 .input-locked {
   background-color: #EDEDED !important;
   border: 1px dashed #CCC !important;
+  color: #888 !important;
 }
 
-/* Footer & Logout */
+/* Logout: Perubahan Warna */
 .profile-footer {
   margin-top: 80px;
   display: flex;
@@ -170,5 +214,4 @@
 .btn-profile-logout:hover {
   background-color: #E63946;
   color: white;
-  box-shadow: 0 6px 20px rgba(230, 57, 70, 0.25);
 }

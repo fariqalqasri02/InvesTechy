@@ -5,9 +5,8 @@ import ChartSection from "../components/CharSection";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
-  const [filter, setFilter] = useState('MONTH');
+  const [filter, setFilter] = useState('WEEKLY');
   
-  // Data dummy yang bisa kamu ganti dengan Fetch API nanti
   const dataWeekly = [
     { label: "MON", value: 30 }, { label: "TUE", value: 45 }, { label: "WED", value: 60 },
     { label: "THU", value: 40 }, { label: "FRI", value: 70 }, { label: "SAT", value: 90 }, { label: "SUN", value: 55 }
@@ -22,6 +21,7 @@ export default function AdminDashboard() {
     <div className="admin-layout">
       <SidebarAdmin activeMenu="Dashboard" />
       <main className="admin-content">
+        
         {/* Header Section */}
         <header className="top-bar">
           <div className="welcome">
@@ -31,26 +31,33 @@ export default function AdminDashboard() {
           <div className="top-bar-right">
             <div className="search-wrapper">
               <input type="text" placeholder="Search for anything...." />
-              <span>🔍</span>
-            </div>
-            <div className="admin-profile">
-              <span className="notif-icon">🔔<span className="dot"></span></span>
-              <div className="divider"></div>
-              <img src="/assets/mike.png" alt="Mike" className="avatar" />
-              <div className="details">
-                <span className="name">Mike</span>
-                <span className="role">Admin</span>
-              </div>
+              <span className="search-icon">🔍</span>
             </div>
           </div>
         </header>
 
         {/* Cards Grid */}
         <div className="summary-grid">
-          <SummaryCard title="TOTAL USERS" value={1000} icon="👥" />
-          <SummaryCard title="TOTAL PROJECTS" value={1500} icon="📊" />
-          <SummaryCard title="ACTIVITY" value={550} icon="⚡" />
-          <SummaryCard title="CONSULTANTS" value={5} icon="👨‍🏫" />
+          <SummaryCard 
+            title="TOTAL USERS" 
+            value="1000" 
+            icon="https://img.icons8.com/?size=100&id=1Wf241bLN9LO&format=png&color=00381e" 
+          />
+          <SummaryCard 
+            title="TOTAL PROJECTS" 
+            value="1500" 
+            icon="https://img.icons8.com/?size=100&id=xhmDNaoYW1Mf&format=png&color=00381e" 
+          />
+          <SummaryCard 
+            title="ACTIVITY" 
+            value="550" 
+            icon="https://img.icons8.com/?size=100&id=IOdrUofMto8h&format=png&color=00381e" 
+          />
+          <SummaryCard 
+            title="CONSULTANTS" 
+            value="5" 
+            icon="https://img.icons8.com/?size=100&id=fT3liaAJWLmA&format=png&color=00381e" 
+          />
         </div>
 
         {/* Chart Section */}
@@ -58,8 +65,18 @@ export default function AdminDashboard() {
           <div className="chart-header-row">
             <h2>TOTAL PROJECTS</h2>
             <div className="toggle-buttons">
-              <button className={filter === 'WEEKLY' ? 'active' : ''} onClick={() => setFilter('WEEKLY')}>WEEKLY</button>
-              <button className={filter === 'MONTH' ? 'active' : ''} onClick={() => setFilter('MONTH')}>MONTH</button>
+              <button 
+                className={filter === 'WEEKLY' ? 'active' : ''} 
+                onClick={() => setFilter('WEEKLY')}
+              >
+                WEEKLY
+              </button>
+              <button 
+                className={filter === 'MONTH' ? 'active' : ''} 
+                onClick={() => setFilter('MONTH')}
+              >
+                MONTH
+              </button>
             </div>
           </div>
           <ChartSection 

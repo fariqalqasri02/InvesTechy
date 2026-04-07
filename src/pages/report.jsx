@@ -5,14 +5,15 @@ import '../components/report.css';
 const Report = () => {
   const [reports, setReports] = useState([]);
   const [filteredReports, setFilteredReports] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   
-  // State untuk Dropdown
+  // State Dropdown
   const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   
-  // State Logic (Default: sort by name asc)
+  // State Logic
   const [filterStatus, setFilterStatus] = useState('');
-  const [sortType, setSortType] = useState('newest'); // Pilihan: 'newest' atau 'oldest'
+  const [sortType, setSortType] = useState('newest'); 
 
   useEffect(() => {
     const dummyData = [
@@ -23,26 +24,22 @@ const Report = () => {
       { id: 5, name: 'Report 5', date: 'Wed, 17 Apr 2020', roi: '162%', status: 'Error' },
     ];
     setReports(dummyData);
+    
+    // Memicu animasi page transition setelah render pertama
+    setTimeout(() => setIsLoaded(true), 100);
   }, []);
 
   useEffect(() => {
     let result = [...reports];
 
-    // 1. Filter Status
     if (filterStatus) {
       result = result.filter(item => item.status === filterStatus);
     }
 
-    // 2. Logic Sorting (Newest vs Oldest)
     result.sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      
-      if (sortType === 'newest') {
-        return dateB - dateA; // Descending (Terbaru di atas)
-      } else {
-        return dateA - dateB; // Ascending (Terlama di atas)
-      }
+      return sortType === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
     setFilteredReports(result);
@@ -52,22 +49,22 @@ const Report = () => {
     <div className="report-container">
       <Sidebar activeMenu="Report List" />
       
-      <main className="report-content">
+      <main className={`report-content ${isLoaded ? 'page-fade-in' : ''}`}>
         <h1 className="report-title">Report List</h1>
 
         <div className="report-filters">
-          {/* Dropdown Order By (Newest/Oldest) */}
+          {/* Dropdown Order By */}
           <div className="custom-dropdown">
             <button 
               className={`dropdown-btn ${isOrderOpen ? 'active' : ''}`} 
               onClick={() => { setIsOrderOpen(!isOrderOpen); setIsStatusOpen(false); }}
             >
-              Order by: {sortType === 'newest' ? 'Newest' : 'Oldest'}
+              Order by
               <span className="arrow-icon-visible"></span>
             </button>
             
             {isOrderOpen && (
-              <div className="dropdown-content border-style">
+              <div className="dropdown-content border-style dropdown-animate">
                 <div 
                   className={`menu-item ${sortType === 'newest' ? 'selected' : ''}`} 
                   onClick={() => { setSortType('newest'); setIsOrderOpen(false); }}
@@ -84,7 +81,7 @@ const Report = () => {
             )}
           </div>
 
-          {/* Status Dropdown */}
+          {/* Dropdown Status */}
           <div className="custom-dropdown">
             <button 
               className={`dropdown-btn ${isStatusOpen ? 'active' : ''}`} 
@@ -95,7 +92,7 @@ const Report = () => {
             </button>
             
             {isStatusOpen && (
-              <div className="dropdown-content border-style">
+              <div className="dropdown-content border-style dropdown-animate">
                 <div className="menu-item" onClick={() => { setFilterStatus(''); setIsStatusOpen(false); }}>All Status</div>
                 <div className="menu-item" onClick={() => { setFilterStatus('Recommended'); setIsStatusOpen(false); }}>Recommended</div>
                 <div className="menu-item" onClick={() => { setFilterStatus('Not Recommended'); setIsStatusOpen(false); }}>Not Recommended</div>
@@ -120,7 +117,7 @@ const Report = () => {
               </thead>
               <tbody>
                 {filteredReports.map((report) => (
-                  <tr key={report.id}>
+                  <tr key={report.id} className="row-animate">
                     <td className="report-name-cell">{report.name}</td>
                     <td className="report-date-cell">{report.date}</td>
                     <td><span className="roi-tag">{report.roi}</span></td>
