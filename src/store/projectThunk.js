@@ -36,3 +36,15 @@ export const fetchProjectDraft = createAsyncThunk(
     }
   },
 );
+
+export const fetchProjectById = createAsyncThunk(
+  "project/fetchProjectById",
+  async (projectId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/projects/${projectId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || error.message);
+    }
+  },
+);

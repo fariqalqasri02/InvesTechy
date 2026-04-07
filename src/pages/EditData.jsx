@@ -16,7 +16,7 @@ export default function EditData() {
 
   const handleSave = () => {
     alert("Data saved!");
-    navigate("/report-list");
+    navigate(`/report-list/${id}`);
   };
 
   return (

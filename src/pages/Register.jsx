@@ -46,11 +46,15 @@ const Register = () => {
 
     try {
       const response = await api.post("/auth/register", form);
+      const user = response.user ?? response.data;
       setSession({
         token: response.token,
-        user: response.user ?? response.data,
+        user,
       });
-      navigate("/project-list");
+      const destination = user?.role?.toLowerCase?.() === "admin"
+        ? "/admin/dashboard"
+        : "/dashboard";
+      navigate(destination);
     } catch (requestError) {
       setError(requestError.message);
     } finally {

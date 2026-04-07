@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = "http://localhost:3000/api";
+const DEFAULT_BASE_URL = "https://unvicarious-camelia-porky.ngrok-free.dev/api";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || DEFAULT_BASE_URL;
 
@@ -34,6 +34,7 @@ export const getStoredUser = () => {
 const buildHeaders = (headers = {}) => {
   const finalHeaders = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
     ...headers,
   };
 
@@ -48,6 +49,7 @@ const buildHeaders = (headers = {}) => {
 const request = async (endpoint, options = {}) => {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
+    credentials: "include",
     headers: buildHeaders(options.headers),
   });
 

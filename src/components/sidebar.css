@@ -1,6 +1,6 @@
 .sidebar {
   width: 260px;
-  background-color: #053b29;
+  background-color: var(--sidebar-bg);
   height: 100vh;
   padding: 40px 20px;
   position: fixed;
@@ -34,19 +34,19 @@
   padding: 12px 18px;
   margin-bottom: 12px;
   border-radius: 10px;
-  color: #ffffff;
+  color: var(--sidebar-text);
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
 }
 
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--sidebar-hover);
 }
 
 .nav-item.active {
-  background-color: #ffffff;
-  color: #053b29;
+  background-color: var(--surface);
+  color: var(--text-strong);
   font-weight: 700;
 }
 
@@ -76,7 +76,7 @@
   height: 48px;
   border: none;
   border-radius: 14px;
-  background: #053b29;
+  background: var(--sidebar-bg);
   box-shadow: 0 8px 24px rgba(5, 59, 41, 0.2);
   z-index: 1100;
   padding: 12px 10px;

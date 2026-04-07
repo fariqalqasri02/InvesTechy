@@ -33,11 +33,15 @@ const Login = () => {
 
     try {
       const response = await api.post("/auth/login", form);
+      const user = response.user ?? response.data;
       setSession({
         token: response.token,
-        user: response.user ?? response.data,
+        user,
       });
-      navigate("/project-list");
+      const destination = user?.role?.toLowerCase?.() === "admin"
+        ? "/admin/dashboard"
+        : "/dashboard";
+      navigate(destination);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -175,7 +179,7 @@ const Login = () => {
                   gap: "10px",
                 }}
                 onClick={() =>
-                  window.location.assign("http://localhost:3000/api/auth/google")
+                  window.location.assign("https://unvicarious-camelia-porky.ngrok-free.dev/api/auth/google")
                 }
               >
                 <img

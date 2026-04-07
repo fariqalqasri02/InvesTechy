@@ -1,6 +1,6 @@
 .admin-layout {
   display: flex;
-  background-color: #f8fafc;
+  background-color: var(--page-bg);
   min-height: 100vh;
 }
 
@@ -16,24 +16,57 @@
   margin-bottom: 30px;
 }
 
+.welcome h1 {
+  color: var(--text-main);
+}
+
+.welcome p {
+  color: var(--text-soft);
+}
+
 .search-wrapper {
-  background: white;
+  background: var(--surface);
   padding: 10px 20px;
   border-radius: 30px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-soft);
 }
 
 .search-wrapper input {
   border: none;
   outline: none;
   width: 200px;
+  background: transparent;
+  color: var(--text-main);
 }
 
-.toggle-buttons { background: #F1F1F1; padding: 5px; border-radius: 10px; }
-.toggle-buttons button { border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; background: transparent; color: #888; }
-.toggle-buttons button.active { background: #053B29; color: white; }
+.search-icon {
+  color: var(--text-soft);
+  margin-left: 10px;
+  font-size: 13px;
+}
+
+.toggle-buttons {
+  background: var(--surface-muted);
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.toggle-buttons button {
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-soft);
+}
+
+.toggle-buttons button.active {
+  background: #053B29;
+  color: white;
+}
 
 @media (max-width: 1024px) {
   .admin-content {

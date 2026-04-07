@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   createProject,
+  fetchProjectById,
   fetchProjectDraft,
   fetchProjects,
 } from "./projectThunk";
@@ -9,6 +10,7 @@ const initialState = {
   projectList: [],
   currentProject: null,
   currentDraft: null,
+  selectedProject: null,
   status: "idle",
   loading: false,
   error: null,
@@ -24,6 +26,7 @@ const projectSlice = createSlice({
     resetCurrentProject: (state) => {
       state.currentProject = null;
       state.currentDraft = null;
+      state.selectedProject = null;
       state.status = "idle";
       state.error = null;
     },
@@ -68,6 +71,18 @@ const projectSlice = createSlice({
       .addCase(fetchProjectDraft.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to load project draft.";
+      })
+      .addCase(fetchProjectById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProjectById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedProject = action.payload;
+      })
+      .addCase(fetchProjectById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to load project.";
       });
   },
 });

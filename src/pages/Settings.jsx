@@ -1,20 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
+import { useAppSettings } from "../context/AppSettingsContext";
 import "./settings.css";
 
-
 export default function Settings() {
-  const [form, setForm] = useState({
-    name: "Mas Rusdi",
-    email: "user@email.com",
-    company: "InvesTechy",
-    theme: "light",
-    language: "id", // 🔥 tambah ini
-    notifications: true,
-    password: "",
-    confirmPassword: ""
-  });
-
+  const { settings, updateSettings, t } = useAppSettings();
+  const [form, setForm] = useState(settings);
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -22,25 +13,27 @@ export default function Settings() {
     setAnimate(true);
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  useEffect(() => {
+    setForm(settings);
+  }, [settings]);
 
-    setForm({
-      ...form,
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+
+    setForm((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
   const handleSave = () => {
     if (form.password !== form.confirmPassword) {
-      alert("Password tidak sama!");
+      alert(t("passwordMismatch"));
       return;
     }
 
-    // 🔥 simpan ke localStorage
-    localStorage.setItem("app_settings", JSON.stringify(form));
-
-    alert("Settings berhasil disimpan!");
+    updateSettings(form);
+    alert(t("settingsSaved"));
   };
 
   return (
@@ -48,50 +41,44 @@ export default function Settings() {
       <Sidebar activeMenu="Settings" />
 
       <main className={`main-content ${animate ? "page-enter" : ""}`}>
-        
-        <h1 className="settings-title">Settings</h1>
-        <p className="settings-subtitle">
-          Manage your account preferences and system configuration
-        </p>
+        <h1 className="settings-title">{t("settingsTitle")}</h1>
+        <p className="settings-subtitle">{t("settingsSubtitle")}</p>
 
-        {/* PROFILE */}
         <div className="settings-card">
-          <h2>Profile Information</h2>
+          <h2>{t("profileInformation")}</h2>
 
           <div className="form-group">
-            <label>Full Name</label>
-            <input type="text" name="name" value={form.name} onChange={handleChange}/>
+            <label>{t("fullName")}</label>
+            <input type="text" name="name" value={form.name} onChange={handleChange} />
           </div>
 
           <div className="form-group">
-            <label>Email</label>
-            <input type="email" name="email" value={form.email} onChange={handleChange}/>
+            <label>{t("email")}</label>
+            <input type="email" name="email" value={form.email} onChange={handleChange} />
           </div>
 
           <div className="form-group">
-            <label>Company</label>
-            <input type="text" name="company" value={form.company} onChange={handleChange}/>
+            <label>{t("company")}</label>
+            <input type="text" name="company" value={form.company} onChange={handleChange} />
           </div>
         </div>
 
-        {/* SYSTEM */}
         <div className="settings-card">
-          <h2>System Preferences</h2>
+          <h2>{t("systemPreferences")}</h2>
 
           <div className="form-group">
-            <label>Theme</label>
+            <label>{t("theme")}</label>
             <select name="theme" value={form.theme} onChange={handleChange}>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+              <option value="light">{t("light")}</option>
+              <option value="dark">{t("dark")}</option>
             </select>
           </div>
 
-          {/* 🔥 LANGUAGE SELECTOR */}
           <div className="form-group">
-            <label>Language</label>
+            <label>{t("language")}</label>
             <select name="language" value={form.language} onChange={handleChange}>
-              <option value="id">Bahasa Indonesia</option>
-              <option value="en">English</option>
+              <option value="id">{t("indonesian")}</option>
+              <option value="en">{t("english")}</option>
             </select>
           </div>
 
@@ -103,32 +90,35 @@ export default function Settings() {
                 checked={form.notifications}
                 onChange={handleChange}
               />
-              Enable Notifications
+              {t("notifications")}
             </label>
           </div>
         </div>
 
-        {/* SECURITY */}
         <div className="settings-card">
-          <h2>Security</h2>
+          <h2>{t("security")}</h2>
 
           <div className="form-group">
-            <label>New Password</label>
-            <input type="password" name="password" value={form.password} onChange={handleChange}/>
+            <label>{t("newPassword")}</label>
+            <input type="password" name="password" value={form.password} onChange={handleChange} />
           </div>
 
           <div className="form-group">
-            <label>Confirm Password</label>
-            <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange}/>
+            <label>{t("confirmPassword")}</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+            />
           </div>
         </div>
 
         <div className="settings-action">
           <button className="btn-save" onClick={handleSave}>
-            Save Changes
+            {t("saveChanges")}
           </button>
         </div>
-
       </main>
     </div>
   );

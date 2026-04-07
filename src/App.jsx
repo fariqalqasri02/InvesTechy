@@ -14,6 +14,7 @@ import EditData from "./pages/EditData";
 import Consult from "./pages/Consult";
 import Settings from "./pages/Settings";
 import Report from './pages/report'; 
+import ReportSummary from "./pages/ReportSummary";
 import { getStoredUser } from "./services/api";
 
 // --- IMPORT COMPONENT BARU UNTUK ADMIN ---
@@ -24,12 +25,8 @@ import AdminSettings from './pagesadmin/AdminSettings'; // <--- Tambahan Import 
 import './App.css';
 
 function App() {
-<<<<<<< HEAD
-  const userRole = getStoredUser()?.role || "user";
-=======
-  // Simulasi Role (Nanti ini diambil dari Global State/Redux/LocalStorage)
-  const userRole = "admin"; 
->>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
+  const storedUser = getStoredUser();
+  const userRole = storedUser?.role?.toLowerCase?.() ?? "user";
 
   return (
     <Router>
@@ -45,6 +42,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/report-list" element={<Report />} />
+        <Route path="/report-list/:id" element={<ReportSummary />} />
         <Route path="/new-project" element={<NewProject />} />
         <Route path="/new-project/survey" element={<Survey />} />
         <Route path="/project-list" element={<ProjectList />} />

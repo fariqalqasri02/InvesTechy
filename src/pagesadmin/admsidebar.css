@@ -1,6 +1,6 @@
 .admin-sidebar {
   width: 260px;
-  background-color: #053b29;
+  background-color: var(--sidebar-bg);
   height: 100vh;
   padding: 40px 20px;
   position: fixed;
@@ -34,14 +34,14 @@
   padding: 14px 18px;
   margin-bottom: 12px;
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--sidebar-text);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .admin-sidebar .nav-item.active {
-  background-color: #ffffff;
-  color: #053b29;
+  background-color: var(--surface);
+  color: var(--text-strong);
   font-weight: 700;
 }
 
@@ -54,10 +54,22 @@
 .admin-sidebar .sidebar-footer-line {
   height: 1px;
   background-color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+}
+
+.admin-sidebar .sidebar-footer {
   margin-top: auto;
 }
 
-<<<<<<< HEAD
+.admin-sidebar .logout-item {
+  margin-bottom: 0;
+  color: var(--sidebar-text);
+}
+
+.admin-sidebar .logout-item:hover {
+  background-color: var(--sidebar-hover);
+}
+
 .admin-sidebar-toggle {
   display: none;
   position: fixed;
@@ -67,7 +79,7 @@
   height: 48px;
   border: none;
   border-radius: 14px;
-  background: #053b29;
+  background: var(--sidebar-bg);
   box-shadow: 0 8px 24px rgba(5, 59, 41, 0.2);
   z-index: 1100;
   padding: 12px 10px;
@@ -118,28 +130,3 @@
     pointer-events: auto;
   }
 }
-=======
-/* ... keep your existing CSS ... */
-
-.sidebar-footer {
-  margin-top: auto;
-}
-
-.sidebar-footer-line {
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.2);
-  margin-bottom: 20px;
-}
-
-.logout-item {
-  margin-bottom: 0;
-  /* Warna teks putih sama dengan menu lain saat tidak aktif */
-  color: #ffffff; 
-}
-
-.logout-item:hover {
-  /* Efek hover transparan agar tetap terlihat elegan */
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
->>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9

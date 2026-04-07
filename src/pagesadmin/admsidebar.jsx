@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/InvesTechy.jpg";
+import { useAppSettings } from "../context/AppSettingsContext";
 import "./admsidebar.css";
 
 const SidebarAdmin = ({ activeMenu }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useAppSettings();
 
   const menus = [
     {
-      name: "Dashboard",
+      name: t("navDashboard"),
+      key: "Dashboard",
       path: "/admin/dashboard",
       icon: "https://img.icons8.com/?size=100&id=sUJRwjfnGwbJ&format=png&color=FFFFFF",
       activeIcon:
@@ -17,13 +20,15 @@ const SidebarAdmin = ({ activeMenu }) => {
     },
     {
       name: "Consultant",
+      key: "Consultant",
       path: "/admin/consultant",
       icon: "https://img.icons8.com/?size=100&id=8kHOhdrNngb3&format=png&color=FFFFFF",
       activeIcon:
         "https://img.icons8.com/?size=100&id=8kHOhdrNngb3&format=png&color=053B29",
     },
     {
-      name: "Settings",
+      name: t("navSettings"),
+      key: "Settings",
       path: "/admin/settings",
       icon: "https://img.icons8.com/?size=100&id=CcpTg57jVuhI&format=png&color=FFFFFF",
       activeIcon:
@@ -31,7 +36,6 @@ const SidebarAdmin = ({ activeMenu }) => {
     },
   ];
 
-<<<<<<< HEAD
   useEffect(() => {
     document.body.classList.toggle("sidebar-open", isOpen);
 
@@ -43,6 +47,11 @@ const SidebarAdmin = ({ activeMenu }) => {
   const handleNavigate = (path) => {
     setIsOpen(false);
     navigate(path);
+  };
+
+  const handleLogout = () => {
+    setIsOpen(false);
+    navigate("/login");
   };
 
   return (
@@ -71,10 +80,10 @@ const SidebarAdmin = ({ activeMenu }) => {
 
         <nav className="sidebar-nav">
           {menus.map((menu) => {
-            const isActive = activeMenu === menu.name;
+            const isActive = activeMenu === menu.key;
             return (
               <div
-                key={menu.name}
+                key={menu.key}
                 className={`nav-item ${isActive ? "active" : ""}`}
                 onClick={() => handleNavigate(menu.path)}
               >
@@ -88,54 +97,20 @@ const SidebarAdmin = ({ activeMenu }) => {
             );
           })}
         </nav>
-        <div className="sidebar-footer-line" />
+
+        <div className="sidebar-footer">
+          <div className="sidebar-footer-line"></div>
+          <div className="nav-item logout-item" onClick={handleLogout}>
+            <img
+              src="https://img.icons8.com/?size=100&id=2445&format=png&color=FFFFFF"
+              alt="Logout"
+              className="sidebar-icon-img"
+            />
+            <span className="menu-text">Log Out</span>
+          </div>
+        </div>
       </aside>
     </>
-=======
-  const handleLogout = () => {
-    console.log("Admin Logged Out");
-    navigate('/login');
-  };
-
-  return (
-    <div className="sidebar">
-      <div className="sidebar-logo">
-        <img src={logo} alt="InvesTechy Admin" />
-      </div>
-      
-      <nav className="sidebar-nav">
-        {menus.map((menu) => {
-          const isActive = activeMenu === menu.name;
-          return (
-            <div
-              key={menu.name}
-              className={`nav-item ${isActive ? 'active' : ''}`}
-              onClick={() => navigate(menu.path)}
-            >
-              <img 
-                src={isActive ? menu.activeIcon : menu.icon} 
-                alt={menu.name} 
-                className="sidebar-icon-img"
-              />
-              <span className="menu-text">{menu.name}</span>
-            </div>
-          );
-        })}
-      </nav>
-
-      <div className="sidebar-footer">
-        <div className="sidebar-footer-line"></div>
-        <div className="nav-item logout-item" onClick={handleLogout}>
-          <img 
-            src="https://img.icons8.com/?size=100&id=2445&format=png&color=FFFFFF" 
-            alt="Logout" 
-            className="sidebar-icon-img"
-          />
-          <span className="menu-text">Log Out</span>
-        </div>
-      </div>
-    </div>
->>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
   );
 };
 

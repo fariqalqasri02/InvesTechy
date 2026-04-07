@@ -28,19 +28,41 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+  align-items: stretch;
   margin-bottom: 30px;
+}
+
+.filter-select {
+  position: relative;
+}
+
+.filter-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid #64748b;
+  border-bottom: 2px solid #64748b;
+  transform: translateY(-65%) rotate(45deg);
+  pointer-events: none;
 }
 
 .filter-bar select {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
+  height: 48px;
+  padding: 12px 42px 12px 14px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
   background: white;
   font-size: 14px;
+  font-weight: 500;
+  color: #334155;
   outline: none;
   transition: all 0.3s ease;
   cursor: pointer;
+  appearance: none;
 }
 
 .filter-bar select:focus {

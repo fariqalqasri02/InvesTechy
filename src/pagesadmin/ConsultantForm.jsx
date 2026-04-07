@@ -53,13 +53,8 @@ const ConsultantForm = () => {
       <SidebarAdmin activeMenu="Consultant" />
       
       <main className="admin-content-area">
-        {/* Header Sejajar */}
         <header className="form-header-container">
           <h2 className="form-title">Consultant Profile</h2>
-          <div className="header-actions">
-            <button type="button" className="btn-rect cancel" onClick={() => navigate('/admin/consultant')}>Cancel</button>
-            <button type="submit" form="profileForm" className="btn-rect save">Save Changes</button>
-          </div>
         </header>
         
         <form id="profileForm" className="profile-form-container" onSubmit={handleSubmit}>
@@ -118,6 +113,19 @@ const ConsultantForm = () => {
               <label className="input-label">per Session Fee</label>
               <input type="text" name="fee" placeholder="IDR" value={formData.fee} onChange={handleInputChange} />
             </div>
+          </div>
+
+          <div className="form-actions-bottom">
+            <button
+              type="button"
+              className="btn-rect cancel"
+              onClick={() => navigate('/admin/consultant')}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn-rect save">
+              Save Changes
+            </button>
           </div>
         </form>
       </main>

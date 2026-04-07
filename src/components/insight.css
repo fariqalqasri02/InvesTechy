@@ -1,9 +1,9 @@
 .insight {
-  background: white;
+  background: var(--surface);
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Shadow halus khas Figma */
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Menjaga badge tetap di bawah */
@@ -11,7 +11,7 @@
 }
 
 .insight h3 {
-  color: #1a202c;
+  color: var(--text-main);
   font-size: 16px;
   font-weight: 800;
   margin-bottom: 16px;
@@ -21,7 +21,7 @@
 .insight p {
   font-size: 14px;
   line-height: 1.6;
-  color: #4a5568;
+  color: var(--text-soft);
   margin-bottom: 20px;
 }
 

@@ -48,8 +48,6 @@ export default function ProjectList() {
             <h1>Projects Portfolio</h1>
             <p>Manage and simulate your IT investment projects</p>
           </div>
-
-          <div className="profile">JD</div>
         </div>
 
         <div className="stats-grid">
@@ -113,27 +111,19 @@ export default function ProjectList() {
                       <h4>{item.date}</h4>
                     </div>
 
-                    <button className="btn-detail" disabled>
+                    <button
+                      className="btn-detail"
+                      onClick={() => navigate(`/edit-data/${item.id}`)}
+                    >
                       View Detail
                     </button>
                   </div>
                 </div>
-<<<<<<< HEAD
               ))
             )}
           </div>
         )}
-=======
 
-                <button className="btn-detail"onClick={() => navigate(`/edit-data/${item.id}`)}>
-                  View Detail
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
->>>>>>> ec4629a4bb2a311dba967fcfef8669e3eab2eae9
       </main>
     </div>
   );

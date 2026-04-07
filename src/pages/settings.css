@@ -2,7 +2,7 @@
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--page-bg);
 }
 
 /* MAIN CONTENT */
@@ -36,12 +36,12 @@
 .settings-title {
   font-size: 28px;
   font-weight: 800;
-  color: #053b29;
+  color: var(--text-strong);
   margin-bottom: 5px;
 }
 
 .settings-subtitle {
-  color: #718096;
+  color: var(--text-soft);
   margin-bottom: 30px;
   font-size: 14px;
 }
@@ -49,11 +49,11 @@
 
 /* ===== CARD ===== */
 .settings-card {
-  background: white;
+  background: var(--surface);
   padding: 25px;
   border-radius: 16px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-soft);
   transition: 0.3s ease;
 }
 
@@ -72,7 +72,7 @@
 .form-group label {
   font-size: 14px;
   margin-bottom: 6px;
-  color: #053b29;
+  color: var(--text-strong);
   font-weight: 600;
 }
 
@@ -80,11 +80,12 @@
 .form-group select {
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   outline: none;
   font-size: 14px;
   transition: all 0.3s ease;
-  background: white;
+  background: var(--surface);
+  color: var(--text-main);
 }
 
 .form-group input:focus,
@@ -99,7 +100,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #053b29;
+  color: var(--text-strong);
   cursor: pointer;
   font-size: 14px;
 }
