@@ -1,35 +1,22 @@
-/* ============================= */
-/* BASE LAYOUT */
-/* ============================= */
-
-.dashboard-layout { 
-  display: flex; 
-  background-color: #F8F9FA; 
-  min-height: 100vh; 
+.dashboard-layout {
+  display: flex;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  width: 100%;
 }
-
-/* ============================= */
-/* MAIN CONTENT */
-/* ============================= */
 
 .main-content {
   flex: 1;
   padding: 60px 80px;
   box-sizing: border-box;
-
-  margin-left: 260px; /* 🔥 WAJIB biar ga ketutup sidebar */
-
+  margin-left: 260px;
+  width: calc(100% - 260px);
   display: flex;
   flex-direction: column;
-
-  animation: pageEnter 0.3s ease; 
+  animation: pageEnter 0.3s ease;
 }
 
-/* ============================= */
-/* ANIMASI */
-/* ============================= */
-
- @keyframes pageEnter {
+@keyframes pageEnter {
   from {
     opacity: 0;
     transform: translateX(30px);
@@ -38,10 +25,9 @@
     opacity: 1;
     transform: translateX(0);
   }
-} 
+}
 
-/* ANIMASI KELUAR */
- @keyframes pageExit {
+@keyframes pageExit {
   from {
     opacity: 1;
     transform: translateX(0);
@@ -52,27 +38,19 @@
   }
 }
 
-/* ============================= */
-/* TITLE */
-/* ============================= */
-
-.page-title { 
-  font-size: 32px; 
-  font-weight: 800; 
-  color: #053B29; 
-  margin: 0; 
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #053b29;
+  margin: 0;
 }
 
-.page-subtitle { 
-  font-size: 14px; 
-  color: #718096; 
-  margin-top: 5px; 
-  margin-bottom: 30px; 
+.page-subtitle {
+  font-size: 14px;
+  color: #718096;
+  margin-top: 5px;
+  margin-bottom: 30px;
 }
-
-/* ============================= */
-/* CARD */
-/* ============================= */
 
 .content-card {
   background: white;
@@ -82,34 +60,30 @@
   margin-bottom: 30px;
 }
 
-/* ============================= */
-/* FORM */
-/* ============================= */
-
-.form-row { 
-  display: flex; 
-  gap: 30px; 
-  margin-bottom: 25px; 
+.form-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 25px;
 }
 
-.form-group { 
-  flex: 1; 
-  position: relative; 
+.form-group {
+  flex: 1;
+  position: relative;
 }
 
-.form-group label { 
-  display: block; 
-  font-weight: 700; 
-  color: #053B29; 
-  margin-bottom: 10px; 
-  font-size: 14px; 
+.form-group label {
+  display: block;
+  font-weight: 700;
+  color: #053b29;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
-.form-group input, 
+.form-group input,
 .form-group select {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 14px;
   outline: none;
@@ -120,13 +94,9 @@
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #053B29;
-  box-shadow: 0 0 0 1px #053B29;
+  border-color: #053b29;
+  box-shadow: 0 0 0 1px #053b29;
 }
-
-/* ============================= */
-/* DROPDOWN */
-/* ============================= */
 
 .form-group select {
   appearance: none;
@@ -149,14 +119,10 @@
   transform: rotate(180deg);
 }
 
-/* ============================= */
-/* BUTTON */
-/* ============================= */
-
 .history-title {
   font-size: 20px;
   font-weight: 700;
-  color: #053B29;
+  color: #053b29;
   margin-bottom: 25px;
 }
 
@@ -168,8 +134,8 @@
 .project-table th {
   text-align: left;
   padding: 15px;
-  background-color: #F4F7FE;
-  color: #8A92A6;
+  background-color: #f4f7fe;
+  color: #8a92a6;
   font-size: 13px;
   font-weight: 600;
   text-transform: capitalize;
@@ -177,14 +143,14 @@
 
 .project-table td {
   padding: 20px 15px;
-  border-bottom: 1px solid #EDF2F7;
+  border-bottom: 1px solid #edf2f7;
   font-size: 14px;
-  color: #2D3748;
+  color: #2d3748;
 }
 
 .status-badge {
-  background-color: #C6F6D5;
-  color: #22543D;
+  background-color: #c6f6d5;
+  color: #22543d;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
@@ -194,7 +160,7 @@
 
 .btn-detail {
   background-color: white;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   color: #718096;
   padding: 8px 30px;
   border-radius: 8px;
@@ -204,13 +170,12 @@
   font-weight: 600;
 }
 
-/* --- Survey / Radio Question Styling --- */
 .survey-section-title {
   font-size: 24px;
   font-weight: 800;
-  color: #053B29;
-  margin: 40px 0 20px 0;
-  border-left: 5px solid #053B29;
+  color: #053b29;
+  margin: 40px 0 20px;
+  border-left: 5px solid #053b29;
   padding-left: 15px;
 }
 
@@ -220,13 +185,13 @@
   padding: 30px;
   margin-bottom: 25px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  border: 1px solid #F0F0F0;
+  border: 1px solid #f0f0f0;
 }
 
 .question-label {
   font-size: 16px;
   font-weight: 700;
-  color: #053B29;
+  color: #053b29;
   margin-bottom: 20px;
   display: block;
   line-height: 1.5;
@@ -244,7 +209,7 @@
   gap: 12px;
   cursor: pointer;
   font-size: 14px;
-  color: #4A5568;
+  color: #4a5568;
   line-height: 1.5;
   transition: all 0.2s;
   padding: 10px;
@@ -252,33 +217,31 @@
 }
 
 .option-label:hover {
-  background-color: #F8F9FA;
-  color: #053B29;
+  background-color: #f8f9fa;
+  color: #053b29;
 }
 
 .option-label input[type="radio"] {
-  accent-color: #053B29;
+  accent-color: #053b29;
   width: 18px;
   height: 18px;
   margin-top: 2px;
   cursor: pointer;
 }
 
-/* --- Navigation & Buttons --- */
 .button-container {
   display: flex;
-  justify-content: flex-end; /* Memastikan tombol ke pojok kanan */
+  justify-content: flex-end;
   margin-top: 40px;
   margin-bottom: 60px;
   gap: 15px;
 }
 
-/* Tambahkan .btn-next di sini agar sama dengan btn-submit */
 .btn-submit,
 .btn-next {
-  background-color: #1D4337;
+  background-color: #1d4337;
   color: white;
-  padding: 16px 120px; /* Lebar sesuai gambar desain */
+  padding: 16px 120px;
   border: none;
   border-radius: 12px;
   font-weight: 700;
@@ -290,18 +253,104 @@
 
 .btn-submit:hover,
 .btn-next:hover {
-  background-color: #053B29;
+  background-color: #053b29;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
-/* Tambahan jika butuh tombol back yang berbeda warna */
 .btn-back {
   background-color: white;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #e2e8f0;
   color: #718096;
   padding: 16px 40px;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 232px;
+    width: calc(100% - 232px);
+    padding: 40px 32px;
+  }
+
+  .content-card {
+    padding: 28px;
+  }
+
+  .form-row {
+    gap: 20px;
+  }
+
+  .btn-submit,
+  .btn-next {
+    padding: 16px 72px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 88px 16px 28px;
+  }
+
+  .page-title {
+    font-size: 26px;
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+    margin-bottom: 22px;
+  }
+
+  .content-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .survey-section-title {
+    font-size: 20px;
+    margin-top: 28px;
+  }
+
+  .survey-card {
+    padding: 20px 16px;
+    margin-bottom: 18px;
+  }
+
+  .question-label {
+    font-size: 15px;
+  }
+
+  .option-label {
+    padding: 8px 0;
+  }
+
+  .button-container {
+    justify-content: stretch;
+    margin-top: 24px;
+    margin-bottom: 28px;
+    gap: 12px;
+  }
+
+  .btn-submit,
+  .btn-next,
+  .btn-back {
+    width: 100%;
+    padding: 14px 20px;
+  }
+
+  .project-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

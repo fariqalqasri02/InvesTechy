@@ -1,29 +1,61 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
-import '../components/auth.css'; 
-import logoImg from '../assets/InvesTechy.jpg'; 
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logoImg from "../assets/InvesTechy.jpg";
+import api, { setSession } from "../services/api";
+import "../components/auth.css";
 
 const Register = () => {
-  const navigate = useNavigate(); // 2. Inisialisasi hook
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    businessName: "",
+    password: "",
+    confirmPassword: "",
+    role: "user",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
-  const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
-  const dropdownIcon = "https://img.icons8.com/?size=100&id=5jRysPx2JtDa&format=png&color=000000";
+  const eyeOpen =
+    "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
+  const eyeClosed =
+    "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
+  const dropdownIcon =
+    "https://img.icons8.com/?size=100&id=5jRysPx2JtDa&format=png&color=000000";
 
-  // 3. Fungsi untuk menangani submit
-  const handleRegister = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+  const handleChange = (event) => {
+    setForm((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    setError("");
+
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
-    // Di sini nanti tempat memanggil API Register
-    alert("Registration Successful! Please login.");
-    navigate('/login'); // 4. Pindah ke halaman login
+
+    setLoading(true);
+
+    try {
+      const response = await api.post("/auth/register", form);
+      setSession({
+        token: response.token,
+        user: response.user ?? response.data,
+      });
+      navigate("/project-list");
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,7 +63,7 @@ const Register = () => {
       <div className="auth-container">
         <div className="auth-banner">
           <div className="banner-content">
-            <div className="banner-logo-container"> 
+            <div className="banner-logo-container">
               <img src={logoImg} alt="InvesTechy Logo" className="banner-logo" />
             </div>
             <h1 className="banner-title">
@@ -39,7 +71,7 @@ const Register = () => {
               <span className="highlight">Starts Here</span>
             </h1>
             <p className="banner-subtitle">
-              Make smarter digital investment decisions in minutes <br/>
+              Make smarter digital investment decisions in minutes <br />
               no complexity, just data-driven insights.
             </p>
           </div>
@@ -49,37 +81,61 @@ const Register = () => {
           <div className="form-box">
             <h2>Register</h2>
             <p className="form-subtext">
-              Already have an account? <a href="/login">Login</a>
+              Already have an account? <Link to="/login">Login</Link>
             </p>
 
-            <form onSubmit={handleRegister}> {/* Tambahkan onSubmit */}
+            <form onSubmit={handleRegister}>
               <div className="input-group">
                 <label>Name</label>
-                <input type="text" placeholder="Your Name" required />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="input-group">
                 <label>E-mail</label>
-                <input type="email" placeholder="example@gmail.com" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="example@gmail.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="input-group">
                 <label>Business Name</label>
-                <input type="text" placeholder="Input Your Business Name" />
+                <input
+                  type="text"
+                  name="businessName"
+                  placeholder="Input Your Business Name"
+                  value={form.businessName}
+                  onChange={handleChange}
+                />
               </div>
 
               <div className="input-group">
                 <label>Password</label>
                 <div className="input-wrapper">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="**********" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required 
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="**********"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
                   />
-                  {password.length > 0 && (
-                    <span className="password-icon" onClick={() => setShowPassword(!showPassword)}>
+                  {form.password.length > 0 && (
+                    <span
+                      className="password-icon"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
                       <img src={showPassword ? eyeOpen : eyeClosed} alt="toggle view" />
                     </span>
                   )}
@@ -89,16 +145,23 @@ const Register = () => {
               <div className="input-group">
                 <label>Confirm Password</label>
                 <div className="input-wrapper">
-                  <input 
-                    type={showConfirmPassword ? "text" : "password"} 
-                    placeholder="**********" 
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required 
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="**********"
+                    value={form.confirmPassword}
+                    onChange={handleChange}
+                    required
                   />
-                  {confirmPassword.length > 0 && (
-                    <span className="password-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                      <img src={showConfirmPassword ? eyeOpen : eyeClosed} alt="toggle view" />
+                  {form.confirmPassword.length > 0 && (
+                    <span
+                      className="password-icon"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      <img
+                        src={showConfirmPassword ? eyeOpen : eyeClosed}
+                        alt="toggle view"
+                      />
                     </span>
                   )}
                 </div>
@@ -107,8 +170,12 @@ const Register = () => {
               <div className="input-group">
                 <label>Role</label>
                 <div className="input-wrapper">
-                  <select defaultValue="" required>
-                    <option value="" disabled>Choose Your Role</option>
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={handleChange}
+                    required
+                  >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                   </select>
@@ -116,14 +183,21 @@ const Register = () => {
                 </div>
               </div>
 
+              {error && (
+                <p style={{ color: "#b42318", marginBottom: "20px" }}>{error}</p>
+              )}
+
               <div className="term-condition">
                 <input type="checkbox" required />
                 <label>
-                    I agree to the <strong>Terms of Service</strong> and acknowledge the <strong>Privacy Policy</strong>.
+                  I agree to the <strong>Terms of Service</strong> and acknowledge
+                  the <strong> Privacy Policy</strong>.
                 </label>
               </div>
 
-              <button type="submit" className="btn-auth-primary">Register</button>
+              <button type="submit" className="btn-auth-primary" disabled={loading}>
+                {loading ? "Creating account..." : "Register"}
+              </button>
             </form>
           </div>
         </div>

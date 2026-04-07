@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Pastikan react-router-dom sudah terinstall
-import Sidebar from '../components/sidebar.jsx';
-import '../components/pages.css';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/sidebar.jsx";
+import { createProject } from "../store/projectThunk";
+import "../components/pages.css";
 
 const Survey = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.project);
 
   useEffect(() => {
     document.body.classList.remove("page-exit"); 
@@ -202,25 +206,46 @@ const Survey = () => {
     setAnswers(prev => ({ ...prev, [qId]: score }));
   };
 
-  const handleSubmit = (e) => {
+  const buildProjectPayload = () => {
+    const baseData = JSON.parse(sessionStorage.getItem("temp_project_base") || "{}");
+
+    return {
+      industry: baseData.businessSector,
+      employeeCount: Number(baseData.employeeCount),
+      plan: baseData.investmentType,
+      location: baseData.location,
+      businessDomain: {
+        SM: answers.bd_q1,
+        CA: answers.bd_q2,
+        MI: answers.bd_q3,
+        CR: answers.bd_q4,
+        OR: answers.bd_q5,
+      },
+      technologyDomain: {
+        SA: answers.td_q1,
+        DU: answers.td_q2,
+        TU: answers.td_q3,
+        IR: answers.td_q4,
+      },
+      currentIT: [answers.cit_q1, answers.cit_q2],
+      futureIT: [answers.fit_q1, answers.fit_q2],
+      DM: [answers.dm_q1],
+      RE: [answers.re_q1, answers.re_q2, answers.re_q3],
+    };
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Munculkan konfirmasi bawaan browser
     const isConfirmed = window.confirm("Apakah Anda yakin ingin mengirim analisis ini?");
 
     if (isConfirmed) {
-      // Logic penggabungan data
-      const baseData = JSON.parse(sessionStorage.getItem('temp_project_base') || '{}');
-      const finalData = { 
-        ...baseData, 
-        surveyAnswers: answers,
-        submittedAt: new Date().toISOString() 
-      };
-      
-      console.log("Submitting data...", finalData);
-      
-      // Langsung arahkan ke halaman project list tanpa alert tambahan
-      navigate('/project-list');
+      const resultAction = await dispatch(createProject(buildProjectPayload()));
+
+      if (createProject.fulfilled.match(resultAction)) {
+        sessionStorage.removeItem("temp_project_base");
+        navigate("/project-list");
+      }
     }
   };
 
@@ -261,8 +286,11 @@ const Survey = () => {
           ))}
 
           <div className="button-container">
-            <button type="submit" className="btn-submit">
-              Submit
+            {error && (
+              <p style={{ color: "#b42318", marginBottom: "12px" }}>{error}</p>
+            )}
+            <button type="submit" className="btn-submit" disabled={loading}>
+              {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
         </form>

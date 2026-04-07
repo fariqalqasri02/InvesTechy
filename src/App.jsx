@@ -14,13 +14,12 @@ import Consult from "./pages/Consult";
 import Settings from "./pages/Settings";
 // 1. Import halaman Report
 import Report from './pages/report'; 
+import { getStoredUser } from "./services/api";
 
 import './App.css';
 
 function App() {
-  // Simulasi Role (Nanti ini diambil dari Global State/Redux/LocalStorage)
-  // Contoh: const userRole = useSelector((state) => state.auth.role);
-  const userRole = "admin"; 
+  const userRole = getStoredUser()?.role || "user";
 
   return (
     <Router>

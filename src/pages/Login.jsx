@@ -1,32 +1,56 @@
-import React, { useState } from 'react';
-import '../components/auth.css'; 
-import logoImg from '../assets/InvesTechy.jpg'; 
-// Tambahkan Link di sini untuk navigasi yang lebih cepat
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logoImg from "../assets/InvesTechy.jpg";
+import api, { setSession } from "../services/api";
+import "../components/auth.css";
 
 const Login = () => {
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Inisialisasi navigate di sini
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
-  const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
+  const eyeOpen =
+    "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
+  const eyeClosed =
+    "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Simulasi login berhasil, lalu pindah ke dashboard
-    navigate("/dashboard");
+  const handleChange = (event) => {
+    setForm((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await api.post("/auth/login", form);
+      setSession({
+        token: response.token,
+        user: response.user ?? response.data,
+      });
+      navigate("/project-list");
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="auth-body">
       <div className="auth-container">
-        {/* --- BANNER KIRI --- */}
         <div className="auth-banner">
           <div className="banner-content">
-            <div className="banner-logo-container"> 
+            <div className="banner-logo-container">
               <img src={logoImg} alt="InvesTechy Logo" className="banner-logo" />
             </div>
             <h1 className="banner-title">
@@ -34,70 +58,134 @@ const Login = () => {
               <span className="highlight">Starts Here</span>
             </h1>
             <p className="banner-subtitle">
-              Make smarter digital investment decisions in minutes <br/>
+              Make smarter digital investment decisions in minutes <br />
               no complexity, just data-driven insights.
             </p>
           </div>
         </div>
 
-        {/* --- FORM KANAN --- */}
         <div className="auth-form-section">
           <div className="form-box">
             <h2>Login</h2>
             <p className="form-subtext">
-              {/* Menggunakan Link agar tidak refresh halaman */}
-              Don’t have an account? <Link to="/register">Create Now</Link>
+              Don&apos;t have an account? <Link to="/register">Create Now</Link>
             </p>
 
             <form onSubmit={handleLogin}>
               <div className="input-group">
                 <label>E-mail</label>
-                <input type="email" placeholder="example@gmail.com" required />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="example@gmail.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="input-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <label>Password</label>
-                  <Link to="/forgot-password" style={{ fontSize: '12px', color: '#053B29', fontWeight: 'bold', textDecoration: 'none' }}>
+                  <Link
+                    to="/forgot-password"
+                    style={{
+                      fontSize: "12px",
+                      color: "#053B29",
+                      fontWeight: "bold",
+                      textDecoration: "none",
+                    }}
+                  >
                     Forgot Password?
                   </Link>
                 </div>
                 <div className="input-wrapper">
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="**********" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required 
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="**********"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
                   />
-                  
-                  {password.length > 0 && (
-                    <span className="password-icon" onClick={() => setShowPassword(!showPassword)}>
+
+                  {form.password.length > 0 && (
+                    <span
+                      className="password-icon"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
                       <img src={showPassword ? eyeOpen : eyeClosed} alt="toggle view" />
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="term-condition" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
-                <input type="checkbox" id="remember" style={{ margin: '0 10px 0 0' }} />
-                <label htmlFor="remember" style={{ cursor: 'pointer', fontSize: '14px' }}>Remember me</label>
+              {error && (
+                <p style={{ color: "#b42318", marginBottom: "20px" }}>{error}</p>
+              )}
+
+              <div
+                className="term-condition"
+                style={{ marginBottom: "20px", display: "flex", alignItems: "center" }}
+              >
+                <input type="checkbox" id="remember" style={{ margin: "0 10px 0 0" }} />
+                <label htmlFor="remember" style={{ cursor: "pointer", fontSize: "14px" }}>
+                  Remember me
+                </label>
               </div>
 
-              <button type="submit" className="btn-auth-primary">Login</button>
-              
-              <div className="divider" style={{ textAlign: 'center', margin: '20px 0', display: 'flex', alignItems: 'center' }}>
-                <span style={{ flex: 1, height: '1px', background: '#E2E8F0' }}></span>
-                <span style={{ padding: '0 10px', color: '#718096', fontSize: '14px' }}>OR</span>
-                <span style={{ flex: 1, height: '1px', background: '#E2E8F0' }}></span>
+              <button type="submit" className="btn-auth-primary" disabled={loading}>
+                {loading ? "Signing in..." : "Login"}
+              </button>
+
+              <div
+                className="divider"
+                style={{
+                  textAlign: "center",
+                  margin: "20px 0",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <span style={{ flex: 1, height: "1px", background: "#E2E8F0" }} />
+                <span style={{ padding: "0 10px", color: "#718096", fontSize: "14px" }}>
+                  OR
+                </span>
+                <span style={{ flex: 1, height: "1px", background: "#E2E8F0" }} />
               </div>
 
-              <button type="button" className="btn-google" style={{ 
-                width: '100%', padding: '12px', border: '1px solid #E2E8F0', borderRadius: '8px', 
-                background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
-              }}>
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" />
-                <span style={{ fontWeight: '600', color: '#4A5568' }}>Continue with Google</span>
+              <button
+                type="button"
+                className="btn-google"
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  border: "1px solid #E2E8F0",
+                  borderRadius: "8px",
+                  background: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "10px",
+                }}
+                onClick={() =>
+                  window.location.assign("http://localhost:3000/api/auth/google")
+                }
+              >
+                <img
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  alt="Google"
+                  width="18"
+                />
+                <span style={{ fontWeight: "600", color: "#4A5568" }}>
+                  Continue with Google
+                </span>
               </button>
             </form>
           </div>

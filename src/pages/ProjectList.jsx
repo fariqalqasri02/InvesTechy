@@ -1,45 +1,48 @@
-import React, { useEffect, useState } from "react";
-import Sidebar from "../components/sidebar";
-import "./projectList.css";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/sidebar";
+import { fetchProjects } from "../store/projectThunk";
+import "./projectList.css";
+
+const normalizeStatus = (status = "") => status.replaceAll("_", " ");
 
 export default function ProjectList() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [animate, setAnimate] = useState(false);
+  const { projectList, loading, error } = useSelector((state) => state.project);
 
   useEffect(() => {
-    // 🔥 FIX UTAMA: hapus sisa animasi page sebelumnya
     document.body.classList.remove("page-exit");
-
-    // trigger animasi masuk
     setAnimate(true);
-  }, []);
+    dispatch(fetchProjects());
+  }, [dispatch]);
 
-  const stats = {
-    total: 12,
-    calculated: 8,
-    waiting: 3,
-    drafting: 1,
-  };
+  const stats = useMemo(() => {
+    const counts = {
+      total: projectList.length,
+      calculated: 0,
+      waiting: 0,
+      drafting: 0,
+      error: 0,
+    };
 
-  const projects = [
-    {
-      id: "7274AA84",
-      industry: "Retail",
-      status: "WAITING USER INPUT",
-      date: "Mon, 6 Apr 2026",
-    },
-  ];
+    projectList.forEach((project) => {
+      if (project.status === "CALCULATED") counts.calculated += 1;
+      if (project.status === "WAITING_USER_INPUT") counts.waiting += 1;
+      if (project.status === "DRAFTING") counts.drafting += 1;
+      if (project.status === "ERROR") counts.error += 1;
+    });
+
+    return counts;
+  }, [projectList]);
 
   return (
     <div className="dashboard-layout">
       <Sidebar activeMenu="Project List" />
 
-      {/* 🔥 kasih animasi masuk */}
       <main className={`main-content ${animate ? "page-enter" : ""}`}>
-        
-        {/* HEADER */}
         <div className="header">
           <div>
             <h1>Projects Portfolio</h1>
@@ -49,7 +52,6 @@ export default function ProjectList() {
           <div className="profile">JD</div>
         </div>
 
-        {/* STATS */}
         <div className="stats-grid">
           <div className="stat-card">
             <p>Total Projects</p>
@@ -69,48 +71,57 @@ export default function ProjectList() {
           </div>
         </div>
 
-        {/* PROJECT HEADER */}
         <div className="project-header">
           <h2>Recent Projects</h2>
-          <button 
-            className="btn-primary"
-            onClick={() => navigate("/new-project")}
-          >
+          <button className="btn-primary" onClick={() => navigate("/new-project")}>
             + New Project
           </button>
         </div>
 
-        {/* PROJECT CARD */}
-        <div className="project-grid">
-          {projects.map((item, index) => (
-            <div className="project-card" key={index}>
-              <div className="card-top">
-                <div>
-                  <p className="label">Project ID</p>
-                  <h3>{item.id}</h3>
+        {loading && <p>Loading projects...</p>}
+        {error && <p style={{ color: "#b42318" }}>{error}</p>}
+
+        {!loading && !error && (
+          <div className="project-grid">
+            {projectList.length === 0 ? (
+              <div className="project-card">
+                <div className="card-top">
+                  <div>
+                    <p className="label">Project</p>
+                    <h3>No projects yet</h3>
+                  </div>
                 </div>
-
-                <span className="status waiting">
-                  {item.status}
-                </span>
+                <div className="tag">Start by creating your first analysis</div>
               </div>
+            ) : (
+              projectList.map((item) => (
+                <div className="project-card" key={item.id}>
+                  <div className="card-top">
+                    <div>
+                      <p className="label">Project ID</p>
+                      <h3>{item.id}</h3>
+                    </div>
 
-              <div className="tag">{item.industry}</div>
+                    <span className="status waiting">{normalizeStatus(item.status)}</span>
+                  </div>
 
-              <div className="card-footer">
-                <div>
-                  <p className="label">Created At</p>
-                  <h4>{item.date}</h4>
+                  <div className="tag">{item.industry}</div>
+
+                  <div className="card-footer">
+                    <div>
+                      <p className="label">Created At</p>
+                      <h4>{item.date}</h4>
+                    </div>
+
+                    <button className="btn-detail" disabled>
+                      View Detail
+                    </button>
+                  </div>
                 </div>
-
-                <button className="btn-detail">
-                  View Detail
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
+              ))
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

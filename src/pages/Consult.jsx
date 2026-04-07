@@ -1,58 +1,26 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/sidebar";
-import "./consult.css";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/sidebar";
+import { fetchConsultants } from "../store/consultantThunk";
+import "./consult.css";
 
 export default function Consult() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [animate, setAnimate] = useState(false);
+  const { items, loading, error } = useSelector((state) => state.consultant);
 
   useEffect(() => {
-    // 🔥 FIX WAJIB: hapus animasi keluar dari page sebelumnya
     document.body.classList.remove("page-exit");
-
-    // trigger animasi masuk
     setAnimate(true);
-  }, []);
+    dispatch(fetchConsultants());
+  }, [dispatch]);
 
-  const consultants = [
-    {
-      name: "Audelia Nainggolan",
-      role: "UI/UX, Front End Dev, UMKM IT, ERP",
-      price: "IDR. 150.000 / Session",
-      rating: 5,
-    },
-    {
-      name: "Eriza Aminato",
-      role: "Back End, Data Scientist, UMKM IT, ERP",
-      price: "IDR. 150.000 / Session",
-      rating: 5,
-    },
-    {
-      name: "M. FARIQ AL QASRI",
-      role: "UI/UX, Front End Dev, UMKM IT, ERP",
-      price: "IDR. 150.000 / Session",
-      rating: 5,
-    },
-    {
-      name: "Iryana Sania Rusdi",
-      role: "AI Engineer, Back End, ERP, UMKM IT",
-      price: "IDR. 150.000 / Session",
-      rating: 5,
-    },
-    {
-      name: "Muhammad Wijaya",
-      role: "Back End, UMKM IT, ERP",
-      price: "IDR. 150.000 / Session",
-      rating: 5,
-    },
-  ];
-
-  // 🔥 OPTIONAL: contoh kalau mau ke detail page
-  const goToDetail = (name) => {
+  const goToDetail = (consultantId) => {
     document.body.classList.add("page-exit");
     setTimeout(() => {
-      navigate("/consult-detail", { state: { name } });
+      navigate("/consult-detail", { state: { consultantId } });
     }, 300);
   };
 
@@ -61,14 +29,11 @@ export default function Consult() {
       <Sidebar activeMenu="Consult" />
 
       <main className={`main-content ${animate ? "page-enter" : ""}`}>
-        
-        {/* HEADER */}
         <div className="consult-header">
           <h1>Our Consultant</h1>
           <p>Seek expert IT consultation for your investment needs.</p>
         </div>
 
-        {/* FILTER */}
         <div className="filter-bar">
           <select>
             <option>Position</option>
@@ -81,35 +46,35 @@ export default function Consult() {
           </select>
         </div>
 
-        {/* GRID */}
-        <div className="consult-grid">
-          {consultants.map((item, index) => (
-            <div className="consult-card" key={index}>
-              
-              <div className="card-image" />
+        {loading && <p>Loading consultants...</p>}
+        {error && <p style={{ color: "#b42318" }}>{error}</p>}
 
-              <div className="card-content">
-                <div className="card-header">
-                  <h3>{item.name}</h3>
-                  <span className="rating">⭐ {item.rating}</span>
+        {!loading && !error && (
+          <div className="consult-grid">
+            {items.map((item) => (
+              <div className="consult-card" key={item.id}>
+                <div className="card-image" />
+
+                <div className="card-content">
+                  <div className="card-header">
+                    <h3>{item.nama}</h3>
+                    <span className="rating">5.0</span>
+                  </div>
+
+                  <p className="role">{item.spesialisasi?.join(", ")}</p>
+                  <p className="price">{item.email?.replace("mailto:", "")}</p>
+
+                  <button
+                    className="btn-consult"
+                    onClick={() => goToDetail(item.id)}
+                  >
+                    Consult Now
+                  </button>
                 </div>
-
-                <p className="role">{item.role}</p>
-                <p className="price">{item.price}</p>
-
-                {/* 🔥 tombol dengan navigasi */}
-                <button 
-                  className="btn-consult"
-                  onClick={() => goToDetail(item.name)}
-                >
-                  💬 Consult Now
-                </button>
               </div>
-
-            </div>
-          ))}
-        </div>
-
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -127,3 +127,22 @@ body {
     justify-content: center; /* Gambar rata tengah */
   }
 }
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 36px 16px 28px;
+  }
+
+  .hero-title {
+    font-size: 30px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+  .get-started-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

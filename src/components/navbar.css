@@ -1,25 +1,26 @@
-/* Container Utama Navbar */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 80px;
   background-color: #ffffff;
-  font-family: 'Inter', sans-serif;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Tambahan: shadow halus agar lebih modern */
+  font-family: "Inter", sans-serif;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* --- PERBAIKAN LOGO --- */
 .nav-logo {
   display: flex;
-  flex-direction: row; /* Berubah dari column ke row agar sejajar ke samping */
-  align-items: center; /* Menjaga logo dan teks tetap rata tengah secara vertikal */
-  gap: 12px; /* Jarak antara gambar logo dan tulisan */
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   cursor: pointer;
 }
 
 .logo-img {
-  height: 40px; /* Ukuran yang lebih pas untuk logo navbar */
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
@@ -27,18 +28,21 @@
 .logo-text {
   font-weight: 800;
   color: #1a3a32;
-  font-size: 18px; /* Sedikit diperbesar agar proporsional dengan logo sampingnya */
+  font-size: 18px;
   letter-spacing: -0.5px;
 }
-/* ---------------------- */
 
-/* Styling Menu Navigasi */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
 .nav-links {
   display: flex;
   list-style: none;
   gap: 40px;
 }
-
 
 .nav-links a {
   text-decoration: none;
@@ -52,76 +56,123 @@
   color: #1a3a32;
 }
 
-/* Bagian Tombol (Login & Register) */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 20px; /* Jarak antar tombol sedikit dirapatkan */
+  gap: 20px;
 }
 
 .login-btn {
   background: none;
   border: none;
-  color: #1a3a32;
-  font-weight: 700;
+  color: #2f5d50;
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
   padding: 8px 12px;
   transition: opacity 0.2s;
-} */
-
-.login-link {
   text-decoration: none;
-  color: #2f5d50;
-  font-weight: 500;
-  font-size: 16px;
 }
 
-.btn-login:hover {
+.login-btn:hover {
   opacity: 0.7;
 }
 
- .register-btn {
+.register-btn {
   background-color: #2d4f46;
   color: #ffffff;
-  padding: 12px 28px; /* Padding sedikit diperlebar agar tombol lebih elegan */
+  padding: 12px 28px;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-} 
-
-.login-btn {
   text-decoration: none;
-  color: #2f5d50;
-  font-weight: 500;
-  font-size: 16px;
 }
 
-
-.register-btn:hover{
+.register-btn:hover {
   background-color: #1a3a32;
-  box-shadow: 0 4px 15px rgba(45, 79, 70, 0.2); /* Efek hover bayangan */
+  box-shadow: 0 4px 15px rgba(45, 79, 70, 0.2);
 }
 
-/* Responsif untuk layar kecil */
-@media (max-width: 992px) {
+.nav-toggle {
+  display: none;
+  width: 46px;
+  height: 46px;
+  border: 1px solid #d7e1dc;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 10px 9px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  margin: 4px 0;
+  border-radius: 999px;
+  background: #1a3a32;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+@media (max-width: 1024px) {
   .navbar {
-    padding: 15px 40px;
+    padding: 15px 32px;
   }
-  
+
   .nav-links {
-    gap: 25px;
+    gap: 24px;
+  }
+
+  .nav-menu {
+    gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
   .navbar {
-    padding: 15px 20px;
+    padding: 14px 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-menu {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 12px 0 8px;
+    border-top: 1px solid #eef2f0;
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nav-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .login-btn,
+  .register-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .register-btn {
+    padding: 12px 20px;
   }
 }

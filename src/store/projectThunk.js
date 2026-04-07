@@ -1,14 +1,38 @@
-import { setProjects, setCurrentProject } from "./projectSlice";
-import api from "../../services/api";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../services/api";
 
-// GET PROJECT LIST
-export const fetchProjects = () => async (dispatch) => {
-  const res = await api.get("/projects");
-  dispatch(setProjects(res.data));
-};
+export const fetchProjects = createAsyncThunk(
+  "project/fetchProjects",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/projects");
+      return response.data ?? [];
+    } catch (error) {
+      return rejectWithValue(error.data?.message || error.message);
+    }
+  },
+);
 
-// CREATE PROJECT (AI TRIGGER)
-export const createProject = (data) => async (dispatch) => {
-  const res = await api.post("/projects", data);
-  dispatch(setCurrentProject(res.data));
-};
+export const createProject = createAsyncThunk(
+  "project/createProject",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/projects", payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || error.message);
+    }
+  },
+);
+
+export const fetchProjectDraft = createAsyncThunk(
+  "project/fetchProjectDraft",
+  async (projectId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/projects/${projectId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.data?.message || error.message);
+    }
+  },
+);
