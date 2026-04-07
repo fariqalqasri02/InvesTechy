@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "./pages/Home";
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard'; // Ini Dashboard User
-import AdminDashboard from './pagesadmin/AdminDashboard'; // Import Dashboard Admin Baru
+import Dashboard from './pages/Dashboard'; // Dashboard User
+import AdminDashboard from './pagesadmin/AdminDashboard'; // Dashboard Admin
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -13,14 +13,17 @@ import ProjectList from "./pages/ProjectList";
 import EditData from "./pages/EditData";
 import Consult from "./pages/Consult";
 import Settings from "./pages/Settings";
-// 1. Import halaman Report
 import Report from './pages/report'; 
+
+// --- IMPORT COMPONENT BARU UNTUK ADMIN ---
+import ConsultantPage from './pagesadmin/consultant';
+import ConsultantForm from './pagesadmin/ConsultantForm';
+import AdminSettings from './pagesadmin/AdminSettings'; // <--- Tambahan Import ini
 
 import './App.css';
 
 function App() {
   // Simulasi Role (Nanti ini diambil dari Global State/Redux/LocalStorage)
-  // Contoh: const userRole = useSelector((state) => state.auth.role);
   const userRole = "admin"; 
 
   return (
@@ -45,16 +48,27 @@ function App() {
         <Route path="/settings" element={<Settings />} />
 
         {/* --- DASHBOARD ADMIN --- */}
-        {/* Menggunakan prefix /admin agar terpisah dengan jelas */}
+        {/* Route Dashboard Utama */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/consultant" element={<div>Halaman Consultant Admin</div>} />
-        <Route path="/admin/settings" element={<div>Halaman Settings Admin</div>} />
+        
+        {/* Route List Consultant */}
+        <Route path="/admin/consultant" element={<ConsultantPage />} />
+        
+        {/* Route Form Consultant (Tambah Baru & Edit) */}
+        <Route path="/admin/consultant/form" element={<ConsultantForm />} />
+        <Route path="/admin/consultant/form/:id" element={<ConsultantForm />} />
+        
+        {/* Route Settings Admin (Sudah diganti dari div ke Component) */}
+        <Route path="/admin/settings" element={<AdminSettings />} />
 
-        {/* Proteksi Sederhana: Jika user akses root dashboard, arahkan sesuai role */}
+        {/* Proteksi & Redirect Sederhana */}
         <Route 
           path="/main" 
           element={userRole === "admin" ? <Navigate to="/admin/dashboard" /> : <Navigate to="/dashboard" />} 
         />
+        
+        {/* Fallback Route (Opsional: Jika path tidak ditemukan) */}
+        <Route path="*" element={<Navigate to="/" />} />
         
       </Routes>
     </Router>

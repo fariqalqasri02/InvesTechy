@@ -55,3 +55,27 @@
   background-color: rgba(255, 255, 255, 0.2);
   margin-top: auto;
 }
+
+/* ... keep your existing CSS ... */
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.sidebar-footer-line {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+}
+
+.logout-item {
+  margin-bottom: 0;
+  /* Warna teks putih sama dengan menu lain saat tidak aktif */
+  color: #ffffff; 
+}
+
+.logout-item:hover {
+  /* Efek hover transparan agar tetap terlihat elegan */
+  background-color: rgba(255, 255, 255, 0.1);
+}
+

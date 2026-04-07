@@ -29,13 +29,13 @@ export default function Consult() {
       rating: 5,
     },
     {
-      name: "M. FARIQ AL QASRI",
+      name: "M. Fariq Al Qasri",
       role: "UI/UX, Front End Dev, UMKM IT, ERP",
       price: "IDR. 150.000 / Session",
       rating: 5,
     },
     {
-      name: "Iryana Sania Rusdi",
+      name: "Irvana Sania Rusadi",
       role: "AI Engineer, Back End, ERP, UMKM IT",
       price: "IDR. 150.000 / Session",
       rating: 5,

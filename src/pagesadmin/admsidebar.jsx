@@ -27,6 +27,11 @@ const SidebarAdmin = ({ activeMenu }) => {
     }
   ];
 
+  const handleLogout = () => {
+    console.log("Admin Logged Out");
+    navigate('/login');
+  };
+
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
@@ -52,7 +57,18 @@ const SidebarAdmin = ({ activeMenu }) => {
           );
         })}
       </nav>
-      <div className="sidebar-footer-line"></div>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-footer-line"></div>
+        <div className="nav-item logout-item" onClick={handleLogout}>
+          <img 
+            src="https://img.icons8.com/?size=100&id=2445&format=png&color=FFFFFF" 
+            alt="Logout" 
+            className="sidebar-icon-img"
+          />
+          <span className="menu-text">Log Out</span>
+        </div>
+      </div>
     </div>
   );
 };

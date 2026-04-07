@@ -1,0 +1,87 @@
+.admin-page-layout {
+  display: flex;
+  background-color: #F7F9F8;
+  min-height: 100vh;
+}
+
+.admin-content-area {
+  margin-left: 260px;
+  padding: 50px;
+  flex: 1;
+}
+
+.top-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.add-consultant-btn {
+  background-color: #053B29;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.consultant-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.consultant-item-card {
+  background: white;
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.item-card-image {
+  height: 180px;
+  background-color: #E0E0E0;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+.item-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-name {
+  color: #053B29;
+  font-weight: 800;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.item-role {
+  font-size: 13px;
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+.item-price {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.item-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-icon img { width: 22px; }

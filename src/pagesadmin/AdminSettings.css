@@ -1,0 +1,77 @@
+.admin-container {
+  display: flex;
+  background-color: #f8f9fa; /* Warna background abu muda halus */
+  min-height: 100vh;
+}
+
+.admin-content {
+  flex-grow: 1;
+  margin-left: 260px; /* Sesuai lebar sidebar kamu */
+  padding: 40px;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.settings-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #053B29; /* Menyesuaikan warna brand di sidebar */
+  margin-bottom: 10px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #053B29;
+}
+
+.notification-section {
+  display: flex;
+  justify-content: center; /* Sesuai gambar, checkbox di tengah */
+  align-items: center;
+  margin-top: 30px;
+  position: relative;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-enable {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  color: #053B29;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: right;
+}

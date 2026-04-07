@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom"; // TAMBAHAN: Import Link
 import Sidebar from "../components/sidebar";
 import SummaryCard from "../components/SummaryCard";
 import ChartSection from "../components/CharSection";
@@ -51,7 +52,13 @@ export default function Dashboard() {
               {/* PROFILE */}
               <div className="profile-info">
                 <span className="notif">🔔</span>
-                <div className="user-profile">
+                
+                {/* LINK MENUJU PROFILE (GAMBAR 2) */}
+                <Link 
+                  to="/profile" 
+                  className="user-profile" 
+                  style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                >
                   <img 
                     src="./assets/AkUnpad.png" 
                     alt="Avatar" 
@@ -61,7 +68,8 @@ export default function Dashboard() {
                     <span className="user-name">Mas Rusdi</span>
                     <span className="user-role">UMKM Owner</span>
                   </div>
-                </div>
+                </Link>
+
               </div>
 
             </div>
