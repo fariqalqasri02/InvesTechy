@@ -10,6 +10,7 @@ import NewProject from './pages/NewProject';
 import Survey from './pages/Survey';
 import Profile from './pages/profile'; 
 import ProjectList from "./pages/ProjectList";
+import EditData from "./pages/EditData";
 import Consult from "./pages/Consult";
 import Settings from "./pages/Settings";
 // 1. Import halaman Report
@@ -39,6 +40,7 @@ function App() {
         <Route path="/new-project" element={<NewProject />} />
         <Route path="/new-project/survey" element={<Survey />} />
         <Route path="/project-list" element={<ProjectList />} />
+        <Route path="/edit-data/:id" element={<EditData />} />
         <Route path="/consult" element={<Consult />} />
         <Route path="/settings" element={<Settings />} />
 

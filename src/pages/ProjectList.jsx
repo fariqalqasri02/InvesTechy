@@ -103,7 +103,7 @@ export default function ProjectList() {
                   <h4>{item.date}</h4>
                 </div>
 
-                <button className="btn-detail">
+                <button className="btn-detail"onClick={() => navigate(`/edit-data/${item.id}`)}>
                   View Detail
                 </button>
               </div>

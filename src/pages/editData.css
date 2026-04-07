@@ -1,0 +1,173 @@
+/* LAYOUT */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* MAIN */
+.main-content {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  padding: 40px;
+  transition: all 0.3s ease;
+  opacity: 1; /* ✅ anti blank */
+}
+
+/* SHRINK WHEN AI OPEN */
+.main-content.shrink {
+  width: calc(100% - 260px - 320px);
+}
+
+/* HEADER */
+.header h1 {
+  font-size: 32px;
+  color: #053b29;
+}
+
+.header p {
+  color: #718096;
+  margin-bottom: 30px;
+}
+
+/* GRID */
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* CARD */
+.input-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+/* CARD HEADER */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.card-header h3 {
+  color: #053b29;
+}
+
+.actions span {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* FORM */
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: #718096;
+  margin-top: 10px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-top: 5px;
+}
+
+/* FOOTER */
+.footer-actions {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* BUTTON */
+.btn-save {
+  background: #1d4337;
+  color: white;
+  padding: 14px 40px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background: #053b29;
+}
+
+/* AI TRIGGER */
+.ai-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.ai-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #1d4337;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* AI CHAT */
+.ai-chat {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  height: 100%;
+  background: white;
+  border-left: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+/* OPEN STATE */
+.ai-chat.open {
+  right: 0;
+}
+
+/* HEADER */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-title {
+  font-weight: 600;
+}
+
+/* BODY */
+.chat-body {
+  padding: 20px;
+}
+
+.chat-body h2 {
+  font-size: 18px;
+}
+
+/* FOOTER */
+.chat-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 15px;
+}
+
+.chat-footer input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
