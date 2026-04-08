@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import logo from "../assets/InvesTechy.jpg";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { useAdminPageTransition } from "./useAdminPageTransition";
 import "./admsidebar.css";
 
 const SidebarAdmin = ({ activeMenu }) => {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useAppSettings();
+  const { navigateWithTransition } = useAdminPageTransition();
 
   const menus = [
     {
@@ -46,12 +46,12 @@ const SidebarAdmin = ({ activeMenu }) => {
 
   const handleNavigate = (path) => {
     setIsOpen(false);
-    navigate(path);
+    navigateWithTransition(path);
   };
 
   const handleLogout = () => {
     setIsOpen(false);
-    navigate("/login");
+    navigateWithTransition("/login");
   };
 
   return (
@@ -85,7 +85,15 @@ const SidebarAdmin = ({ activeMenu }) => {
               <div
                 key={menu.key}
                 className={`nav-item ${isActive ? "active" : ""}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => handleNavigate(menu.path)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    handleNavigate(menu.path);
+                  }
+                }}
               >
                 <img
                   src={isActive ? menu.activeIcon : menu.icon}

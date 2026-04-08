@@ -1,61 +1,288 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import SidebarAdmin from './admsidebar';
+import { clearCurrentConsultant } from '../store/consultantSlice';
+import {
+  createConsultant,
+  fetchConsultantById,
+  fetchConsultants,
+  updateConsultant,
+} from '../store/consultantThunk';
+import { useAdminPageTransition } from './useAdminPageTransition';
+import './adminTransitions.css';
 import './ConsultantForm.css';
+
+const EMPTY_FORM = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  whatsapp: '',
+  positions: [],
+  positionInput: '',
+  fee: '',
+  photoPreview: null,
+  photoValue: null,
+};
+
+const getConsultantFeeValue = (consultant) => {
+  const rawFee =
+    consultant?.harga ??
+    consultant?.fee ??
+    consultant?.price ??
+    consultant?.harga_per_sesi ??
+    consultant?.sessionFee ??
+    consultant?.perSessionFee;
+
+  if (typeof rawFee === 'number') {
+    return rawFee.toString();
+  }
+
+  if (typeof rawFee === 'string') {
+    const normalizedFee = rawFee.replace(/[^\d]/g, '');
+    return normalizedFee || '';
+  }
+
+  return '';
+};
+
+const resizeImageToDataUrl = (file, maxWidth = 1200, quality = 0.82) =>
+  new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const ratio = Math.min(1, maxWidth / image.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(image.width * ratio);
+        canvas.height = Math.round(image.height * ratio);
+
+        const context = canvas.getContext('2d');
+        if (!context) {
+          reject(new Error('Failed to process image.'));
+          return;
+        }
+
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+
+      image.onerror = () => reject(new Error('Failed to read image.'));
+      image.src = fileReader.result;
+    };
+
+    fileReader.onerror = () => reject(new Error('Failed to read image.'));
+    fileReader.readAsDataURL(file);
+  });
+
+const splitName = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) {
+    return { firstName: '', lastName: '' };
+  }
+
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(' '),
+  };
+};
+
+const mapConsultantToFormData = (consultant) => {
+  if (!consultant) {
+    return EMPTY_FORM;
+  }
+
+  const { firstName, lastName } = splitName(
+    consultant.nama ||
+      [consultant.firstName, consultant.lastName].filter(Boolean).join(' '),
+  );
+
+  return {
+    firstName,
+    lastName,
+    email: consultant.email?.replace?.('mailto:', '') || '',
+    whatsapp: consultant.whatsapp || consultant.nomor_whatsapp || '',
+    positions: Array.isArray(consultant.spesialisasi)
+      ? consultant.spesialisasi.filter(Boolean)
+      : consultant.spesialisasi
+        ? [consultant.spesialisasi]
+        : consultant.position
+          ? [consultant.position]
+          : [],
+    positionInput: '',
+    fee: getConsultantFeeValue(consultant),
+    photoPreview: consultant.photo || consultant.photoUrl || null,
+    photoValue: consultant.photo || consultant.photoUrl || null,
+  };
+};
+
+const normalizePosition = (value = '') => value.trim().replace(/\s+/g, ' ');
+
+const mapFormDataToPayload = (formData) => {
+  const nama = [formData.firstName, formData.lastName].filter(Boolean).join(' ').trim();
+  const harga = Number.parseInt(formData.fee.replace(/[^\d]/g, ''), 10);
+  const spesialisasi = formData.positions.map(normalizePosition).filter(Boolean);
+  const whatsapp = formData.whatsapp.trim();
+  const normalizedEmail = formData.email.trim().replace(/^mailto:/i, '');
+  const normalizedPhoto = formData.photoValue || null;
+
+  return {
+    nama,
+    email: normalizedEmail ? `mailto:${normalizedEmail}` : '',
+    ...(whatsapp ? { whatsapp, nomor_whatsapp: whatsapp } : {}),
+    spesialisasi,
+    harga: Number.isNaN(harga) ? 0 : harga,
+    fee: Number.isNaN(harga) ? 0 : harga,
+    price: Number.isNaN(harga) ? 0 : harga,
+    harga_per_sesi: Number.isNaN(harga) ? 0 : harga,
+    sessionFee: Number.isNaN(harga) ? 0 : harga,
+    perSessionFee: Number.isNaN(harga) ? 0 : harga,
+    ...(normalizedPhoto
+      ? {
+          photo: normalizedPhoto,
+          photoUrl: normalizedPhoto,
+          image: normalizedPhoto,
+          foto: normalizedPhoto,
+        }
+      : {}),
+  };
+};
 
 const ConsultantForm = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const isEditMode = Boolean(id);
+  const { items, currentItem, loading, saving, error } = useSelector((state) => state.consultant);
+  const { transitionClassName, navigateWithTransition } = useAdminPageTransition();
 
-  const [formData, setFormData] = useState({
-    firstName: '', lastName: '', email: '',
-    whatsapp: '', position: '', fee: '',
-    photoPreview: null
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const suggestedPositions = Array.from(
+    new Set(
+      items.flatMap((consultant) =>
+        Array.isArray(consultant?.spesialisasi)
+          ? consultant.spesialisasi
+          : consultant?.spesialisasi
+            ? [consultant.spesialisasi]
+            : [],
+      )
+        .map(normalizePosition)
+        .filter(Boolean),
+    ),
+  ).sort((a, b) => a.localeCompare(b));
 
   useEffect(() => {
-    if (isEditMode) {
-      setFormData({
-        firstName: 'Audelia', lastName: 'Nainggolan',
-        email: 'audelia@investechy.com', whatsapp: '08123456789',
-        position: 'UI/UX Designer', fee: '150000',
-        photoPreview: null 
-      });
+    if (items.length === 0) {
+      dispatch(fetchConsultants());
     }
-  }, [id, isEditMode]);
+
+    if (isEditMode) {
+      dispatch(fetchConsultantById(id));
+      return;
+    }
+
+    dispatch(clearCurrentConsultant());
+    setFormData(EMPTY_FORM);
+  }, [dispatch, id, isEditMode, items.length]);
+
+  useEffect(() => {
+    if (isEditMode && currentItem) {
+      setFormData(mapConsultantToFormData(currentItem));
+    }
+  }, [currentItem, isEditMode]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleAddPosition = () => {
+    const nextPosition = normalizePosition(formData.positionInput);
+    if (!nextPosition) {
+      return;
+    }
+
+    setFormData((prev) => {
+      if (prev.positions.some((item) => item.toLowerCase() === nextPosition.toLowerCase())) {
+        return { ...prev, positionInput: '' };
+      }
+
+      return {
+        ...prev,
+        positions: [...prev.positions, nextPosition],
+        positionInput: '',
+      };
+    });
+  };
+
+  const handleRemovePosition = (positionToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      positions: prev.positions.filter((item) => item !== positionToRemove),
+    }));
+  };
+
+  const handlePositionKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddPosition();
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, photoPreview: URL.createObjectURL(file) });
+      resizeImageToDataUrl(file)
+        .then((compressedImage) => {
+          setFormData((prev) => ({
+            ...prev,
+            photoPreview: compressedImage,
+            photoValue: compressedImage,
+          }));
+        })
+        .catch((uploadError) => {
+          window.alert(uploadError.message || 'Failed to process image.');
+        });
     }
   };
 
   const handleDeletePhoto = () => {
-    setFormData({ ...formData, photoPreview: null });
+    setFormData({ ...formData, photoPreview: null, photoValue: null });
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/admin/consultant');
+
+    const payload = mapFormDataToPayload(formData);
+
+    if (!payload.nama || !payload.email || payload.spesialisasi.length === 0) {
+      window.alert('Please complete name, email, and position first.');
+      return;
+    }
+
+    const action = isEditMode
+      ? updateConsultant({ id, payload })
+      : createConsultant(payload);
+
+    const resultAction = await dispatch(action);
+    if (!resultAction.type.endsWith('/rejected')) {
+      navigateWithTransition('/admin/consultant');
+    }
   };
 
   return (
     <div className="admin-page-layout">
       <SidebarAdmin activeMenu="Consultant" />
       
-      <main className="admin-content-area">
+      <main className={`admin-content-area ${transitionClassName}`}>
         <header className="form-header-container">
           <h2 className="form-title">Consultant Profile</h2>
         </header>
+
+        {loading && isEditMode && <p>Loading consultant data...</p>}
+        {error && <p style={{ color: "#b42318" }}>{error}</p>}
         
         <form id="profileForm" className="profile-form-container" onSubmit={handleSubmit}>
           {/* Section Foto */}
@@ -103,11 +330,45 @@ const ConsultantForm = () => {
             </div>
             <div className="input-group">
               <label className="input-label">Position</label>
-              <select name="position" value={formData.position} onChange={handleInputChange}>
-                <option value="">Choose Your Position</option>
-                <option value="UI/UX Designer">UI/UX Designer</option>
-                <option value="Front End Dev">Front End Dev</option>
-              </select>
+              <div className="position-editor">
+                <div className="position-input-row">
+                  <input
+                    type="text"
+                    name="positionInput"
+                    list="consultant-position-options"
+                    placeholder="Add a position then press Enter"
+                    value={formData.positionInput}
+                    onChange={handleInputChange}
+                    onKeyDown={handlePositionKeyDown}
+                  />
+                  <button type="button" className="position-add-btn" onClick={handleAddPosition}>
+                    Add
+                  </button>
+                </div>
+                <datalist id="consultant-position-options">
+                  {suggestedPositions.map((position) => (
+                    <option key={position} value={position} />
+                  ))}
+                </datalist>
+                <div className="position-chip-list">
+                  {formData.positions.length === 0 && (
+                    <span className="position-empty">No positions added yet.</span>
+                  )}
+                  {formData.positions.map((position) => (
+                    <span key={position} className="position-chip">
+                      {position}
+                      <button
+                        type="button"
+                        className="position-chip-remove"
+                        onClick={() => handleRemovePosition(position)}
+                        aria-label={`Remove ${position}`}
+                      >
+                        x
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="input-group">
               <label className="input-label">per Session Fee</label>
@@ -119,12 +380,13 @@ const ConsultantForm = () => {
             <button
               type="button"
               className="btn-rect cancel"
-              onClick={() => navigate('/admin/consultant')}
+              onClick={() => navigateWithTransition('/admin/consultant')}
+              disabled={saving}
             >
               Cancel
             </button>
-            <button type="submit" className="btn-rect save">
-              Save Changes
+            <button type="submit" className="btn-rect save" disabled={saving}>
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

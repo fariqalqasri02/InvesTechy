@@ -97,3 +97,53 @@
   background: #042e20;
   transform: translateY(-1px);
 }
+
+@media (max-width: 1024px) {
+  .admin-content {
+    margin-left: 0;
+    padding: 24px;
+  }
+
+  .settings-card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-content {
+    padding: 88px 16px 24px;
+  }
+
+  .settings-card {
+    border-radius: 18px;
+    padding: 20px;
+  }
+
+  .settings-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .notification-section {
+    align-items: flex-start;
+  }
+
+  .settings-actions {
+    justify-content: stretch;
+  }
+
+  .btn-save-settings {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-group label {
+    font-size: 15px;
+  }
+
+  .form-control {
+    min-height: 46px;
+    font-size: 15px;
+  }
+}
