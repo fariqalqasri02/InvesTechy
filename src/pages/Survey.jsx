@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar.jsx";
 import { createProject } from "../store/projectThunk";
+import { getProjectId } from "../services/projectNormalizer";
 import "../components/pages.css";
 
 const Survey = () => {
@@ -210,6 +211,7 @@ const Survey = () => {
     const baseData = JSON.parse(sessionStorage.getItem("temp_project_base") || "{}");
 
     return {
+      projectName: baseData.projectName,
       industry: baseData.businessSector,
       employeeCount: Number(baseData.employeeCount),
       plan: baseData.investmentType,
@@ -238,11 +240,17 @@ const Survey = () => {
     e.preventDefault();
 
     const isConfirmed = window.confirm("Apakah Anda yakin ingin mengirim analisis ini?");
+    const payload = buildProjectPayload();
 
     if (isConfirmed) {
-      const resultAction = await dispatch(createProject(buildProjectPayload()));
+      const resultAction = await dispatch(createProject(payload));
 
       if (createProject.fulfilled.match(resultAction)) {
+        const createdProject = resultAction.payload?.data || resultAction.payload;
+        const projectId = getProjectId(createdProject);
+        if (projectId) {
+          sessionStorage.setItem("investechy_latest_project_id", projectId);
+        }
         sessionStorage.removeItem("temp_project_base");
         navigate("/project-list");
       }

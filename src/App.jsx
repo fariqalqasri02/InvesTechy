@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Report from './pages/report'; 
 import ReportSummary from "./pages/ReportSummary";
 import { getStoredUser } from "./services/api";
+import ProjectStatusNotifier from "./components/ProjectStatusNotifier";
 
 // --- IMPORT COMPONENT BARU UNTUK ADMIN ---
 import ConsultantPage from './pagesadmin/consultant';
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <Router>
+      <ProjectStatusNotifier />
       <Routes>
         {/* Landing & Auth */}
         <Route path="/" element={<Home />} />

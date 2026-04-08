@@ -36,18 +36,15 @@ const formatPercent = (value) => {
   return `${amount.toFixed(2)}%`;
 };
 
+const getProjectDisplayName = (project) => project?.projectName?.trim() || "Untitled Project";
+
 const mapReportItem = (project) => {
   const latestSimulation = getLatestSimulation(project?.simulationHistory);
   const financialResults = latestSimulation?.financialResults || {};
 
   return {
     id: project?._id || project?.id,
-    name:
-      project?.businessName ||
-      project?.projectName ||
-      project?.industry ||
-      project?.name ||
-      "Untitled Project",
+    name: getProjectDisplayName(project),
     date: latestSimulation?.calculatedAt || project?.updatedAt || project?.createdAt,
     roi: financialResults?.roi,
     status: financialResults?.feasibilityStatus || project?.status || "Unknown",
@@ -74,7 +71,7 @@ const Report = () => {
   const reports = useMemo(() => {
     return projectList
       .filter((project) => Array.isArray(project?.simulationHistory) && project.simulationHistory.length > 0)
-      .map(mapReportItem);
+      .map((project) => mapReportItem(project));
   }, [projectList]);
 
   const statusOptions = useMemo(() => {

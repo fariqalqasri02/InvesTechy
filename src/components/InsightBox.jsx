@@ -1,21 +1,27 @@
-    import "./insight.css";
+import "./insight.css";
 
-    export default function InsightBox() {
-    return (
-        <div className="insight">
-        <div className="insight-content">
-              <h3>Insight AI</h3>
-              <p>Investing in a POS system and inventory management will have the greatest 
-                impact on your operational efficiency, with a very fast payback period of 8.2 months.
-          </p>
-        </div>
-        
-        
+export default function InsightBox({ note }) {
+  const hasNote = Boolean(note?.trim());
+
+  return (
+    <div className="insight">
+      <div className="insight-content">
+        <span className="insight-subtitle">NOTE</span>
+        <h3>Operational Recommendation</h3>
+        <p>
+          {hasNote
+            ? note
+            : "Belum ada data kalkulasi yang tersedia untuk memberikan wawasan."}
+        </p>
+      </div>
+
+      {hasNote ? (
         <div className="badge-container">
-            <div className="badge-insight">
-            Very Worth Doing
+          <button type="button" className="badge-insight">
+            Save
+          </button>
         </div>
-        </div>
-        </div>
-    );
-    }
+      ) : null}
+    </div>
+  );
+}

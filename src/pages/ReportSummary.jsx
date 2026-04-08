@@ -69,6 +69,8 @@ const SummaryStat = ({ icon, label, value, accent = "green" }) => (
   </div>
 );
 
+const getProjectDisplayName = (project) => project?.projectName?.trim() || "Project Summary";
+
 export default function ReportSummary() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -87,8 +89,7 @@ export default function ReportSummary() {
   const settings = latestSimulation?.simulationSettings || {};
   const financialResults = latestSimulation?.financialResults || {};
   const breakEvenRows = financialResults?.breakEvenAnalysisDetail || [];
-  const businessName =
-    project?.businessName || project?.projectName || project?.industry || project?.name || "Project Summary";
+  const businessName = project ? getProjectDisplayName(project) : "Project Summary";
 
   return (
     <div className="report-summary-layout">
