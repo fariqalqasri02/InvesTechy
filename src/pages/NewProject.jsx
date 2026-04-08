@@ -14,6 +14,7 @@ const NewProject = () => {
   }, []);
 
   const [formData, setFormData] = useState({
+    projectName: '',
     businessSector: '',
     customSector: '', // State untuk input manual jika memilih "Others"
     location: '',
@@ -68,6 +69,21 @@ const NewProject = () => {
 
         <div className="content-card">
           <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Project Name</label>
+                <input
+                  type="text"
+                  name="projectName"
+                  placeholder="Enter Your Name Project"
+                  value={formData.projectName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group" />
+            </div>
+
             <div className="form-row">
               <div className="form-group">
                 <label>Business Sector</label>

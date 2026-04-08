@@ -2,15 +2,36 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
-import { fetchProjects } from "../store/projectThunk";
+import { deleteProject, fetchProjects } from "../store/projectThunk";
 import "./projectList.css";
 
 const normalizeStatus = (status = "") => status.replaceAll("_", " ");
+const getProjectId = (project) => project?._id || project?.id || "";
+
+const getProjectDisplayName = (project) => {
+  const name = project?.projectName?.trim();
+  return name || "Untitled Project";
+};
+
+const formatProjectDate = (value) => {
+  if (!value) return "-";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return new Intl.DateTimeFormat("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+};
 
 export default function ProjectList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [animate, setAnimate] = useState(false);
+  const [deletingId, setDeletingId] = useState("");
   const { projectList, loading, error } = useSelector((state) => state.project);
 
   useEffect(() => {
@@ -37,6 +58,35 @@ export default function ProjectList() {
 
     return counts;
   }, [projectList]);
+
+  const sortedProjects = useMemo(() => {
+    return [...projectList].sort((a, b) => {
+      const dateA = new Date(a?.createdAt || a?.updatedAt || 0).getTime();
+      const dateB = new Date(b?.createdAt || b?.updatedAt || 0).getTime();
+      return dateB - dateA;
+    });
+  }, [projectList]);
+
+  const handleDeleteProject = async (project) => {
+    const projectId = getProjectId(project);
+    const projectName = getProjectDisplayName(project);
+
+    if (!projectId) return;
+
+    const isConfirmed = window.confirm(`Hapus project "${projectName}"?`);
+    if (!isConfirmed) return;
+
+    setDeletingId(projectId);
+    const resultAction = await dispatch(deleteProject(projectId));
+    setDeletingId("");
+
+    if (deleteProject.rejected.match(resultAction)) {
+      window.alert(resultAction.payload || "Gagal menghapus project.");
+      return;
+    }
+
+    dispatch(fetchProjects());
+  };
 
   return (
     <div className="dashboard-layout">
@@ -81,7 +131,7 @@ export default function ProjectList() {
 
         {!loading && !error && (
           <div className="project-grid">
-            {projectList.length === 0 ? (
+            {sortedProjects.length === 0 ? (
               <div className="project-card">
                 <div className="card-top">
                   <div>
@@ -92,15 +142,24 @@ export default function ProjectList() {
                 <div className="tag">Start by creating your first analysis</div>
               </div>
             ) : (
-              projectList.map((item) => (
-                <div className="project-card" key={item.id}>
+              sortedProjects.map((item) => {
+                const projectId = getProjectId(item);
+
+                return (
+                <div className="project-card" key={projectId}>
                   <div className="card-top">
                     <div>
-                      <p className="label">Project ID</p>
-                      <h3>{item.id}</h3>
+                      <p className="label">Project Name</p>
+                      <h3>{getProjectDisplayName(item)}</h3>
                     </div>
 
-                    <span className="status waiting">{normalizeStatus(item.status)}</span>
+                    <span
+                      className={`status ${String(item.status || "")
+                        .toLowerCase()
+                        .replaceAll("_", "-")}`}
+                    >
+                      {normalizeStatus(item.status)}
+                    </span>
                   </div>
 
                   <div className="tag">{item.industry}</div>
@@ -108,18 +167,28 @@ export default function ProjectList() {
                   <div className="card-footer">
                     <div>
                       <p className="label">Created At</p>
-                      <h4>{item.date}</h4>
+                      <h4>{formatProjectDate(item.createdAt || item.updatedAt)}</h4>
                     </div>
 
-                    <button
-                      className="btn-detail"
-                      onClick={() => navigate(`/edit-data/${item.id}`)}
-                    >
-                      View Detail
-                    </button>
+                    <div className="card-actions">
+                      <button
+                        className="btn-detail"
+                        onClick={() => navigate(`/edit-data/${projectId}`)}
+                      >
+                        View Detail
+                      </button>
+                      <button
+                        className="btn-delete-project"
+                        type="button"
+                        onClick={() => handleDeleteProject(item)}
+                        disabled={deletingId === projectId}
+                      >
+                        {deletingId === projectId ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         )}

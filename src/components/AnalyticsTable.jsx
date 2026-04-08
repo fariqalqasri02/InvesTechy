@@ -1,43 +1,51 @@
 import "./table.css";
 
-export default function AnalyticsTable() {
-  const data = [
-    {
-      name: "Toko Kopi Sejahtera",
-      date: "20 Apr 2024",
-      investment: "Rp 20.000.000",
-      roi: "180%",
-      status: "Completed",
-    },
-  ];
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
 
+export default function AnalyticsTable({ data = [] }) {
   return (
     <div className="table-container">
-      <h3>New Analytics</h3>
+      <div className="table-head">
+        <span className="table-subtitle">Top Project</span>
+        <h3 className="table-title">Top Project</h3>
+      </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Investment</th>
-            <th>ROI</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {data.map((item, i) => (
-            <tr key={i}>
-              <td>{item.name}</td>
-              <td>{item.date}</td>
-              <td>{item.investment}</td>
-              <td>{item.roi}</td>
-              <td className="status">{item.status}</td>
+      {data.length === 0 ? (
+        <div className="table-empty-state">
+          <p>No top project data yet.</p>
+        </div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Simulation Name</th>
+              <th>Investment</th>
+              <th>ROI</th>
+              <th>IE Score</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {data.map((item, i) => (
+              <tr key={i}>
+                <td>{item.projectName}</td>
+                <td>{item.simulationName}</td>
+                <td>{formatCurrency(item.investment)}</td>
+                <td><span className="status-pill">{item.roiPercentage}%</span></td>
+                <td><span className="status-pill">{item.ieScore}</span></td>
+                <td><span className="status-pill">{item.status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

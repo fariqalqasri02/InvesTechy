@@ -4,13 +4,35 @@
   border-radius: 20px;
   width: 100%;
   border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+}
+
+.chart-container.compact {
+  padding: 22px 20px;
 }
 
 .chart-content {
   display: flex;
   gap: 20px;
-  height: 300px;
-  margin-top: 20px;
+  height: 260px;
+  margin-top: 16px;
+}
+
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subtitle {
+  color: #8f95c8;
+  font-size: 13px;
+}
+
+.chart-title {
+  color: #26264f;
+  font-size: 18px;
+  line-height: 1.2;
 }
 
 .y-axis {
@@ -27,6 +49,7 @@
   flex: 1;
   position: relative;
   display: flex;
+  min-height: 0;
 }
 
 .chart-grid {
@@ -47,11 +70,16 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: space-around; /* Jarak otomatis */
+  justify-content: space-around;
   align-items: flex-end;
   width: 100%;
-  height: 100%;
-  gap: 12px;
+  height: calc(100% - 30px);
+  padding-bottom: 30px;
+}
+
+.chart-bars-admin {
+  justify-content: space-between;
+  padding: 0 20px 30px;
 }
 
 .bar-wrapper {
@@ -64,21 +92,16 @@
   justify-content: flex-end;
 }
 
-.bar {
-  background-color: var(--accent-strong);
-  width: 40px;
-  border-radius: 6px 6px 0 0;
-  transition: height 0.5s ease;
-}
-
-.chart-bars-admin {
-  justify-content: space-between;
-  padding: 0 20px;
-}
-
 .bar-wrapper-admin {
   width: 140px;
   min-width: 140px;
+}
+
+.bar {
+  background-color: var(--accent-strong);
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+  transition: height 0.5s ease;
 }
 
 .bar-admin {
@@ -91,4 +114,45 @@
   font-size: 12px;
   white-space: nowrap;
   text-align: center;
+}
+
+.compact .chart-content {
+  height: 260px;
+}
+
+.compact .bar-wrapper {
+  width: 30px;
+  min-width: 30px;
+}
+
+:root[data-theme="dark"] .chart-title {
+  color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+  .chart-content {
+    gap: 12px;
+  }
+
+  .chart-bars-admin {
+    padding: 0 8px 30px;
+  }
+
+  .bar-wrapper {
+    width: 64px;
+    min-width: 64px;
+  }
+
+  .bar-wrapper-admin {
+    width: 88px;
+    min-width: 88px;
+  }
+
+  .bar-admin {
+    width: 40px;
+  }
+
+  .x-label {
+    font-size: 11px;
+  }
 }

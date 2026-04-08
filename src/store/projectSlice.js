@@ -2,9 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   createProject,
   fetchAdminDashboard,
+  deleteProject,
   fetchProjectById,
   fetchProjectDraft,
   fetchProjects,
+  updateProjectDraft,
 } from "./projectThunk";
 
 const initialState = {
@@ -97,6 +99,34 @@ const projectSlice = createSlice({
       .addCase(fetchProjectById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to load project.";
+      })
+      .addCase(updateProjectDraft.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProjectDraft.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentDraft = action.payload;
+        state.selectedProject = action.payload;
+      })
+      .addCase(updateProjectDraft.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to save project draft.";
+      })
+      .addCase(deleteProject.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProject.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projectList = state.projectList.filter((project) => {
+          const projectId = project?._id || project?.id;
+          return projectId !== action.payload;
+        });
+      })
+      .addCase(deleteProject.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to delete project.";
       });
   },
 });

@@ -1,15 +1,99 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../services/api";
 
+const CONSULTANT_OVERRIDES_KEY = "investechy_consultant_overrides";
+
+const getConsultantId = (consultant) => consultant?.id ?? consultant?._id ?? null;
+
 const extractResponseData = (response) => response?.data ?? response;
-const mergeConsultantPayload = (responseData, payload = {}) => {
+
+const loadConsultantOverrides = () => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(CONSULTANT_OVERRIDES_KEY);
+    return rawValue ? JSON.parse(rawValue) : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveConsultantOverride = (consultant) => {
+  const consultantId = getConsultantId(consultant);
+  if (typeof window === "undefined" || !consultantId) {
+    return;
+  }
+
+  const existingOverrides = loadConsultantOverrides();
+  existingOverrides[consultantId] = {
+    ...(existingOverrides[consultantId] || {}),
+    ...consultant,
+  };
+
+  window.localStorage.setItem(
+    CONSULTANT_OVERRIDES_KEY,
+    JSON.stringify(existingOverrides),
+  );
+};
+
+const applyConsultantOverride = (consultant) => {
+  const consultantId = getConsultantId(consultant);
+  if (!consultantId) {
+    return consultant;
+  }
+
+  const overrides = loadConsultantOverrides();
+  return overrides[consultantId]
+    ? {
+        ...consultant,
+        ...overrides[consultantId],
+      }
+    : consultant;
+};
+
+const normalizeConsultantCollection = (responseData) => {
+  if (Array.isArray(responseData)) {
+    return responseData;
+  }
+
+  if (Array.isArray(responseData?.consultants)) {
+    return responseData.consultants;
+  }
+
+  if (Array.isArray(responseData?.items)) {
+    return responseData.items;
+  }
+
+  if (Array.isArray(responseData?.data)) {
+    return responseData.data;
+  }
+
+  return [];
+};
+
+const normalizeConsultantItem = (responseData) => {
   if (!responseData || typeof responseData !== "object") {
     return responseData;
   }
 
-  return {
+  if (responseData.data && typeof responseData.data === "object" && !Array.isArray(responseData.data)) {
+    return responseData.data;
+  }
+
+  return responseData;
+};
+
+const mergeConsultantPayload = (responseData, payload = {}, fallbackId = null) => {
+  if (!responseData || typeof responseData !== "object") {
+    return responseData;
+  }
+
+  const mergedConsultant = {
     ...payload,
     ...responseData,
+    ...(fallbackId ? { id: getConsultantId(responseData) ?? fallbackId } : {}),
     spesialisasi: responseData.spesialisasi ?? payload.spesialisasi,
     harga:
       responseData.harga ??
@@ -51,7 +135,11 @@ const mergeConsultantPayload = (responseData, payload = {}) => {
       responseData.image ??
       payload.foto,
   };
+
+  saveConsultantOverride(mergedConsultant);
+  return mergedConsultant;
 };
+
 const formatConsultantError = (error) => {
   const details = error?.data;
 
@@ -102,7 +190,8 @@ export const fetchConsultants = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/consultants");
-      return extractResponseData(response) ?? [];
+      const consultants = normalizeConsultantCollection(extractResponseData(response));
+      return consultants.map(applyConsultantOverride);
     } catch (error) {
       return rejectWithValue(formatConsultantError(error));
     }
@@ -114,7 +203,7 @@ export const fetchConsultantById = createAsyncThunk(
   async (consultantId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/consultants/${consultantId}`);
-      return extractResponseData(response);
+      return applyConsultantOverride(normalizeConsultantItem(extractResponseData(response)));
     } catch (error) {
       return rejectWithValue(formatConsultantError(error));
     }
@@ -126,7 +215,7 @@ export const createConsultant = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await api.post("/consultants", payload);
-      return mergeConsultantPayload(extractResponseData(response), payload);
+      return mergeConsultantPayload(normalizeConsultantItem(extractResponseData(response)), payload);
     } catch (error) {
       return rejectWithValue(formatConsultantError(error));
     }
@@ -138,7 +227,7 @@ export const updateConsultant = createAsyncThunk(
   async ({ id, payload }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/consultants/${id}`, payload);
-      return mergeConsultantPayload(extractResponseData(response), payload);
+      return mergeConsultantPayload(normalizeConsultantItem(extractResponseData(response)), payload, id);
     } catch (error) {
       return rejectWithValue(formatConsultantError(error));
     }

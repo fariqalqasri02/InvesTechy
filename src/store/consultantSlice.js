@@ -75,7 +75,7 @@ const consultantSlice = createSlice({
       .addCase(updateConsultant.fulfilled, (state, action) => {
         state.saving = false;
         state.currentItem = action.payload;
-        const updatedId = getConsultantId(action.payload);
+        const updatedId = getConsultantId(action.payload) ?? action.meta.arg.id;
         state.items = state.items.map((item) =>
           getConsultantId(item) === updatedId ? action.payload : item,
         );
