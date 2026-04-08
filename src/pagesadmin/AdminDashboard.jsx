@@ -36,15 +36,11 @@ const formatWeekRangeLabel = (startValue, endValue) => {
   }).format(endDate)}`;
 };
 
-const normalizeChartData = (items = [], getLabel) => {
-  const maxTotal = Math.max(...items.map((item) => item.total || 0), 0);
-
-  return items.map((item) => ({
+const normalizeChartData = (items = [], getLabel) =>
+  (items || []).map((item) => ({
     label: getLabel(item),
     rawValue: item.total || 0,
-    value: maxTotal > 0 ? Math.max(((item.total || 0) / maxTotal) * 100, 8) : 0,
   }));
-};
 
 export default function AdminDashboard() {
   const dispatch = useDispatch();

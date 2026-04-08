@@ -8,10 +8,32 @@ export default function ChartSection({
   yAxisLabels,
   compact = false,
 }) {
-  const defaultYAxisLabels = type === "admin"
-    ? ["100", "80", "60", "40", "20", "0"]
-    : ["60", "50", "40", "30", "20", "0"];
-  const labels = yAxisLabels || defaultYAxisLabels;
+  const maxRawValue = Math.max(
+    ...data.map((item) => Number(item?.rawValue ?? item?.value ?? 0) || 0),
+    0,
+  );
+
+  const roundedMaxValue = maxRawValue <= 0
+    ? 5
+    : Math.ceil(maxRawValue / 5) * 5;
+
+  const defaultYAxisLabels = yAxisLabels || Array.from({ length: 6 }, (_, index) => {
+    const stepIndex = 5 - index;
+    return Math.round((roundedMaxValue / 5) * stepIndex).toString();
+  });
+
+  const labels = defaultYAxisLabels;
+  const normalizedData = data.map((item) => {
+    const rawValue = Number(item?.rawValue ?? item?.value ?? 0) || 0;
+    const scaledHeight = roundedMaxValue > 0 ? (rawValue / roundedMaxValue) * 100 : 0;
+    const visualHeight = rawValue > 0 ? Math.max(scaledHeight, 14) : 0;
+
+    return {
+      ...item,
+      rawValue,
+      visualHeight,
+    };
+  });
 
   return (
     <div className={`chart-container ${compact ? "compact" : ""}`}>
@@ -31,9 +53,14 @@ export default function ChartSection({
           </div>
 
           <div className={`chart-bars ${type === "admin" ? "chart-bars-admin" : ""}`}>
-            {data.map((item, i) => (
+            {normalizedData.map((item, i) => (
               <div key={i} className={`bar-wrapper ${type === "admin" ? "bar-wrapper-admin" : ""}`}>
-                <div className={`bar ${type === "admin" ? "bar-admin" : ""}`} style={{ height: `${item.value}%` }}></div>
+                <div className="bar-plot-area">
+                  <div
+                    className={`bar ${type === "admin" ? "bar-admin" : ""}`}
+                    style={{ height: `${item.visualHeight}%` }}
+                  ></div>
+                </div>
                 <span className="x-label">{item.label}</span>
               </div>
             ))}
