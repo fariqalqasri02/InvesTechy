@@ -32,12 +32,12 @@ export default function Consult() {
     null;
   const getConsultantPrice = (consultant) => {
     const rawPrice =
-      consultant?.harga ??
-      consultant?.fee ??
-      consultant?.price ??
       consultant?.harga_per_sesi ??
       consultant?.sessionFee ??
-      consultant?.perSessionFee;
+      consultant?.perSessionFee ??
+      consultant?.fee ??
+      consultant?.price ??
+      consultant?.harga;
 
     if (typeof rawPrice === "number") {
       return rawPrice;

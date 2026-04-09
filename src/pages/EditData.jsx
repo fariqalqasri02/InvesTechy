@@ -7,6 +7,7 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import api from "../services/api";
 import invesTechyLogo from "../assets/InvesTechy.jpg";
+import { usePopup } from "../components/PopupProvider";
 import "./editData.css";
 
 const SECTION_NAMES = ["CAPEX", "OPEX", "Tangible Results", "Intangible Results"];
@@ -198,6 +199,7 @@ export default function EditData() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const popup = usePopup();
   const pdfExportRef = useRef(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showResultCard, setShowResultCard] = useState(false);
@@ -449,7 +451,14 @@ export default function EditData() {
 
   const handleSave = () => {
     if (filledRows.length === 0) {
-      window.alert("Isi minimal satu data dulu sebelum menyimpan.");
+      popup.alert({
+        title: { id: "Data Belum Lengkap", en: "Incomplete Data" },
+        message: {
+          id: "Isi minimal satu data dulu sebelum menyimpan.",
+          en: "Please fill in at least one item before saving.",
+        },
+        tone: "danger",
+      });
       return;
     }
 
@@ -459,7 +468,11 @@ export default function EditData() {
   const handleExportPdf = () => {
     const exportElement = pdfExportRef.current;
     if (!exportElement) {
-      window.alert("Template PDF belum siap.");
+      popup.alert({
+        title: { id: "Template Belum Siap", en: "Template Not Ready" },
+        message: { id: "Template PDF belum siap.", en: "The PDF template is not ready yet." },
+        tone: "danger",
+      });
       return;
     }
 
@@ -469,39 +482,53 @@ export default function EditData() {
       return;
     }
 
-    (async () => {
-      try {
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4",
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4",
+    });
+
+    Promise.all(
+      pages.map((page) =>
+        html2canvas(page, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+        }),
+      ),
+    )
+      .then((canvases) => {
+        canvases.forEach((canvas, index) => {
+          const imageData = canvas.toDataURL("image/png");
+
+          if (index > 0) {
+            pdf.addPage();
+          }
+
+          pdf.addImage(imageData, "PNG", 0, 0, 297, 210);
         });
 
-        for (let index = 0; index < pages.length; index += 1) {
-          const canvas = await html2canvas(pages[index], {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: "#f6f2e7",
-          });
-
-          const imageData = canvas.toDataURL("image/png");
-          if (index > 0) {
-            pdf.addPage("a4", "portrait");
-          }
-          pdf.addImage(imageData, "PNG", 0, 0, 210, 297);
-        }
-
         pdf.save(`project-${id}-executive-summary.pdf`);
-      } catch {
-        window.alert("Gagal membuat PDF.");
-      }
-    })();
+      })
+      .catch(() => {
+        popup.alert({
+          title: { id: "Export Gagal", en: "Export Failed" },
+          message: { id: "Gagal membuat PDF.", en: "Failed to generate the PDF." },
+          tone: "danger",
+        });
+      });
   };
 
   const handleSaveProject = async () => {
-    const isConfirmed = window.confirm(
-      "Yakin ingin menyimpan project ini? Jika disimpan, kamu akan lanjut ke Report List.",
-    );
+    const isConfirmed = await popup.confirm({
+      title: { id: "Simpan Project", en: "Save Project" },
+      message: {
+        id: "Yakin ingin menyimpan project ini? Setelah disimpan, kamu akan lanjut ke Report List.",
+        en: "Are you sure you want to save this project? After saving, you will be redirected to Report List.",
+      },
+      confirmText: { id: "Simpan Project", en: "Save Project" },
+      cancelText: { id: "Cek Lagi", en: "Review Again" },
+    });
 
     if (!isConfirmed) {
       return;
@@ -515,12 +542,23 @@ export default function EditData() {
     );
 
     if (updateProjectDraft.rejected.match(resultAction)) {
-      window.alert(resultAction.payload || "Gagal menyimpan project.");
+      await popup.alert({
+        title: { id: "Penyimpanan Gagal", en: "Save Failed" },
+        message: resultAction.payload || { id: "Gagal menyimpan project.", en: "Failed to save the project." },
+        tone: "danger",
+      });
       return;
     }
 
     await dispatch(fetchProjects());
     setShowResultCard(false);
+    popup.notify({
+      title: { id: "Project Tersimpan", en: "Project Saved" },
+      message: {
+        id: "Perubahan sudah disimpan dan siap dilihat di Report List.",
+        en: "Your changes have been saved and are ready to view in Report List.",
+      },
+    });
     navigate("/report-list");
   };
 

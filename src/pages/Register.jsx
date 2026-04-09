@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logoImg from "../assets/InvesTechy.jpg";
-import api, { setSession } from "../services/api";
+import api, { extractAuthSession, setSession } from "../services/api";
 import "../components/auth.css";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -23,8 +24,20 @@ const Register = () => {
     "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed =
     "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
-  const dropdownIcon =
-    "https://img.icons8.com/?size=100&id=5jRysPx2JtDa&format=png&color=000000";
+
+  useEffect(() => {
+    document.body.classList.remove("auth-page-exit");
+    const timer = window.setTimeout(() => setIsLoaded(true), 100);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const navigateWithAuthTransition = (path) => {
+    document.body.classList.add("auth-page-exit");
+    window.setTimeout(() => {
+      navigate(path);
+    }, 260);
+  };
 
   const handleChange = (event) => {
     setForm((prev) => ({
@@ -46,15 +59,15 @@ const Register = () => {
 
     try {
       const response = await api.post("/auth/register", form);
-      const user = response.user ?? response.data;
+      const { token, user } = extractAuthSession(response);
       setSession({
-        token: response.token,
+        token,
         user,
       });
       const destination = user?.role?.toLowerCase?.() === "admin"
         ? "/admin/dashboard"
         : "/dashboard";
-      navigate(destination);
+      navigateWithAuthTransition(destination);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -64,7 +77,7 @@ const Register = () => {
 
   return (
     <div className="auth-body">
-      <div className="auth-container">
+      <div className={`auth-container ${isLoaded ? "auth-page-enter" : ""}`}>
         <div className="auth-banner">
           <div className="banner-content">
             <div className="banner-logo-container">
@@ -85,7 +98,14 @@ const Register = () => {
           <div className="form-box">
             <h2>Register</h2>
             <p className="form-subtext">
-              Already have an account? <Link to="/login">Login</Link>
+              Already have an account?{" "}
+              <button
+                type="button"
+                className="auth-text-link"
+                onClick={() => navigateWithAuthTransition("/login")}
+              >
+                Login
+              </button>
             </p>
 
             <form onSubmit={handleRegister}>
@@ -168,22 +188,6 @@ const Register = () => {
                       />
                     </span>
                   )}
-                </div>
-              </div>
-
-              <div className="input-group">
-                <label>Role</label>
-                <div className="input-wrapper">
-                  <select
-                    name="role"
-                    value={form.role}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <img src={dropdownIcon} alt="dropdown" className="dropdown-icon-img" />
                 </div>
               </div>
 

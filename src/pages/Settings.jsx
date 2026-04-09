@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
+import { usePopup } from "../components/PopupProvider";
 import { useAppSettings } from "../context/AppSettingsContext";
 import "./settings.css";
 
 export default function Settings() {
   const { settings, updateSettings, t } = useAppSettings();
+  const popup = usePopup();
   const [form, setForm] = useState(settings);
   const [animate, setAnimate] = useState(false);
 
@@ -26,14 +28,21 @@ export default function Settings() {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (form.password !== form.confirmPassword) {
-      alert(t("passwordMismatch"));
+      await popup.alert({
+        title: { id: "Periksa Password", en: "Check Your Password" },
+        message: t("passwordMismatch"),
+        tone: "danger",
+      });
       return;
     }
 
     updateSettings(form);
-    alert(t("settingsSaved"));
+    popup.notify({
+      title: { id: "Pengaturan Tersimpan", en: "Settings Saved" },
+      message: t("settingsSaved"),
+    });
   };
 
   return (
@@ -80,18 +89,6 @@ export default function Settings() {
               <option value="id">{t("indonesian")}</option>
               <option value="en">{t("english")}</option>
             </select>
-          </div>
-
-          <div className="form-group checkbox">
-            <label>
-              <input
-                type="checkbox"
-                name="notifications"
-                checked={form.notifications}
-                onChange={handleChange}
-              />
-              {t("notifications")}
-            </label>
           </div>
         </div>
 

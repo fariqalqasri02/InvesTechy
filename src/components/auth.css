@@ -28,6 +28,38 @@ input::-webkit-credentials-auto-fill-button {
   display: flex;
   min-height: 100vh;
   width: 100%;
+  opacity: 0;
+  transform: translateX(10px) scale(0.992);
+}
+
+.auth-page-enter {
+  animation: authPageEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+body.auth-page-exit .auth-container {
+  animation: authPageExit 0.18s ease-out forwards;
+}
+
+@keyframes authPageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(10px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes authPageExit {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-8px) scale(0.994);
+  }
 }
 
 /* --- Bagian Kiri: Banner --- */
@@ -108,7 +140,32 @@ input::-webkit-credentials-auto-fill-button {
   transition: color 0.2s ease;
 }
 
-.form-subtext a:hover {
+.auth-text-link,
+.auth-inline-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.auth-text-link {
+  color: #10B981;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.auth-inline-link {
+  font-size: 12px;
+  color: #053B29;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.form-subtext a:hover,
+.auth-text-link:hover,
+.auth-inline-link:hover {
   color: #053B29;
 }
 
@@ -205,8 +262,36 @@ input::-webkit-credentials-auto-fill-button {
   transition: background-color 0.2s;
 }
 
+.btn-auth-primary:disabled {
+  background-color: #7a8f88;
+  cursor: not-allowed;
+}
+
 .btn-auth-primary:hover {
   background-color: #053B29;
+}
+
+.btn-auth-primary:disabled:hover {
+  background-color: #7a8f88;
+}
+
+.auth-feedback {
+  margin-top: -8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.auth-feedback-error {
+  color: #c53030;
+}
+
+.otp-input {
+  text-align: center;
+  letter-spacing: 0.5em;
+  font-size: 24px;
+  font-weight: 700;
+  padding-right: 16px !important;
 }
 
 .term-condition {

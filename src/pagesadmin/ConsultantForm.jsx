@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarAdmin from './admsidebar';
+import { usePopup } from '../components/PopupProvider';
 import { clearCurrentConsultant } from '../store/consultantSlice';
 import {
   createConsultant,
@@ -27,12 +28,12 @@ const EMPTY_FORM = {
 
 const getConsultantFeeValue = (consultant) => {
   const rawFee =
-    consultant?.harga ??
-    consultant?.fee ??
-    consultant?.price ??
     consultant?.harga_per_sesi ??
     consultant?.sessionFee ??
-    consultant?.perSessionFee;
+    consultant?.perSessionFee ??
+    consultant?.fee ??
+    consultant?.price ??
+    consultant?.harga;
 
   if (typeof rawFee === 'number') {
     return rawFee.toString();
@@ -46,7 +47,7 @@ const getConsultantFeeValue = (consultant) => {
   return '';
 };
 
-const resizeImageToDataUrl = (file, maxWidth = 1200, quality = 0.82) =>
+const resizeImageToDataUrl = (file, maxWidth = 520, quality = 0.58) =>
   new Promise((resolve, reject) => {
     const fileReader = new FileReader();
 
@@ -152,6 +153,7 @@ const mapFormDataToPayload = (formData) => {
 const ConsultantForm = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const popup = usePopup();
   const fileInputRef = useRef(null);
   const isEditMode = Boolean(id);
   const { items, currentItem, loading, saving, error } = useSelector((state) => state.consultant);
@@ -241,8 +243,12 @@ const ConsultantForm = () => {
             photoValue: compressedImage,
           }));
         })
-        .catch((uploadError) => {
-          window.alert(uploadError.message || 'Failed to process image.');
+        .catch(async (uploadError) => {
+          await popup.alert({
+            title: { id: 'Upload Gambar Gagal', en: 'Image Upload Failed' },
+            message: uploadError.message || { id: 'Gagal memproses gambar.', en: 'Failed to process image.' },
+            tone: 'danger',
+          });
         });
     }
   };
@@ -258,7 +264,14 @@ const ConsultantForm = () => {
     const payload = mapFormDataToPayload(formData);
 
     if (!payload.nama || !payload.email || payload.spesialisasi.length === 0) {
-      window.alert('Please complete name, email, and position first.');
+      await popup.alert({
+        title: { id: 'Data Belum Lengkap', en: 'Incomplete Data' },
+        message: {
+          id: 'Lengkapi nama, email, dan posisi terlebih dahulu.',
+          en: 'Please complete name, email, and position first.',
+        },
+        tone: 'danger',
+      });
       return;
     }
 
@@ -268,6 +281,20 @@ const ConsultantForm = () => {
 
     const resultAction = await dispatch(action);
     if (!resultAction.type.endsWith('/rejected')) {
+      popup.notify({
+        title: isEditMode
+          ? { id: 'Konsultan Diperbarui', en: 'Consultant Updated' }
+          : { id: 'Konsultan Ditambahkan', en: 'Consultant Added' },
+        message: isEditMode
+          ? {
+              id: 'Perubahan profil konsultan berhasil disimpan.',
+              en: 'The consultant profile changes were saved successfully.',
+            }
+          : {
+              id: 'Konsultan baru berhasil ditambahkan ke direktori.',
+              en: 'A new consultant was added to the directory successfully.',
+            },
+      });
       navigateWithTransition('/admin/consultant');
     }
   };

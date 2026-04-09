@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SidebarAdmin from "./admsidebar";
+import { usePopup } from "../components/PopupProvider";
 import { useAppSettings } from "../context/AppSettingsContext";
 import { useAdminPageTransition } from "./useAdminPageTransition";
 import "./adminTransitions.css";
@@ -7,15 +8,14 @@ import "./AdminSettings.css";
 
 const AdminSettings = () => {
   const { settings, updateSettings, t } = useAppSettings();
+  const popup = usePopup();
   const { transitionClassName } = useAdminPageTransition();
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("id");
-  const [isNotifEnabled, setIsNotifEnabled] = useState(true);
 
   useEffect(() => {
     setTheme(settings.theme || "light");
     setLanguage(settings.language || "id");
-    setIsNotifEnabled(Boolean(settings.notifications));
   }, [settings]);
 
   const handleSave = () => {
@@ -23,9 +23,11 @@ const AdminSettings = () => {
       ...settings,
       theme,
       language,
-      notifications: isNotifEnabled,
     });
-    alert(t("settingsSaved"));
+    popup.notify({
+      title: { id: "Pengaturan Tersimpan", en: "Settings Saved" },
+      message: t("settingsSaved"),
+    });
   };
 
   return (
@@ -50,21 +52,6 @@ const AdminSettings = () => {
               <option value="id">{t("indonesian")}</option>
               <option value="en">{t("english")}</option>
             </select>
-          </div>
-
-          <div className="notification-section">
-            <div className="checkbox-wrapper">
-              <input
-                type="checkbox"
-                checked={isNotifEnabled}
-                onChange={() => setIsNotifEnabled((prev) => !prev)}
-                style={{ accentColor: "#053B29", width: "20px", height: "20px" }}
-              />
-            </div>
-
-            <button className="btn-enable" type="button">
-              {t("notifications")}
-            </button>
           </div>
 
           <div className="settings-actions">

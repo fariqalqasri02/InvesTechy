@@ -1,27 +1,64 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import '../components/auth.css'; 
-import logoImg from '../assets/InvesTechy.jpg'; 
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import '../components/auth.css';
+import logoImg from '../assets/InvesTechy.jpg';
+import {
+  clearResetPasswordFlow,
+  getResetPasswordEmail,
+  isResetPasswordOtpVerified,
+} from '../services/api';
+import { usePopup } from '../components/PopupProvider';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const popup = usePopup();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+  const [email, setEmail] = useState(getResetPasswordEmail() || location.state?.email || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const otpVerified =
+    location.state?.otpVerified === true || isResetPasswordOtpVerified();
 
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
 
-  const handleResetSubmit = (e) => {
+  useEffect(() => {
+    if (!otpVerified) {
+      navigate('/verify-otp', { replace: true });
+      return;
+    }
+
+    if (!email) {
+      const storedEmail = getResetPasswordEmail() || '';
+      setEmail(storedEmail);
+    }
+  }, [email, navigate, otpVerified]);
+
+  const handleResetSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      await popup.alert({
+        title: { id: "Password Tidak Cocok", en: "Passwords Do Not Match" },
+        message: {
+          id: "Password dan konfirmasi password harus sama.",
+          en: "Password and confirm password must match.",
+        },
+        tone: "danger",
+      });
       return;
     }
     // Logika API reset password di sini
     console.log("Password updated!");
+    clearResetPasswordFlow();
+    popup.notify({
+      title: { id: "Password Diperbarui", en: "Password Updated" },
+      message: {
+        id: "Password baru sudah disimpan. Silakan login kembali.",
+        en: "Your new password has been saved. Please sign in again.",
+      },
+    });
     navigate('/login'); // Pindah ke login setelah sukses
   };
 
@@ -55,6 +92,12 @@ const ResetPassword = () => {
               Please enter your new password to secure <br/>
               your account.
             </p>
+
+            {email ? (
+              <p className="form-subtext" style={{ marginTop: '-20px' }}>
+                Resetting password for <strong>{email}</strong>
+              </p>
+            ) : null}
 
             <form onSubmit={handleResetSubmit}>
               <div className="input-group">

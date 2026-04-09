@@ -7,6 +7,41 @@ const getConsultantId = (consultant) => consultant?.id ?? consultant?._id ?? nul
 
 const extractResponseData = (response) => response?.data ?? response;
 
+const normalizeConsultantOverride = (consultant = {}) => {
+  const normalizedConsultant = { ...consultant };
+  const primaryPhoto =
+    normalizedConsultant.photo ??
+    normalizedConsultant.photoUrl ??
+    normalizedConsultant.image ??
+    normalizedConsultant.foto ??
+    null;
+
+  if (primaryPhoto) {
+    normalizedConsultant.photo = primaryPhoto;
+  }
+
+  delete normalizedConsultant.photoUrl;
+  delete normalizedConsultant.image;
+  delete normalizedConsultant.foto;
+
+  return normalizedConsultant;
+};
+
+const normalizeOverrideMap = (overrideMap = {}) =>
+  Object.fromEntries(
+    Object.entries(overrideMap).map(([consultantId, consultant]) => [
+      consultantId,
+      normalizeConsultantOverride(consultant),
+    ]),
+  );
+
+const persistOverrideMap = (overrideMap) => {
+  window.localStorage.setItem(
+    CONSULTANT_OVERRIDES_KEY,
+    JSON.stringify(normalizeOverrideMap(overrideMap)),
+  );
+};
+
 const loadConsultantOverrides = () => {
   if (typeof window === "undefined") {
     return {};
@@ -14,7 +49,14 @@ const loadConsultantOverrides = () => {
 
   try {
     const rawValue = window.localStorage.getItem(CONSULTANT_OVERRIDES_KEY);
-    return rawValue ? JSON.parse(rawValue) : {};
+    const parsedValue = rawValue ? JSON.parse(rawValue) : {};
+    const normalizedValue = normalizeOverrideMap(parsedValue);
+
+    if (rawValue && JSON.stringify(parsedValue) !== JSON.stringify(normalizedValue)) {
+      persistOverrideMap(normalizedValue);
+    }
+
+    return normalizedValue;
   } catch {
     return {};
   }
@@ -29,13 +71,10 @@ const saveConsultantOverride = (consultant) => {
   const existingOverrides = loadConsultantOverrides();
   existingOverrides[consultantId] = {
     ...(existingOverrides[consultantId] || {}),
-    ...consultant,
+    ...normalizeConsultantOverride(consultant),
   };
 
-  window.localStorage.setItem(
-    CONSULTANT_OVERRIDES_KEY,
-    JSON.stringify(existingOverrides),
-  );
+  persistOverrideMap(existingOverrides);
 };
 
 const applyConsultantOverride = (consultant) => {
@@ -85,55 +124,98 @@ const normalizeConsultantItem = (responseData) => {
   return responseData;
 };
 
+const hasMeaningfulValue = (value) =>
+  value !== undefined && value !== null && value !== "";
+
 const mergeConsultantPayload = (responseData, payload = {}, fallbackId = null) => {
   if (!responseData || typeof responseData !== "object") {
     return responseData;
   }
 
+  const preferredSpesialisasi = hasMeaningfulValue(payload.spesialisasi)
+    ? payload.spesialisasi
+    : responseData.spesialisasi;
+  const preferredWhatsapp = hasMeaningfulValue(payload.whatsapp)
+    ? payload.whatsapp
+    : responseData.whatsapp;
+  const preferredNomorWhatsapp = hasMeaningfulValue(payload.nomor_whatsapp)
+    ? payload.nomor_whatsapp
+    : responseData.nomor_whatsapp;
+  const preferredHargaPerSesi = hasMeaningfulValue(payload.harga_per_sesi)
+    ? payload.harga_per_sesi
+    : responseData.harga_per_sesi ??
+      responseData.sessionFee ??
+      responseData.perSessionFee ??
+      responseData.fee ??
+      responseData.price ??
+      responseData.harga;
+  const preferredSessionFee = hasMeaningfulValue(payload.sessionFee)
+    ? payload.sessionFee
+    : responseData.sessionFee ??
+      responseData.harga_per_sesi ??
+      responseData.perSessionFee ??
+      responseData.fee ??
+      responseData.price ??
+      responseData.harga;
+  const preferredPerSessionFee = hasMeaningfulValue(payload.perSessionFee)
+    ? payload.perSessionFee
+    : responseData.perSessionFee ??
+      responseData.harga_per_sesi ??
+      responseData.sessionFee ??
+      responseData.fee ??
+      responseData.price ??
+      responseData.harga;
+  const preferredFee = hasMeaningfulValue(payload.fee)
+    ? payload.fee
+    : responseData.fee ??
+      responseData.harga_per_sesi ??
+      responseData.sessionFee ??
+      responseData.perSessionFee ??
+      responseData.price ??
+      responseData.harga;
+  const preferredPrice = hasMeaningfulValue(payload.price)
+    ? payload.price
+    : responseData.price ??
+      responseData.harga_per_sesi ??
+      responseData.sessionFee ??
+      responseData.perSessionFee ??
+      responseData.fee ??
+      responseData.harga;
+  const preferredHarga = hasMeaningfulValue(payload.harga)
+    ? payload.harga
+    : responseData.harga ??
+      responseData.harga_per_sesi ??
+      responseData.sessionFee ??
+      responseData.perSessionFee ??
+      responseData.fee ??
+      responseData.price;
+  const preferredPhoto =
+    payload.photo ??
+    payload.photoUrl ??
+    payload.image ??
+    payload.foto ??
+    responseData.photo ??
+    responseData.photoUrl ??
+    responseData.image ??
+    responseData.foto;
+
   const mergedConsultant = {
     ...payload,
     ...responseData,
     ...(fallbackId ? { id: getConsultantId(responseData) ?? fallbackId } : {}),
-    spesialisasi: responseData.spesialisasi ?? payload.spesialisasi,
-    harga:
-      responseData.harga ??
-      responseData.fee ??
-      responseData.price ??
-      payload.harga,
-    fee:
-      responseData.fee ??
-      responseData.harga ??
-      responseData.price ??
-      payload.fee,
-    price:
-      responseData.price ??
-      responseData.harga ??
-      responseData.fee ??
-      payload.price,
-    photo:
-      responseData.photo ??
-      responseData.photoUrl ??
-      responseData.image ??
-      responseData.foto ??
-      payload.photo,
-    photoUrl:
-      responseData.photoUrl ??
-      responseData.photo ??
-      responseData.image ??
-      responseData.foto ??
-      payload.photoUrl,
-    image:
-      responseData.image ??
-      responseData.photo ??
-      responseData.photoUrl ??
-      responseData.foto ??
-      payload.image,
-    foto:
-      responseData.foto ??
-      responseData.photo ??
-      responseData.photoUrl ??
-      responseData.image ??
-      payload.foto,
+    spesialisasi: preferredSpesialisasi,
+    whatsapp: preferredWhatsapp,
+    nomor_whatsapp: preferredNomorWhatsapp,
+    harga_per_sesi: preferredHargaPerSesi,
+    sessionFee: preferredSessionFee,
+    perSessionFee: preferredPerSessionFee,
+    fee: preferredFee,
+    price: preferredPrice,
+    harga: preferredHarga,
+    photo: preferredPhoto,
+    photoUrl: preferredPhoto,
+    image: preferredPhoto,
+    foto: preferredPhoto,
   };
 
   saveConsultantOverride(mergedConsultant);

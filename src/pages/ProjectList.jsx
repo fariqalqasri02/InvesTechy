@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
+import { usePopup } from "../components/PopupProvider";
 import { deleteProject, fetchProjects } from "../store/projectThunk";
 import "./projectList.css";
 
@@ -30,6 +31,7 @@ const formatProjectDate = (value) => {
 export default function ProjectList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const popup = usePopup();
   const [animate, setAnimate] = useState(false);
   const [deletingId, setDeletingId] = useState("");
   const { projectList, loading, error } = useSelector((state) => state.project);
@@ -73,7 +75,16 @@ export default function ProjectList() {
 
     if (!projectId) return;
 
-    const isConfirmed = window.confirm(`Hapus project "${projectName}"?`);
+    const isConfirmed = await popup.confirm({
+      title: { id: "Hapus Project", en: "Delete Project" },
+      message: {
+        id: `Project "${projectName}" akan dihapus dari daftar. Aksi ini tidak bisa dibatalkan.`,
+        en: `Project "${projectName}" will be removed from the list. This action cannot be undone.`,
+      },
+      confirmText: { id: "Ya, hapus", en: "Yes, delete" },
+      cancelText: { id: "Kembali", en: "Go Back" },
+      tone: "danger",
+    });
     if (!isConfirmed) return;
 
     setDeletingId(projectId);
@@ -81,11 +92,22 @@ export default function ProjectList() {
     setDeletingId("");
 
     if (deleteProject.rejected.match(resultAction)) {
-      window.alert(resultAction.payload || "Gagal menghapus project.");
+      await popup.alert({
+        title: { id: "Penghapusan Gagal", en: "Delete Failed" },
+        message: resultAction.payload || { id: "Gagal menghapus project.", en: "Failed to delete the project." },
+        tone: "danger",
+      });
       return;
     }
 
     dispatch(fetchProjects());
+    popup.notify({
+      title: { id: "Project Dihapus", en: "Project Deleted" },
+      message: {
+        id: `"${projectName}" berhasil dihapus dari portfolio kamu.`,
+        en: `"${projectName}" was successfully removed from your portfolio.`,
+      },
+    });
   };
 
   return (

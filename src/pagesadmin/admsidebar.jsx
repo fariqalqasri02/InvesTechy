@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/InvesTechy.jpg";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { clearResetPasswordFlow, clearSession } from "../services/api";
 import { useAdminPageTransition } from "./useAdminPageTransition";
 import "./admsidebar.css";
 
@@ -51,6 +52,10 @@ const SidebarAdmin = ({ activeMenu }) => {
 
   const handleLogout = () => {
     setIsOpen(false);
+    clearSession();
+    clearResetPasswordFlow();
+    document.body.classList.add("page-exit");
+    document.body.classList.add("auth-page-exit");
     navigateWithTransition("/login");
   };
 

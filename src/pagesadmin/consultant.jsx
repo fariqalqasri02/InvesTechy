@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux"; // Import Redux hooks
 import SidebarAdmin from './admsidebar'; 
+import { usePopup } from "../components/PopupProvider";
 import { deleteConsultant, fetchConsultants } from "../store/consultantThunk"; // Import thunk yang sama
 import { useAdminPageTransition } from "./useAdminPageTransition";
 import "./adminTransitions.css";
@@ -15,12 +16,12 @@ const getConsultantPhoto = (consultant) =>
   null;
 const getConsultantPrice = (consultant) => {
   const rawPrice =
-    consultant?.harga ??
-    consultant?.fee ??
-    consultant?.price ??
     consultant?.harga_per_sesi ??
     consultant?.sessionFee ??
-    consultant?.perSessionFee;
+    consultant?.perSessionFee ??
+    consultant?.fee ??
+    consultant?.price ??
+    consultant?.harga;
 
   if (typeof rawPrice === 'number') {
     return rawPrice;
@@ -40,6 +41,7 @@ const formatConsultantPrice = (consultant) => {
 
 const ConsultantPage = () => {
   const dispatch = useDispatch();
+  const popup = usePopup();
   const { transitionClassName, navigateWithTransition } = useAdminPageTransition();
   const [positionFilter, setPositionFilter] = useState("ALL");
   const [alphabetFilter, setAlphabetFilter] = useState("A_TO_Z");
@@ -54,9 +56,27 @@ const ConsultantPage = () => {
   }, [dispatch]);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Delete this consultant's data?")) {
-      await dispatch(deleteConsultant(id));
-    }
+    const isConfirmed = await popup.confirm({
+      title: { id: "Hapus Konsultan", en: "Delete Consultant" },
+      message: {
+        id: "Hapus data konsultan ini dari direktori admin?",
+        en: "Delete this consultant's data from the admin directory?",
+      },
+      confirmText: { id: "Hapus", en: "Delete" },
+      cancelText: { id: "Simpan", en: "Keep" },
+      tone: "danger",
+    });
+
+    if (!isConfirmed) return;
+
+    await dispatch(deleteConsultant(id));
+    popup.notify({
+      title: { id: "Konsultan Dihapus", en: "Consultant Removed" },
+      message: {
+        id: "Data konsultan berhasil dihapus dari direktori.",
+        en: "The consultant data has been removed from the directory.",
+      },
+    });
   };
 
   const availablePositions = useMemo(() => (

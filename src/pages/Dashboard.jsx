@@ -1,19 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBell, FaChartLine, FaCoins, FaMoneyBillWave, FaSearch } from "react-icons/fa";
+import { FaChartLine, FaCoins, FaMoneyBillWave, FaSearch } from "react-icons/fa";
 import { LuBadgeDollarSign } from "react-icons/lu";
 import Sidebar from "../components/sidebar";
 import SummaryCard from "../components/SummaryCard";
 import ChartSection from "../components/CharSection";
 import AnalyticsTable from "../components/AnalyticsTable";
 import InsightBox from "../components/InsightBox";
-import avatarImg from "../assets/AkUnpad.png";
 import { useAppSettings } from "../context/AppSettingsContext";
-import api from "../services/api";
+import api, {
+  DEFAULT_USER_AVATAR,
+  fetchCurrentUser,
+  getStoredUser,
+  getUserDisplayName,
+  getUserPhoto,
+  getUserRoleLabel,
+} from "../services/api";
 import "./dashboard.css";
 
 export default function Dashboard() {
   const { t } = useAppSettings();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [storedUser, setStoredUser] = useState(() => getStoredUser());
+  const displayName = getUserDisplayName(storedUser);
+  const displayPhoto = getUserPhoto(storedUser) || DEFAULT_USER_AVATAR;
+  const displayRole = getUserRoleLabel(storedUser);
   const [dashboardData, setDashboardData] = useState({
     overviewCards: {
       totalInvestmentCapex: 0,
@@ -156,7 +167,31 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const syncCurrentUser = async () => {
+      try {
+        const nextUser = await fetchCurrentUser();
+        if (isMounted) {
+          setStoredUser(nextUser);
+        }
+      } catch {
+        // Keep stored session data if user refresh fails.
+      }
+    };
+
+    syncCurrentUser();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     document.body.classList.remove("page-exit");
+    const timer = window.setTimeout(() => setIsLoaded(true), 100);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const formatCurrency = (value) =>
@@ -194,34 +229,37 @@ export default function Dashboard() {
     <div className="dashboard-wrapper dashboard-shell">
       <Sidebar activeMenu="Dashboard" />
 
-      <main className="main-content dashboard-main">
+      <main className={`main-content dashboard-main ${isLoaded ? "page-fade-in" : ""}`}>
         <div className="content-wrapper dashboard-inner">
           <header className="top-bar dashboard-topbar">
             <div className="welcome-message">
-              <h1>{t("dashboardGreeting")}</h1>
+              <h1>{`${t("dashboardGreeting")}, ${displayName}`}</h1>
               <p>Welcome back, We miss you coming</p>
             </div>
 
             <div className="top-bar-right">
-              <div className="search-wrapper dashboard-search">
-                <input type="text" placeholder={t("dashboardSearch")} />
-                <FaSearch className="search-icon" />
-              </div>
+              <label className="search-wrapper dashboard-search" htmlFor="dashboard-search-input">
+                <span className="search-icon-wrap" aria-hidden="true">
+                  <FaSearch className="search-icon" />
+                </span>
+                <input
+                  id="dashboard-search-input"
+                  type="text"
+                  placeholder={t("dashboardSearch")}
+                  aria-label={t("dashboardSearch")}
+                />
+              </label>
 
               <div className="profile-info">
-                <span className="notif">
-                  <FaBell />
-                </span>
-
                 <Link
                   to="/profile"
                   className="user-profile"
                   style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
                 >
-                  <img src={avatarImg} alt="Avatar" className="avatar" />
+                  <img src={displayPhoto} alt="Avatar" className="avatar" />
                   <div className="user-detail">
-                    <span className="user-name">Mas Rusdi</span>
-                    <span className="user-role">UMKM Owner</span>
+                    <span className="user-name">{displayName}</span>
+                    <span className="user-role">{displayRole}</span>
                   </div>
                 </Link>
               </div>

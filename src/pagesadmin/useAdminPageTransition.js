@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const EXIT_DURATION_MS = 240;
+const EXIT_DURATION_MS = 180;
 const EXIT_CLASS_NAME = "admin-route-exiting";
 
 export const useAdminPageTransition = () => {

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 const STORAGE_KEY = "app_settings";
 
 const defaultSettings = {
-  name: "Mas Rusdi",
+  name: "",
   email: "user@email.com",
   company: "InvesTechy",
   theme: "light",
@@ -21,7 +21,7 @@ const translations = {
     navReportList: "Daftar Laporan",
     navConsult: "Konsultasi",
     navSettings: "Pengaturan",
-    dashboardGreeting: "Hello, Mas Rusdi",
+    dashboardGreeting: "Hello",
     dashboardWelcome: "Selamat datang kembali",
     dashboardSearch: "Cari apa pun...",
     totalInvestment: "Total Investment",
@@ -56,7 +56,7 @@ const translations = {
     navReportList: "Report List",
     navConsult: "Consult",
     navSettings: "Settings",
-    dashboardGreeting: "Hello, Mas Rusdi",
+    dashboardGreeting: "Hello",
     dashboardWelcome: "Welcome back",
     dashboardSearch: "Search for anything...",
     totalInvestment: "Total Investment",

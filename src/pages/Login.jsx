@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logoImg from "../assets/InvesTechy.jpg";
-import api, { setSession } from "../services/api";
+import api, { extractAuthSession, GOOGLE_AUTH_URL, setSession } from "../services/api";
 import "../components/auth.css";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -18,6 +19,20 @@ const Login = () => {
     "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed =
     "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
+
+  useEffect(() => {
+    document.body.classList.remove("auth-page-exit");
+    const timer = window.setTimeout(() => setIsLoaded(true), 100);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const navigateWithAuthTransition = (path) => {
+    document.body.classList.add("auth-page-exit");
+    window.setTimeout(() => {
+      navigate(path);
+    }, 260);
+  };
 
   const handleChange = (event) => {
     setForm((prev) => ({
@@ -33,15 +48,15 @@ const Login = () => {
 
     try {
       const response = await api.post("/auth/login", form);
-      const user = response.user ?? response.data;
+      const { token, user } = extractAuthSession(response);
       setSession({
-        token: response.token,
+        token,
         user,
       });
       const destination = user?.role?.toLowerCase?.() === "admin"
         ? "/admin/dashboard"
         : "/dashboard";
-      navigate(destination);
+      navigateWithAuthTransition(destination);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -49,9 +64,14 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    document.body.classList.add("auth-page-exit");
+    window.location.assign(GOOGLE_AUTH_URL);
+  };
+
   return (
     <div className="auth-body">
-      <div className="auth-container">
+      <div className={`auth-container ${isLoaded ? "auth-page-enter" : ""}`}>
         <div className="auth-banner">
           <div className="banner-content">
             <div className="banner-logo-container">
@@ -72,7 +92,14 @@ const Login = () => {
           <div className="form-box">
             <h2>Login</h2>
             <p className="form-subtext">
-              Don&apos;t have an account? <Link to="/register">Create Now</Link>
+              Don&apos;t have an account?{" "}
+              <button
+                type="button"
+                className="auth-text-link"
+                onClick={() => navigateWithAuthTransition("/register")}
+              >
+                Create Now
+              </button>
             </p>
 
             <form onSubmit={handleLogin}>
@@ -97,17 +124,13 @@ const Login = () => {
                   }}
                 >
                   <label>Password</label>
-                  <Link
-                    to="/forgot-password"
-                    style={{
-                      fontSize: "12px",
-                      color: "#053B29",
-                      fontWeight: "bold",
-                      textDecoration: "none",
-                    }}
+                  <button
+                    type="button"
+                    className="auth-inline-link"
+                    onClick={() => navigateWithAuthTransition("/forgot-password")}
                   >
                     Forgot Password?
-                  </Link>
+                  </button>
                 </div>
                 <div className="input-wrapper">
                   <input
@@ -178,9 +201,7 @@ const Login = () => {
                   justifyContent: "center",
                   gap: "10px",
                 }}
-                onClick={() =>
-                  window.location.assign("https://unvicarious-camelia-porky.ngrok-free.dev/api/auth/google")
-                }
+                onClick={handleGoogleLogin}
               >
                 <img
                   src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"

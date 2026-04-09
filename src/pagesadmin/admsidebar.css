@@ -19,7 +19,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 50px;
-  padding-left: 10px;
+  padding-left: 0;
 }
 
 .admin-sidebar .sidebar-logo img {

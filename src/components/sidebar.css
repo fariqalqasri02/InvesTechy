@@ -96,8 +96,21 @@
 .sidebar-footer-line {
   height: 1px;
   background-color: rgba(255, 255, 255, 0.3);
-  margin-top: auto;
+  margin-bottom: 20px;
   width: 100%;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.logout-item {
+  margin-bottom: 0;
+  color: var(--sidebar-text);
+}
+
+.logout-item:hover {
+  background-color: var(--sidebar-hover);
 }
 
 .sidebar-toggle {

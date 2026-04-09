@@ -3,6 +3,7 @@ import "./sidebar.css";
 import logo from "../assets/InvesTechy.jpg";
 import { useNavigate } from "react-router-dom";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { clearSession, clearResetPasswordFlow } from "../services/api";
 
 const Sidebar = ({ activeMenu }) => {
   const navigate = useNavigate();
@@ -76,6 +77,17 @@ const Sidebar = ({ activeMenu }) => {
     }, 250);
   };
 
+  const handleLogout = () => {
+    setIsOpen(false);
+    clearSession();
+    clearResetPasswordFlow();
+    document.body.classList.add("page-exit");
+    document.body.classList.add("auth-page-exit");
+    setTimeout(() => {
+      navigate("/login");
+    }, 250);
+  };
+
   return (
     <>
       <button
@@ -124,6 +136,18 @@ const Sidebar = ({ activeMenu }) => {
             );
           })}
         </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-footer-line"></div>
+          <div className="nav-item logout-item" onClick={handleLogout}>
+            <img
+              src="https://img.icons8.com/?size=100&id=2445&format=png&color=FFFFFF"
+              alt="Logout"
+              className="sidebar-icon-img"
+            />
+            <span className="menu-text">Log Out</span>
+          </div>
+        </div>
       </aside>
     </>
   );

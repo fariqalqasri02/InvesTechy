@@ -1,16 +1,40 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
-import '../components/auth.css'; 
-import logoImg from '../assets/InvesTechy.jpg'; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../components/auth.css';
+import logoImg from '../assets/InvesTechy.jpg';
+import api, {
+  clearResetPasswordFlow,
+  setResetPasswordEmail,
+} from '../services/api';
 
 const ForgotPassword = () => {
-  const navigate = useNavigate(); // 2. Inisialisasi navigate
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Di sini biasanya ada logika API untuk kirim email
-    // Setelah berhasil, pindah ke halaman reset-password
-    navigate('/reset-password'); 
+    setLoading(true);
+    setError('');
+
+    try {
+      const normalizedEmail = email.trim();
+
+      await api.post('/auth/forgot-password', {
+        email: normalizedEmail,
+      });
+
+      clearResetPasswordFlow();
+      setResetPasswordEmail(normalizedEmail);
+      navigate('/verify-otp', {
+        state: { email: normalizedEmail },
+      });
+    } catch (requestError) {
+      setError(requestError.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,17 +65,30 @@ const ForgotPassword = () => {
             
             <p className="form-subtext" style={{ marginTop: '20px' }}>
               Enter your email for the verification process, we will send <br/>
-              a password reset link to your email.
+              a 4-digit OTP to your email.
             </p>
 
-            <form onSubmit={handleSubmit}> {/* 3. Tambahkan onSubmit */}
+            <form onSubmit={handleSubmit}>
               <div className="input-group">
                 <label>E-mail</label>
-                <input type="email" placeholder="Enter email" required />
+                <input
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
               </div>
 
-              <button type="submit" className="btn-auth-primary" style={{ marginTop: '10px' }}>
-                Continue
+              {error ? <p className="auth-feedback auth-feedback-error">{error}</p> : null}
+
+              <button
+                type="submit"
+                className="btn-auth-primary"
+                style={{ marginTop: '10px' }}
+                disabled={loading}
+              >
+                {loading ? 'Sending OTP...' : 'Continue'}
               </button>
             </form>
           </div>

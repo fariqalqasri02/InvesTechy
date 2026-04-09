@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar.jsx";
+import { usePopup } from "../components/PopupProvider";
 import { createProject } from "../store/projectThunk";
 import { getProjectId } from "../services/projectNormalizer";
 import "../components/pages.css";
@@ -9,6 +10,7 @@ import "../components/pages.css";
 const Survey = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const popup = usePopup();
   const { loading, error } = useSelector((state) => state.project);
 
   useEffect(() => {
@@ -239,8 +241,16 @@ const Survey = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const isConfirmed = window.confirm("Apakah Anda yakin ingin mengirim analisis ini?");
     const payload = buildProjectPayload();
+    const isConfirmed = await popup.confirm({
+      title: { id: "Kirim Analisis", en: "Submit Analysis" },
+      message: {
+        id: "Apakah Anda yakin ingin mengirim analisis ini?",
+        en: "Are you sure you want to submit this analysis?",
+      },
+      confirmText: { id: "Kirim Sekarang", en: "Submit Now" },
+      cancelText: { id: "Periksa Lagi", en: "Review Again" },
+    });
 
     if (isConfirmed) {
       const resultAction = await dispatch(createProject(payload));
@@ -252,6 +262,13 @@ const Survey = () => {
           sessionStorage.setItem("investechy_latest_project_id", projectId);
         }
         sessionStorage.removeItem("temp_project_base");
+        popup.notify({
+          title: { id: "Analisis Dikirim", en: "Analysis Submitted" },
+          message: {
+            id: "Project baru berhasil dibuat dan masuk ke daftar project.",
+            en: "The new project was created successfully and added to the project list.",
+          },
+        });
         navigate("/project-list");
       }
     }

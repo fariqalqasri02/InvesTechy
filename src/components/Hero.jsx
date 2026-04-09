@@ -18,7 +18,7 @@ const HeroSection = () => {
           </h1>
           
           <p className="hero-description">
-            Make smarter digital investment decisions in minutes
+            Make smarter digital investment decisions in minutes <br/>
             no complexity, just data-driven insights.
           </p>
         </div>
