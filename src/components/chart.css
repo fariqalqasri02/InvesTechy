@@ -108,10 +108,47 @@
   width: 100%;
   border-radius: 12px 12px 0 0;
   transition: height 0.5s ease;
+  position: relative;
 }
 
 .bar-admin {
   width: 48px;
+}
+
+.bar:hover,
+.bar:focus-visible {
+  filter: brightness(1.06);
+}
+
+.bar::after {
+  content: attr(data-value);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
+  background: #16382f;
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 10px 24px rgba(8, 28, 21, 0.16);
+}
+
+.bar:hover::after,
+.bar:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.bar:focus-visible {
+  outline: 2px solid rgba(22, 56, 47, 0.35);
+  outline-offset: 4px;
 }
 
 .x-label {

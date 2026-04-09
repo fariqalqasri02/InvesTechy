@@ -59,6 +59,10 @@ export default function ChartSection({
                   <div
                     className={`bar ${type === "admin" ? "bar-admin" : ""}`}
                     style={{ height: `${item.visualHeight}%` }}
+                    title={`${item.label}: ${item.rawValue}`}
+                    aria-label={`${item.label}: ${item.rawValue}`}
+                    tabIndex={0}
+                    data-value={item.rawValue}
                   ></div>
                 </div>
                 <span className="x-label">{item.label}</span>
