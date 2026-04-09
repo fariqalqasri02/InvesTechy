@@ -246,10 +246,57 @@
 /* BODY */
 .chat-body {
   padding: 20px;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .chat-body h2 {
   font-size: 18px;
+}
+
+.chat-state {
+  color: #718096;
+  font-size: 13px;
+}
+
+.chat-message {
+  padding: 12px 14px;
+  border-radius: 14px;
+  max-width: 100%;
+}
+
+.chat-message.user {
+  background: #e6f7ee;
+  align-self: flex-end;
+}
+
+.chat-message.assistant {
+  background: #f5f7fb;
+  align-self: flex-start;
+  border: 1px solid #e2e8f0;
+}
+
+.chat-role {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #053b29;
+}
+
+.chat-message p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.chat-error {
+  color: #b42318;
+  font-size: 12px;
 }
 
 /* FOOTER */
@@ -258,13 +305,32 @@
   bottom: 0;
   width: 100%;
   padding: 15px;
+  display: flex;
+  gap: 10px;
+  background: white;
 }
 
 .chat-footer input {
-  width: 100%;
+  flex: 1;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
+}
+
+.chat-send-btn {
+  border: none;
+  border-radius: 10px;
+  background: #1d4337;
+  color: white;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chat-send-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .result-overlay {
@@ -407,6 +473,332 @@
 .btn-result.primary {
   background: #053b29;
   color: white;
+}
+
+.pdf-export-stage {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  width: 1123px;
+  pointer-events: none;
+}
+
+.pdf-export-page {
+  width: 1123px;
+  height: 794px;
+  background: #f6f2e7;
+  color: #14231d;
+  padding: 24px;
+}
+
+.pdf-export-columns {
+  display: grid;
+  grid-template-columns: 1.06fr 1.14fr 0.98fr;
+  gap: 14px;
+  height: 100%;
+}
+
+.pdf-export-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.pdf-export-hero,
+.pdf-section-head {
+  background: linear-gradient(155deg, #0b3d2c, #123b2f 58%, #1d5a46);
+  color: #fff8e1;
+  border-radius: 18px;
+  padding: 18px 20px;
+}
+
+.pdf-export-logo {
+  width: 150px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.pdf-export-logo.small {
+  width: 120px;
+  height: 34px;
+  margin-bottom: 10px;
+}
+
+.pdf-export-hero h1,
+.pdf-section-head h2 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.08;
+  font-weight: 700;
+}
+
+.pdf-export-hero p,
+.pdf-section-head p {
+  margin: 6px 0 0;
+  color: #efe4ba;
+  font-size: 15px;
+}
+
+.pdf-card {
+  background: #fffdf8;
+  border: 1px solid #d9dfd7;
+  border-radius: 18px;
+  padding: 14px 16px;
+  overflow: hidden;
+}
+
+.pdf-card h3 {
+  margin: 0 0 10px;
+  font-size: 21px;
+  color: #173a2d;
+  line-height: 1.1;
+}
+
+.pdf-subheading {
+  margin-top: 14px;
+}
+
+.pdf-kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdf-kv-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #e8ece6;
+  padding-bottom: 7px;
+}
+
+.pdf-kv-list.compact > div {
+  padding-bottom: 5px;
+}
+
+.pdf-kv-list span {
+  font-size: 13px;
+  color: #65767d;
+  font-weight: 600;
+}
+
+.pdf-kv-list strong {
+  font-size: 13px;
+  color: #17261f;
+  text-align: right;
+  max-width: 58%;
+}
+
+.pdf-matrix-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdf-matrix-grid {
+  position: relative;
+  height: 120px;
+  border: 1px solid #b7c0bb;
+  background:
+    linear-gradient(to right, transparent 49.5%, #cbd5cf 49.5%, #cbd5cf 50.5%, transparent 50.5%),
+    linear-gradient(to bottom, transparent 49.5%, #cbd5cf 49.5%, #cbd5cf 50.5%, transparent 50.5%),
+    #fff;
+  border-radius: 12px;
+}
+
+.pdf-matrix-grid span {
+  position: absolute;
+  font-size: 10px;
+  color: #214034;
+  font-weight: 600;
+}
+
+.pdf-matrix-grid span:nth-child(1) { left: 10px; top: 10px; }
+.pdf-matrix-grid span:nth-child(2) { right: 10px; top: 10px; }
+.pdf-matrix-grid span:nth-child(3) { left: 10px; bottom: 10px; }
+.pdf-matrix-grid span:nth-child(4) { right: 10px; bottom: 10px; }
+
+.pdf-matrix-point {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ddb15a;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 3px rgba(221, 177, 90, 0.22);
+}
+
+.pdf-matrix-footer {
+  background: #103f31;
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.pdf-matrix-footer strong {
+  display: block;
+  font-size: 14px;
+}
+
+.pdf-matrix-footer span {
+  display: block;
+  margin-top: 4px;
+  color: #d1ded8;
+  font-size: 11px;
+}
+
+.pdf-score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.pdf-score-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 30px;
+  gap: 8px;
+  align-items: center;
+}
+
+.pdf-score-row span,
+.pdf-score-row strong {
+  font-size: 12px;
+}
+
+.pdf-score-bar {
+  height: 10px;
+  background: #e4ebe6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pdf-score-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #20543f, #2f7355);
+}
+
+.pdf-insight-card p,
+.pdf-conclusion-card p {
+  margin: 0;
+  color: #34474d;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.pdf-table thead th {
+  background: #f2f5f3;
+  color: #2c463b;
+  text-align: left;
+  font-size: 11px;
+  padding: 8px 10px;
+}
+
+.pdf-table tbody td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #ebefec;
+  vertical-align: top;
+  color: #293a33;
+  line-height: 1.25;
+}
+
+.pdf-table.small thead th,
+.pdf-table.small tbody td {
+  font-size: 10px;
+}
+
+.pdf-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  background: linear-gradient(90deg, #ecd18c, #f3e5b9);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.pdf-total-row span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3a3528;
+}
+
+.pdf-total-row strong {
+  font-size: 18px;
+  color: #2f291d;
+}
+
+.pdf-benefit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.pdf-benefit-card {
+  background: #fff;
+  border: 1px solid #e8ece6;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.pdf-benefit-card span {
+  display: block;
+  font-size: 12px;
+  color: #5e7076;
+  margin-bottom: 5px;
+}
+
+.pdf-benefit-card strong {
+  display: block;
+  font-size: 18px;
+  color: #17382d;
+  margin-bottom: 5px;
+}
+
+.pdf-benefit-card small {
+  display: block;
+  font-size: 11px;
+  color: #677981;
+  line-height: 1.3;
+}
+
+.pdf-metric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdf-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: #fcfcf8;
+  border: 1px solid #e7ebe7;
+  border-radius: 12px;
+  padding: 9px 12px;
+}
+
+.pdf-metric-row span {
+  font-size: 13px;
+  color: #31453a;
+  font-weight: 700;
+}
+
+.pdf-metric-row strong {
+  font-size: 14px;
+  color: #0f5a3f;
+  text-align: right;
 }
 
 @media (max-width: 768px) {

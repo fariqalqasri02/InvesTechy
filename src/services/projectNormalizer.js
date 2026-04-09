@@ -1,7 +1,36 @@
 const PROJECT_OVERRIDE_KEY = "investechy_project_overrides";
 const PENDING_PROJECT_OVERRIDE_KEY = "investechy_pending_project_override";
 
-export const getProjectId = (project) => project?._id || project?.id || project?.projectId || "";
+const unwrapObjectId = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value.$oid) return value.$oid;
+  return "";
+};
+
+const unwrapDate = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "object" && value.$date) return value.$date;
+  return "";
+};
+
+const normalizeSimulationHistory = (simulationHistory = []) => {
+  if (!Array.isArray(simulationHistory)) return [];
+
+  return simulationHistory.map((simulation) => ({
+    ...simulation,
+    _id: unwrapObjectId(simulation?._id) || simulation?._id,
+    calculatedAt: unwrapDate(simulation?.calculatedAt) || simulation?.calculatedAt,
+  }));
+};
+
+export const getProjectId = (project) =>
+  unwrapObjectId(project?._id) ||
+  unwrapObjectId(project?.id) ||
+  project?.projectId ||
+  "";
 
 const readOverrides = () => {
   try {
@@ -88,17 +117,29 @@ const pickProjectName = (project, override) => {
 export const normalizeProject = (project) => {
   const projectId = getProjectId(project);
   const override = getOverride(projectId);
+  const createdAt = unwrapDate(project?.createdAt) || unwrapDate(project?.updatedAt);
+  const updatedAt = unwrapDate(project?.updatedAt);
+  const simulationHistory = normalizeSimulationHistory(project?.simulationHistory);
+  const latestSimulation = [...simulationHistory].sort((a, b) => {
+    const dateA = new Date(a?.calculatedAt || 0).getTime();
+    const dateB = new Date(b?.calculatedAt || 0).getTime();
+    return dateB - dateA;
+  })[0];
 
   const normalized = {
     ...project,
-    _id: project?._id || project?.id || project?.projectId,
-    id: project?.id || project?._id || project?.projectId,
+    _id: projectId,
+    id: unwrapObjectId(project?.id) || projectId,
     projectName: pickProjectName(project, override),
     createdAt:
-      project?.createdAt ||
-      project?.updatedAt ||
+      createdAt ||
+      updatedAt ||
       override?.createdAt ||
       deriveCreatedAtFromObjectId(projectId),
+    updatedAt: updatedAt || createdAt || "",
+    expiresAt: unwrapDate(project?.expiresAt) || project?.expiresAt || "",
+    simulationHistory,
+    latestSimulation,
   };
 
   if (normalized.projectName && projectId) {
