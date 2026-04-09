@@ -7,7 +7,7 @@
 
 /* MAIN */
 .main-content {
-  margin-left: 260px;
+  margin-left: 300px;
   width: calc(100% - 260px);
   padding: 40px;
   transition: all 0.3s ease;
@@ -235,8 +235,31 @@
 .chat-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 20px;
   border-bottom: 1px solid #e2e8f0;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-refresh-btn {
+  border: 1px solid #d6e2db;
+  background: #f4fbf7;
+  color: #14532d;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .chat-title {
@@ -260,6 +283,14 @@
 .chat-state {
   color: #718096;
   font-size: 13px;
+}
+
+.chat-history-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
 }
 
 .chat-message {
@@ -292,6 +323,8 @@
   font-size: 13px;
   line-height: 1.5;
   color: #334155;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .chat-error {
@@ -479,30 +512,65 @@
   position: fixed;
   left: -99999px;
   top: 0;
-  width: 1123px;
+  width: 794px;
   pointer-events: none;
 }
 
-.pdf-export-page {
-  width: 1123px;
-  height: 794px;
-  background: #f6f2e7;
-  color: #14231d;
-  padding: 24px;
+.pdf-export-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.pdf-export-columns {
-  display: grid;
-  grid-template-columns: 1.06fr 1.14fr 0.98fr;
-  gap: 14px;
-  height: 100%;
+.pdf-export-page {
+  width: 794px;
+  height: 1123px;
+  background: #f6f2e7;
+  color: #14231d;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.pdf-export-page.portrait {
+  page-break-after: always;
 }
 
 .pdf-export-column {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-height: 0;
+}
+
+.pdf-export-column.full {
+  height: 100%;
+}
+
+.pdf-page-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.pdf-page-grid-overview {
+  grid-template-columns: 1fr;
+}
+
+.pdf-page-grid-breakdown {
+  grid-template-columns: 1fr;
+}
+
+.pdf-page-grid-two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.pdf-page-grid-single {
+  grid-template-columns: 1fr;
+}
+
+.pdf-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .pdf-export-hero,
@@ -514,23 +582,23 @@
 }
 
 .pdf-export-logo {
-  width: 150px;
-  height: 42px;
+  width: 200px;
+  height: 58px;
   object-fit: contain;
   display: block;
   margin-bottom: 14px;
 }
 
 .pdf-export-logo.small {
-  width: 120px;
-  height: 34px;
+  width: 160px;
+  height: 46px;
   margin-bottom: 10px;
 }
 
 .pdf-export-hero h1,
 .pdf-section-head h2 {
   margin: 0;
-  font-size: 25px;
+  font-size: 23px;
   line-height: 1.08;
   font-weight: 700;
 }
@@ -546,13 +614,14 @@
   background: #fffdf8;
   border: 1px solid #d9dfd7;
   border-radius: 18px;
-  padding: 14px 16px;
+  padding: 16px 18px;
   overflow: hidden;
+  break-inside: avoid;
 }
 
 .pdf-card h3 {
   margin: 0 0 10px;
-  font-size: 21px;
+  font-size: 18px;
   color: #173a2d;
   line-height: 1.1;
 }
@@ -580,16 +649,17 @@
 }
 
 .pdf-kv-list span {
-  font-size: 13px;
+  font-size: 12px;
   color: #65767d;
   font-weight: 600;
 }
 
 .pdf-kv-list strong {
-  font-size: 13px;
+  font-size: 12px;
   color: #17261f;
   text-align: right;
   max-width: 58%;
+  word-break: break-word;
 }
 
 .pdf-matrix-box {
@@ -600,7 +670,7 @@
 
 .pdf-matrix-grid {
   position: relative;
-  height: 120px;
+  height: 180px;
   border: 1px solid #b7c0bb;
   background:
     linear-gradient(to right, transparent 49.5%, #cbd5cf 49.5%, #cbd5cf 50.5%, transparent 50.5%),
@@ -665,7 +735,7 @@
 
 .pdf-score-row span,
 .pdf-score-row strong {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .pdf-score-bar {
@@ -685,35 +755,38 @@
 .pdf-conclusion-card p {
   margin: 0;
   color: #34474d;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
+  word-break: break-word;
 }
 
 .pdf-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: 10px;
+  table-layout: fixed;
 }
 
 .pdf-table thead th {
   background: #f2f5f3;
   color: #2c463b;
   text-align: left;
-  font-size: 11px;
-  padding: 8px 10px;
+  font-size: 10px;
+  padding: 8px 8px;
 }
 
 .pdf-table tbody td {
-  padding: 7px 10px;
+  padding: 7px 8px;
   border-bottom: 1px solid #ebefec;
   vertical-align: top;
   color: #293a33;
   line-height: 1.25;
+  word-break: break-word;
 }
 
 .pdf-table.small thead th,
 .pdf-table.small tbody td {
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .pdf-total-row {
@@ -727,13 +800,13 @@
 }
 
 .pdf-total-row span {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #3a3528;
 }
 
 .pdf-total-row strong {
-  font-size: 18px;
+  font-size: 16px;
   color: #2f291d;
 }
 
@@ -753,21 +826,21 @@
 
 .pdf-benefit-card span {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   color: #5e7076;
   margin-bottom: 5px;
 }
 
 .pdf-benefit-card strong {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   color: #17382d;
   margin-bottom: 5px;
 }
 
 .pdf-benefit-card small {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: #677981;
   line-height: 1.3;
 }
@@ -781,7 +854,7 @@
 .pdf-metric-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   background: #fcfcf8;
   border: 1px solid #e7ebe7;
@@ -790,15 +863,23 @@
 }
 
 .pdf-metric-row span {
-  font-size: 13px;
+  font-size: 12px;
   color: #31453a;
   font-weight: 700;
 }
 
 .pdf-metric-row strong {
-  font-size: 14px;
+  font-size: 12px;
   color: #0f5a3f;
   text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.pdf-note {
+  margin: 8px 0 0;
+  font-size: 10px;
+  color: #61736f;
 }
 
 @media (max-width: 768px) {

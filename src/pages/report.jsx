@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import { fetchProjects } from "../store/projectThunk";
+import api from "../services/api";
 import "../components/report.css";
 
 const getLatestSimulation = (simulationHistory = []) => {
@@ -38,17 +39,26 @@ const formatPercent = (value) => {
 
 const getProjectDisplayName = (project) => project?.projectName?.trim() || "Untitled Project";
 
-const mapReportItem = (project) => {
-  const latestSimulation = getLatestSimulation(project?.simulationHistory);
-  const financialResults = latestSimulation?.financialResults || {};
+const mapSimulationHistoryToReports = (project) => {
+  const simulations = Array.isArray(project?.simulationHistory) ? project.simulationHistory : [];
 
-  return {
-    id: project?._id || project?.id,
+  return simulations.map((simulation, index) => ({
+    id: `${project?._id || project?.id}-${simulation?._id || index}`,
+    projectId: project?._id || project?.id,
     name: getProjectDisplayName(project),
-    date: latestSimulation?.calculatedAt || project?.updatedAt || project?.createdAt,
-    roi: financialResults?.roi,
-    status: financialResults?.feasibilityStatus || project?.status || "Unknown",
-  };
+    scenarioName: simulation?.scenarioName || "Current Scenario",
+    date: simulation?.calculatedAt || project?.updatedAt || project?.createdAt,
+    roi: Number(simulation?.financialResults?.roi || 0),
+    ieScore: simulation?.financialResults?.ieScore,
+    status:
+      simulation?.financialResults?.feasibilityStatus ||
+      (simulation?.financialResults?.isFeasible === true
+        ? "Feasible"
+        : simulation?.financialResults?.isFeasible === false
+          ? "Not Feasible"
+          : project?.status || "Unknown"),
+    pdfUrl: "",
+  }));
 };
 
 const Report = () => {
@@ -59,6 +69,9 @@ const Report = () => {
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("");
   const [sortType, setSortType] = useState("newest");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState("");
+  const [reports, setReports] = useState([]);
   const { projectList, loading, error } = useSelector((state) => state.project);
 
   useEffect(() => {
@@ -68,10 +81,67 @@ const Report = () => {
     return () => clearTimeout(timer);
   }, [dispatch]);
 
-  const reports = useMemo(() => {
-    return projectList
-      .filter((project) => Array.isArray(project?.simulationHistory) && project.simulationHistory.length > 0)
-      .map((project) => mapReportItem(project));
+  useEffect(() => {
+    if (!projectList.length) {
+      setReports([]);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadReports = async () => {
+      setReportLoading(true);
+      setReportError("");
+
+      try {
+        const reportResponses = await Promise.all(
+          projectList.map(async (project) => {
+            const projectId = project?._id || project?.id;
+            if (!projectId) return [];
+
+            try {
+              const response = await api.get(`/projects/${projectId}/reports`);
+              const reportItems = Array.isArray(response?.data) ? response.data : [];
+
+              if (reportItems.length === 0) {
+                return mapSimulationHistoryToReports(project);
+              }
+
+              return reportItems.map((reportItem, index) => ({
+                id: `${projectId}-${index}`,
+                projectId,
+                name: getProjectDisplayName(project),
+                scenarioName: reportItem?.scenarioName || "Current Scenario",
+                date: reportItem?.date || project?.updatedAt || project?.createdAt,
+                roi: Number.parseFloat(String(reportItem?.roi || "").replace(/[^\d.-]/g, "")),
+                ieScore: reportItem?.ieScore,
+                status: reportItem?.feasibilityStatus || project?.status || "Unknown",
+                pdfUrl: reportItem?.pdfUrl || "",
+              }));
+            } catch {
+              return mapSimulationHistoryToReports(project);
+            }
+          }),
+        );
+
+        if (!isMounted) return;
+
+        setReports(reportResponses.flat());
+      } catch (fetchError) {
+        if (!isMounted) return;
+        setReportError(fetchError?.message || "Failed to load reports.");
+      } finally {
+        if (isMounted) {
+          setReportLoading(false);
+        }
+      }
+    };
+
+    loadReports();
+
+    return () => {
+      isMounted = false;
+    };
   }, [projectList]);
 
   const statusOptions = useMemo(() => {
@@ -181,16 +251,18 @@ const Report = () => {
         <div className="report-card">
           <h2 className="card-subtitle">History</h2>
 
-          {loading && <p>Loading reports...</p>}
+          {(loading || reportLoading) && <p>Loading reports...</p>}
           {error && <p style={{ color: "#b42318" }}>{error}</p>}
+          {reportError && <p style={{ color: "#b42318" }}>{reportError}</p>}
 
-          {!loading && !error && (
+          {!loading && !reportLoading && !error && !reportError && (
             <div className="table-wrapper">
               <table className="custom-table">
                 <thead>
                   <tr>
                     <th className="text-left">Business Name</th>
                     <th>Date</th>
+                    <th>Scenario</th>
                     <th>ROI</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -199,13 +271,14 @@ const Report = () => {
                 <tbody>
                   {filteredReports.length === 0 ? (
                     <tr>
-                      <td colSpan="5">No calculated reports available yet.</td>
+                      <td colSpan="6">No calculated reports available yet.</td>
                     </tr>
                   ) : (
                     filteredReports.map((report) => (
                       <tr key={report.id} className="row-animate">
                         <td className="report-name-cell">{report.name}</td>
                         <td className="report-date-cell">{formatDate(report.date)}</td>
+                        <td>{report.scenarioName}</td>
                         <td>
                           <span className="roi-tag">{formatPercent(report.roi)}</span>
                         </td>
@@ -221,7 +294,7 @@ const Report = () => {
                         <td className="action-cell">
                           <button
                             className="btn-open"
-                            onClick={() => navigate(`/report-list/${report.id}`)}
+                            onClick={() => navigate(`/report-list/${report.projectId}`)}
                           >
                             Open
                           </button>

@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "../components/sidebar";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchProjectDraft, updateProjectDraft } from "../store/projectThunk";
+import { fetchProjectDraft, fetchProjects, updateProjectDraft } from "../store/projectThunk";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import api from "../services/api";
@@ -161,6 +161,37 @@ const formatShortNumber = (value) => {
   }).format(amount);
 };
 
+const normalizeBreakEvenRows = (rows = []) =>
+  Array.isArray(rows)
+    ? rows.map((row) => ({
+        year: row?.year,
+        netCashFlow: row?.netCashFlow ?? row?.net ?? 0,
+        cumulativeCashFlow:
+          row?.cumulativeCashFlow ??
+          ((Number(row?.cumulativeBenefit) || 0) - (Number(row?.cumulativeCost) || 0)) ??
+          0,
+      }))
+    : [];
+
+const stripMarkdown = (value) =>
+  String(value || "")
+    .replace(/```([\s\S]*?)```/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/_([^_]+)_/g, "$1")
+    .replace(/~~([^~]+)~~/g, "$1")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/^\s*---+\s*$/gm, "")
+    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+    .replace(/^\s*[-*+]\s+/gm, "• ")
+    .replace(/[*_#`~]/g, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+const cleanChatMessage = (value) => stripMarkdown(value).replace(/[ \t]+\n/g, "\n").trim();
+
 const CHATBOT_ENDPOINT = (projectId) => `/projects/${projectId}/chatbot`;
 
 export default function EditData() {
@@ -176,7 +207,6 @@ export default function EditData() {
   const [chatLoading, setChatLoading] = useState(false);
   const [chatSending, setChatSending] = useState(false);
   const [chatError, setChatError] = useState("");
-  const [chatLoaded, setChatLoaded] = useState(false);
   const { currentDraft, loading, error } = useSelector((state) => state.project);
   const latestSimulation = useMemo(
     () => currentDraft?.latestSimulation || getLatestSimulation(currentDraft?.simulationHistory),
@@ -200,64 +230,53 @@ export default function EditData() {
     setSections(buildSectionsFromDraft(currentDraft));
   }, [currentDraft]);
 
-  useEffect(() => {
-    if (!isChatOpen) return undefined;
+  const loadChatHistory = useCallback(async () => {
+    setChatLoading(true);
+    setChatError("");
 
-    let isMounted = true;
+    try {
+      const response = await api.get(CHATBOT_ENDPOINT(id));
+      const payload = response?.data || [];
 
-    const loadChatHistory = async () => {
-      setChatLoading(true);
-      setChatError("");
+      const normalizedMessages = Array.isArray(payload)
+        ? payload
+            .filter((item) => item?.role !== "system")
+            .map((item, index) => ({
+              id: `${item?.role || "message"}-${index}`,
+              role: item?.role || "assistant",
+              content: cleanChatMessage(item?.content || ""),
+            }))
+        : [];
 
-      try {
-        const response = await api.get(CHATBOT_ENDPOINT(id));
-        const payload = response?.data || [];
-
-        if (!isMounted) return;
-
-        const normalizedMessages = Array.isArray(payload)
-          ? payload
-              .filter((item) => item?.role !== "system")
-              .map((item, index) => ({
-                id: `${item?.role || "message"}-${index}`,
-                role: item?.role || "assistant",
-                content: item?.content || "",
-              }))
-          : [];
-
-        setChatMessages(
-          normalizedMessages.length > 0
-            ? normalizedMessages
-            : [
-                {
-                  id: "assistant-welcome",
-                  role: "assistant",
-                  content:
-                    "Halo, saya AI Helpy. Ada yang ingin ditanyakan tentang proyek ini?",
-                },
-              ],
-        );
-        setChatLoaded(true);
-      } catch (error) {
-        if (!isMounted) return;
-
-        setChatMessages([]);
-        setChatError(error?.data?.message || error?.message || "Chat history belum berhasil dimuat.");
-      } finally {
-        if (isMounted) {
-          setChatLoading(false);
-        }
-      }
-    };
-
-    if (!chatLoaded) {
-      loadChatHistory();
+      setChatMessages(
+        normalizedMessages.length > 0
+          ? normalizedMessages
+          : [
+              {
+                id: "assistant-welcome",
+                role: "assistant",
+                content:
+                  "Halo, saya AI Helpy. Ada yang ingin ditanyakan tentang proyek ini?",
+              },
+            ],
+      );
+    } catch (error) {
+      setChatMessages([]);
+      const backendError = error?.data?.message || error?.message || "";
+      setChatError(
+        /fetch failed/i.test(backendError)
+          ? "Koneksi ke AI Helpy belum tersedia."
+          : backendError || "Chat history belum berhasil dimuat.",
+      );
+    } finally {
+      setChatLoading(false);
     }
+  }, [id]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [chatLoaded, id, isChatOpen]);
+  useEffect(() => {
+    if (!isChatOpen) return;
+    loadChatHistory();
+  }, [isChatOpen, loadChatHistory]);
 
   const summary = useMemo(() => {
     const getSectionTotal = (title) =>
@@ -364,7 +383,7 @@ export default function EditData() {
   );
   const financialResults = latestSimulation?.financialResults || {};
   const simulationSettings = latestSimulation?.simulationSettings || {};
-  const breakEvenRows = financialResults?.breakEvenAnalysisDetail || [];
+  const breakEvenRows = normalizeBreakEvenRows(financialResults?.breakEvenAnalysisDetail);
   const exportFeasibility =
     financialResults?.feasibilityStatus ||
     (financialResults?.isFeasible === true
@@ -444,23 +463,39 @@ export default function EditData() {
       return;
     }
 
-    html2canvas(exportElement, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#f6f2e7",
-    }).then((canvas) => {
-      const imageData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4",
-      });
+    const pages = [...exportElement.querySelectorAll(".pdf-export-page")];
+    if (pages.length === 0) {
+      window.alert("Halaman PDF belum siap.");
+      return;
+    }
 
-      pdf.addImage(imageData, "PNG", 0, 0, 297, 210);
-      pdf.save(`project-${id}-executive-summary.pdf`);
-    }).catch(() => {
-      window.alert("Gagal membuat PDF.");
-    });
+    (async () => {
+      try {
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
+
+        for (let index = 0; index < pages.length; index += 1) {
+          const canvas = await html2canvas(pages[index], {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#f6f2e7",
+          });
+
+          const imageData = canvas.toDataURL("image/png");
+          if (index > 0) {
+            pdf.addPage("a4", "portrait");
+          }
+          pdf.addImage(imageData, "PNG", 0, 0, 210, 297);
+        }
+
+        pdf.save(`project-${id}-executive-summary.pdf`);
+      } catch {
+        window.alert("Gagal membuat PDF.");
+      }
+    })();
   };
 
   const handleSaveProject = async () => {
@@ -484,6 +519,7 @@ export default function EditData() {
       return;
     }
 
+    await dispatch(fetchProjects());
     setShowResultCard(false);
     navigate("/report-list");
   };
@@ -518,10 +554,10 @@ export default function EditData() {
         {
           id: `assistant-${Date.now()}`,
           role: "assistant",
-          content: replyText,
+          content: cleanChatMessage(replyText),
         },
       ]);
-      setChatLoaded(true);
+      await loadChatHistory();
     } catch (error) {
       setChatMessages((prev) => [
         ...prev,
@@ -531,7 +567,12 @@ export default function EditData() {
           content: "Maaf, AI Helpy belum bisa merespons sekarang.",
         },
       ]);
-      setChatError(error?.data?.message || error?.message || "Pesan belum berhasil dikirim ke backend.");
+      const backendError = error?.data?.message || error?.message || "";
+      setChatError(
+        /fetch failed/i.test(backendError)
+          ? "Koneksi ke AI Helpy belum tersedia."
+          : backendError || "Pesan belum berhasil dikirim ke backend.",
+      );
     } finally {
       setChatSending(false);
     }
@@ -662,16 +703,21 @@ export default function EditData() {
         )}
       </main>
 
-      <div className={`ai-chat ${isChatOpen ? "open" : ""}`}>
+    <div className={`ai-chat ${isChatOpen ? "open" : ""}`}>
         <div className="chat-header">
           <div className="chat-title">
             AI <span>Helpy</span>
           </div>
-
-          <button onClick={() => setIsChatOpen(false)}>x</button>
+          <div className="chat-header-actions">
+            <button type="button" className="chat-refresh-btn" onClick={loadChatHistory} disabled={chatLoading}>
+              {chatLoading ? "..." : "Refresh"}
+            </button>
+            <button onClick={() => setIsChatOpen(false)}>x</button>
+          </div>
         </div>
 
         <div className="chat-body">
+          <div className="chat-history-title">Riwayat Chat</div>
           {chatLoading ? <p className="chat-state">Loading chat history...</p> : null}
           {!chatLoading && chatMessages.length === 0 ? (
             <p className="chat-state">Belum ada chat history. Coba mulai pertanyaan baru.</p>
@@ -679,7 +725,7 @@ export default function EditData() {
           {chatMessages.map((message) => (
             <div key={message.id} className={`chat-message ${message.role}`}>
               <span className="chat-role">{message.role === "user" ? "You" : "AI Helpy"}</span>
-              <p>{message.content}</p>
+              <p>{cleanChatMessage(message.content)}</p>
             </div>
           ))}
           {chatError ? <p className="chat-error">{chatError}</p> : null}
@@ -700,9 +746,9 @@ export default function EditData() {
       </div>
 
       <div className="pdf-export-stage" aria-hidden="true">
-        <div className="pdf-export-page" ref={pdfExportRef}>
-          <div className="pdf-export-columns">
-            <section className="pdf-export-column">
+        <div className="pdf-export-pages" ref={pdfExportRef}>
+          <div className="pdf-export-page portrait">
+            <section className="pdf-export-column full">
               <div className="pdf-export-hero">
                 <img src={invesTechyLogo} alt="InvesTechy" className="pdf-export-logo" />
                 <h1>{String(exportProjectName).toUpperCase()}</h1>
@@ -720,51 +766,58 @@ export default function EditData() {
                 </div>
               </div>
 
-              <div className="pdf-card">
-                <h3>McFarlan Matrix</h3>
-                <div className="pdf-matrix-box">
-                  <div className="pdf-matrix-grid">
-                    <span>Factory</span>
-                    <span>Strategic</span>
-                    <span>Support</span>
-                    <span>Turnaround</span>
-                    <div
-                      className="pdf-matrix-point"
-                      style={{
-                        left: `${Math.min((Number(exportCoordinates?.x) || 0) * 20, 100)}%`,
-                        top: `${100 - Math.min((Number(exportCoordinates?.y) || 0) * 20, 100)}%`,
-                      }}
-                    />
-                  </div>
-                  <div className="pdf-matrix-footer">
-                    <strong>{exportQuadrant}</strong>
-                    <span>
-                      Coordinate: ({formatShortNumber(exportCoordinates?.x || 0)}, {formatShortNumber(exportCoordinates?.y || 0)})
-                    </span>
+              <div className="pdf-page-grid pdf-page-grid-two">
+                <div className="pdf-card">
+                  <h3>McFarlan Matrix</h3>
+                  <div className="pdf-matrix-box">
+                    <div className="pdf-matrix-grid">
+                      <span>Factory</span>
+                      <span>Strategic</span>
+                      <span>Support</span>
+                      <span>Turnaround</span>
+                      <div
+                        className="pdf-matrix-point"
+                        style={{
+                          left: `${Math.min((Number(exportCoordinates?.x) || 0) * 20, 100)}%`,
+                          top: `${100 - Math.min((Number(exportCoordinates?.y) || 0) * 20, 100)}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="pdf-matrix-footer">
+                      <strong>{exportQuadrant}</strong>
+                      <span>
+                        Coordinate: ({formatShortNumber(exportCoordinates?.x || 0)}, {formatShortNumber(exportCoordinates?.y || 0)})
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="pdf-card pdf-scores-card">
-                <h3>Business Domain Scores</h3>
-                <div className="pdf-score-list">
-                  {Object.entries(businessScores).slice(0, 4).map(([label, value]) => (
-                    <div key={label} className="pdf-score-row">
-                      <span>{label}</span>
-                      <div className="pdf-score-bar"><i style={{ width: `${((Number(value) || 0) / 5) * 100}%` }} /></div>
-                      <strong>{formatShortNumber(value)}</strong>
+                <div className="pdf-stack">
+                  <div className="pdf-card pdf-scores-card">
+                    <h3>Business Domain Scores</h3>
+                    <div className="pdf-score-list">
+                      {Object.entries(businessScores).slice(0, 5).map(([label, value]) => (
+                        <div key={label} className="pdf-score-row">
+                          <span>{label}</span>
+                          <div className="pdf-score-bar"><i style={{ width: `${((Number(value) || 0) / 5) * 100}%` }} /></div>
+                          <strong>{formatShortNumber(value)}</strong>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <h3 className="pdf-subheading">Technology Domain Scores</h3>
-                <div className="pdf-score-list">
-                  {Object.entries(technologyScores).slice(0, 4).map(([label, value]) => (
-                    <div key={label} className="pdf-score-row">
-                      <span>{label}</span>
-                      <div className="pdf-score-bar"><i style={{ width: `${((Number(value) || 0) / 5) * 100}%` }} /></div>
-                      <strong>{formatShortNumber(value)}</strong>
+                  </div>
+
+                  <div className="pdf-card pdf-scores-card">
+                    <h3>Technology Domain Scores</h3>
+                    <div className="pdf-score-list">
+                      {Object.entries(technologyScores).slice(0, 4).map(([label, value]) => (
+                        <div key={label} className="pdf-score-row">
+                          <span>{label}</span>
+                          <div className="pdf-score-bar"><i style={{ width: `${((Number(value) || 0) / 5) * 100}%` }} /></div>
+                          <strong>{formatShortNumber(value)}</strong>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
 
@@ -773,8 +826,10 @@ export default function EditData() {
                 <p>{exportInsight}</p>
               </div>
             </section>
+          </div>
 
-            <section className="pdf-export-column">
+          <div className="pdf-export-page portrait">
+            <section className="pdf-export-column full">
               <div className="pdf-section-head">
                 <img src={invesTechyLogo} alt="InvesTechy" className="pdf-export-logo small" />
                 <div>
@@ -783,55 +838,59 @@ export default function EditData() {
                 </div>
               </div>
 
-              <div className="pdf-card">
-                <h3>CAPEX (Capital Expenditure)</h3>
-                <table className="pdf-table">
-                  <thead>
-                    <tr>
-                      <th>Item</th>
-                      <th>Nominal</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {capexRows.slice(0, 4).map((row) => (
-                      <tr key={row.id}>
-                        <td>{row.item || "-"}</td>
-                        <td>{formatCurrencyText(row.nominal)}</td>
-                        <td>{row.description || "-"}</td>
+              <div className="pdf-page-grid pdf-page-grid-breakdown">
+                <div className="pdf-card">
+                  <h3>CAPEX (Capital Expenditure)</h3>
+                  <table className="pdf-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Nominal</th>
+                        <th>Description</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="pdf-total-row">
-                  <span>Total CAPEX</span>
-                  <strong>{formatCurrencyText(summary.capex)}</strong>
+                    </thead>
+                    <tbody>
+                      {capexRows.slice(0, 5).map((row) => (
+                        <tr key={row.id}>
+                          <td>{row.item || "-"}</td>
+                          <td>{formatCurrencyText(row.nominal)}</td>
+                          <td>{row.description || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {capexRows.length > 6 ? <p className="pdf-note">+ {capexRows.length - 6} item lain tetap dihitung di total.</p> : null}
+                  <div className="pdf-total-row">
+                    <span>Total CAPEX</span>
+                    <strong>{formatCurrencyText(summary.capex)}</strong>
+                  </div>
                 </div>
-              </div>
 
-              <div className="pdf-card">
-                <h3>OPEX (Operational Expenditure)</h3>
-                <table className="pdf-table">
-                  <thead>
-                    <tr>
-                      <th>Item</th>
-                      <th>Nominal</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {opexRows.slice(0, 4).map((row) => (
-                      <tr key={row.id}>
-                        <td>{row.item || "-"}</td>
-                        <td>{formatCurrencyText(row.nominal)}</td>
-                        <td>{row.description || "-"}</td>
+                <div className="pdf-card">
+                  <h3>OPEX (Operational Expenditure)</h3>
+                  <table className="pdf-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Nominal</th>
+                        <th>Description</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="pdf-total-row">
-                  <span>Total OPEX</span>
-                  <strong>{formatCurrencyText(summary.opex)}</strong>
+                    </thead>
+                    <tbody>
+                      {opexRows.slice(0, 5).map((row) => (
+                        <tr key={row.id}>
+                          <td>{row.item || "-"}</td>
+                          <td>{formatCurrencyText(row.nominal)}</td>
+                          <td>{row.description || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {opexRows.length > 6 ? <p className="pdf-note">+ {opexRows.length - 6} item lain tetap dihitung di total.</p> : null}
+                  <div className="pdf-total-row">
+                    <span>Total OPEX</span>
+                    <strong>{formatCurrencyText(summary.opex)}</strong>
+                  </div>
                 </div>
               </div>
 
@@ -855,8 +914,10 @@ export default function EditData() {
                 </div>
               </div>
             </section>
+          </div>
 
-            <section className="pdf-export-column">
+          <div className="pdf-export-page portrait">
+            <section className="pdf-export-column full">
               <div className="pdf-section-head">
                 <img src={invesTechyLogo} alt="InvesTechy" className="pdf-export-logo small" />
                 <div>
@@ -865,61 +926,63 @@ export default function EditData() {
                 </div>
               </div>
 
-              <div className="pdf-card">
-                <h3>Financial Results</h3>
-                <div className="pdf-metric-list">
-                  <div className="pdf-metric-row"><span>NPV</span><strong>{formatCurrencyText(financialResults?.npv || summary.total)}</strong></div>
-                  <div className="pdf-metric-row"><span>ROI</span><strong>{formatShortNumber(financialResults?.roi || 0)}%</strong></div>
-                  <div className="pdf-metric-row"><span>Payback Period</span><strong>{formatShortNumber(financialResults?.paybackPeriod || 0)} Years</strong></div>
-                  <div className="pdf-metric-row"><span>Break Even</span><strong>Year {formatShortNumber(financialResults?.breakEvenYear || 0)}</strong></div>
-                  <div className="pdf-metric-row"><span>IE Score</span><strong>{formatShortNumber(financialResults?.ieScore || 0)}</strong></div>
-                  <div className="pdf-metric-row"><span>Feasibility</span><strong>{exportFeasibility}</strong></div>
+              <div className="pdf-page-grid pdf-page-grid-two">
+                <div className="pdf-stack">
+                  <div className="pdf-card">
+                    <h3>Financial Results</h3>
+                    <div className="pdf-metric-list">
+                      <div className="pdf-metric-row"><span>NPV</span><strong>{formatCurrencyText(financialResults?.npv || summary.total)}</strong></div>
+                      <div className="pdf-metric-row"><span>ROI</span><strong>{formatShortNumber(financialResults?.roi || 0)}%</strong></div>
+                      <div className="pdf-metric-row"><span>Payback Period</span><strong>{formatShortNumber(financialResults?.paybackPeriod || 0)} Years</strong></div>
+                      <div className="pdf-metric-row"><span>Break Even</span><strong>Year {formatShortNumber(financialResults?.breakEvenYear || 0)}</strong></div>
+                      <div className="pdf-metric-row"><span>IE Score</span><strong>{formatShortNumber(financialResults?.ieScore || 0)}</strong></div>
+                      <div className="pdf-metric-row"><span>Feasibility</span><strong>{exportFeasibility}</strong></div>
+                    </div>
+                  </div>
+
+                  <div className="pdf-card">
+                    <h3>Simulation Settings</h3>
+                    <div className="pdf-kv-list compact">
+                      <div><span>Inflation Rate</span><strong>{formatShortNumber((simulationSettings?.inflationRate || 0) * 100)}%</strong></div>
+                      <div><span>Tax Rate</span><strong>{formatShortNumber((simulationSettings?.taxRate || 0) * 100)}%</strong></div>
+                      <div><span>Discount Rate</span><strong>{formatShortNumber((simulationSettings?.discountRate || 0) * 100)}%</strong></div>
+                      <div><span>Projection Years</span><strong>{formatShortNumber(simulationSettings?.years || 3)}</strong></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="pdf-card">
-                <h3>Simulation Settings</h3>
-                <div className="pdf-kv-list compact">
-                  <div><span>Inflation Rate</span><strong>{formatShortNumber((simulationSettings?.inflationRate || 0) * 100)}%</strong></div>
-                  <div><span>Tax Rate</span><strong>{formatShortNumber((simulationSettings?.taxRate || 0) * 100)}%</strong></div>
-                  <div><span>Discount Rate</span><strong>{formatShortNumber((simulationSettings?.discountRate || 0) * 100)}%</strong></div>
-                  <div><span>Projection Years</span><strong>{formatShortNumber(simulationSettings?.years || 3)}</strong></div>
+                <div className="pdf-stack">
+                  <div className="pdf-card">
+                    <h3>Break-Even Table</h3>
+                    <table className="pdf-table small">
+                      <thead>
+                        <tr>
+                          <th>Year</th>
+                          <th>Net Cash Flow</th>
+                          <th>Cumulative Cash Flow</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {breakEvenRows.slice(0, 5).map((row, index) => (
+                          <tr key={`${row?.year || index}`}>
+                            <td>Year {row?.year || index + 1}</td>
+                            <td>{formatCurrencyText(row?.netCashFlow)}</td>
+                            <td>{formatCurrencyText(row?.cumulativeCashFlow)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="pdf-card pdf-conclusion-card">
+                    <h3>Conclusion</h3>
+                    <p>
+                      {String(exportFeasibility).toLowerCase().includes("need")
+                        ? "Project masih perlu penyesuaian tambahan sebelum implementasi penuh."
+                        : `Project menunjukkan hasil yang baik dengan ROI ${formatShortNumber(financialResults?.roi || 0)}% dan payback period ${formatShortNumber(financialResults?.paybackPeriod || 0)} tahun.`}
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="pdf-card">
-                <h3>Break-Even Table</h3>
-                <table className="pdf-table small">
-                  <thead>
-                    <tr>
-                      <th>Year</th>
-                      <th>Net Cash Flow</th>
-                      <th>Cumulative Cash Flow</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {breakEvenRows.slice(0, 3).map((row, index) => (
-                      <tr key={`${row?.year || index}`}>
-                        <td>Year {row?.year || index + 1}</td>
-                        <td>{formatCurrencyText(row?.net)}</td>
-                        <td>
-                          {formatCurrencyText(
-                            (Number(row?.cumulativeBenefit) || 0) - (Number(row?.cumulativeCost) || 0),
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="pdf-card pdf-conclusion-card">
-                <h3>Conclusion</h3>
-                <p>
-                  {String(exportFeasibility).toLowerCase().includes("need")
-                    ? "Project masih perlu penyesuaian tambahan sebelum implementasi penuh."
-                    : `Project menunjukkan hasil yang baik dengan ROI ${formatShortNumber(financialResults?.roi || 0)}% dan payback period ${formatShortNumber(financialResults?.paybackPeriod || 0)} tahun.`}
-                </p>
               </div>
             </section>
           </div>

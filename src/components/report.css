@@ -8,7 +8,7 @@
 }
 
 .report-content {
-  margin-left: 260px;
+  margin-left: 300px;
   padding: 40px 50px;
   flex-grow: 1;
   opacity: 0; /* Awalnya tidak terlihat untuk animasi */

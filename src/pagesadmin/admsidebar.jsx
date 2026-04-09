@@ -76,7 +76,11 @@ const SidebarAdmin = ({ activeMenu }) => {
       <aside className={`admin-sidebar ${isOpen ? "is-open" : ""}`}>
         <div className="sidebar-logo">
           <img src={logo} alt="InvesTechy Admin" />
+        <div className="sidebar-brand-copy">
+          <strong>InvesTechy</strong>
+          <span>Smarter IT Investment Decision</span>
         </div>
+      </div>
 
         <nav className="sidebar-nav">
           {menus.map((menu) => {
