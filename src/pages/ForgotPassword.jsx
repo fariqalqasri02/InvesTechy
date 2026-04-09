@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../components/auth.css';
 import logoImg from '../assets/InvesTechy.jpg';
@@ -9,9 +9,24 @@ import api, {
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    document.body.classList.remove('auth-page-exit');
+    const timer = window.setTimeout(() => setIsLoaded(true), 100);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const navigateWithAuthTransition = (path) => {
+    document.body.classList.add('auth-page-exit');
+    window.setTimeout(() => {
+      navigate(path);
+    }, 260);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +54,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="auth-body">
-      <div className="auth-container">
+      <div className={`auth-container ${isLoaded ? 'auth-page-enter' : ''}`}>
         {/* --- BANNER KIRI --- */}
         <div className="auth-banner">
           <div className="banner-content">
@@ -66,6 +81,17 @@ const ForgotPassword = () => {
             <p className="form-subtext" style={{ marginTop: '20px' }}>
               Enter your email for the verification process, we will send <br/>
               a 4-digit OTP to your email.
+            </p>
+
+            <p className="form-subtext" style={{ marginTop: '-20px', marginBottom: '24px' }}>
+              Remembered your password?{' '}
+              <button
+                type="button"
+                className="auth-text-link"
+                onClick={() => navigateWithAuthTransition('/login')}
+              >
+                Back to Login
+              </button>
             </p>
 
             <form onSubmit={handleSubmit}>

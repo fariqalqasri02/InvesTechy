@@ -13,12 +13,20 @@ const OTP_LENGTH = 4;
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [email, setEmail] = useState(
     location.state?.email || getResetPasswordEmail() || '',
   );
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    document.body.classList.remove('auth-page-exit');
+    const timer = window.setTimeout(() => setIsLoaded(true), 100);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!email) {
@@ -58,7 +66,7 @@ const VerifyOtp = () => {
 
   return (
     <div className="auth-body">
-      <div className="auth-container">
+      <div className={`auth-container ${isLoaded ? 'auth-page-enter' : ''}`}>
         <div className="auth-banner">
           <div className="banner-content">
             <div className="banner-logo-container">

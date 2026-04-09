@@ -13,6 +13,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const popup = usePopup();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [email, setEmail] = useState(getResetPasswordEmail() || location.state?.email || '');
@@ -23,6 +24,13 @@ const ResetPassword = () => {
 
   const eyeOpen = "https://img.icons8.com/?size=100&id=4y6r43dyjbzw&format=png&color=000000";
   const eyeClosed = "https://img.icons8.com/?size=100&id=FThUtBIXcPnM&format=png&color=000000";
+
+  useEffect(() => {
+    document.body.classList.remove('auth-page-exit');
+    const timer = window.setTimeout(() => setIsLoaded(true), 100);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!otpVerified) {
@@ -64,7 +72,7 @@ const ResetPassword = () => {
 
   return (
     <div className="auth-body">
-      <div className="auth-container">
+      <div className={`auth-container ${isLoaded ? 'auth-page-enter' : ''}`}>
         {/* --- BANNER KIRI --- */}
         <div className="auth-banner">
           <div className="banner-content">
