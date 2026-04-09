@@ -24,6 +24,39 @@ export default function Consult() {
     }, 300);
   };
 
+  const getConsultantPhoto = (consultant) =>
+    consultant?.photo ||
+    consultant?.photoUrl ||
+    consultant?.image ||
+    consultant?.foto ||
+    null;
+  const getConsultantPrice = (consultant) => {
+    const rawPrice =
+      consultant?.harga ??
+      consultant?.fee ??
+      consultant?.price ??
+      consultant?.harga_per_sesi ??
+      consultant?.sessionFee ??
+      consultant?.perSessionFee;
+
+    if (typeof rawPrice === "number") {
+      return rawPrice;
+    }
+
+    if (typeof rawPrice === "string") {
+      const parsedPrice = Number.parseInt(rawPrice.replace(/[^\d]/g, ""), 10);
+      return Number.isNaN(parsedPrice) ? null : parsedPrice;
+    }
+
+    return null;
+  };
+  const formatConsultantPrice = (consultant) => {
+    const price = getConsultantPrice(consultant);
+    return price === null
+      ? "Fee not set"
+      : `IDR. ${price.toLocaleString("id-ID")} / Session`;
+  };
+
   return (
     <div className="dashboard-layout">
       <Sidebar activeMenu="Consult" />
@@ -69,7 +102,11 @@ export default function Consult() {
           <div className="consult-grid">
             {items.map((item) => (
               <div className="consult-card" key={item.id}>
-                <div className="card-image" />
+                <div className="card-image">
+                  {getConsultantPhoto(item) && (
+                    <img src={getConsultantPhoto(item)} alt={item.nama} className="img-preview-fill" />
+                  )}
+                </div>
 
                 <div className="card-content">
                   <div className="card-header">
@@ -78,7 +115,9 @@ export default function Consult() {
                   </div>
 
                   <p className="role">{item.spesialisasi?.join(", ")}</p>
-                  <p className="price">{item.email?.replace("mailto:", "")}</p>
+                  <p className="price">
+                    {formatConsultantPrice(item)}
+                  </p>
 
                   <button
                     className="btn-consult"

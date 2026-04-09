@@ -6,7 +6,7 @@
 }
 
 .form-title {
-  color: #053B29;
+  color: var(--text-strong);
   font-size: 28px;
   font-weight: 700;
   margin: 0;
@@ -28,14 +28,14 @@
 }
 
 .btn-rect.cancel {
-  background: white;
-  color: #666;
-  border: 1px solid #ddd;
+  background: var(--surface);
+  color: var(--text-soft);
+  border: 1px solid var(--border-color);
 }
 
 .btn-rect.save {
-  background: #053B29;
-  color: white;
+  background: var(--accent-strong);
+  color: var(--surface);
   border: none;
 }
 
@@ -50,8 +50,8 @@
 .photo-display-area {
   width: 100%;
   height: 220px;
-  background: #f9f9f9;
-  border: 1px solid #eee;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
@@ -70,7 +70,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #bbb;
+  color: var(--text-soft);
   gap: 8px;
 }
 
@@ -93,8 +93,8 @@
   cursor: pointer;
 }
 
-.edit-photo { background: white; color: #053B29; border: 1.5px solid #053B29; }
-.delete-photo { background: white; color: #C80000; border: 1.5px solid #C80000; }
+.edit-photo { background: var(--surface); color: var(--accent-strong); border: 1.5px solid var(--accent-strong); }
+.delete-photo { background: var(--surface); color: var(--danger-strong); border: 1.5px solid var(--danger-strong); }
 
 /* Grid Inputs */
 .inputs-grid-layout {
@@ -105,13 +105,73 @@
 }
 
 .input-group { display: flex; flex-direction: column; gap: 8px; }
-.input-label { font-size: 14px; color: #555; font-weight: 600; }
+.input-label { font-size: 14px; color: var(--text-soft); font-weight: 600; }
 .input-group input, .input-group select {
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #fafafa;
+  background: var(--surface-soft);
+  color: var(--text-main);
   outline: none;
+}
+
+.position-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.position-input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.position-input-row input {
+  flex: 1;
+}
+
+.position-add-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-strong);
+  color: var(--surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.position-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.position-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.position-chip-remove {
+  border: none;
+  background: transparent;
+  color: var(--accent-text);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+.position-empty {
+  color: var(--text-soft);
+  font-size: 13px;
 }
 
 .form-actions-bottom {
@@ -141,5 +201,37 @@
 
   .inputs-grid-layout {
     grid-template-columns: 1fr;
+  }
+
+  .position-input-row {
+    flex-direction: column;
+  }
+
+  .photo-display-area {
+    height: 180px;
+  }
+
+  .photo-action-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-title {
+    font-size: 24px;
+  }
+
+  .btn-rect {
+    width: 100%;
+  }
+
+  .form-actions-bottom {
+    flex-direction: column-reverse;
+  }
+
+  .input-group input,
+  .input-group select,
+  .position-add-btn {
+    min-height: 46px;
   }
 }

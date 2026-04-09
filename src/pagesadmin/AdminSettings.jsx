@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import SidebarAdmin from "./admsidebar";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { useAdminPageTransition } from "./useAdminPageTransition";
+import "./adminTransitions.css";
 import "./AdminSettings.css";
 
 const AdminSettings = () => {
   const { settings, updateSettings, t } = useAppSettings();
+  const { transitionClassName } = useAdminPageTransition();
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("id");
   const [isNotifEnabled, setIsNotifEnabled] = useState(true);
@@ -29,7 +32,7 @@ const AdminSettings = () => {
     <div className="admin-container">
       <SidebarAdmin activeMenu="Settings" />
 
-      <main className="admin-content">
+      <main className={`admin-content ${transitionClassName}`}>
         <div className="settings-card">
           <h1 className="settings-title">{t("systemPreferences")}</h1>
 

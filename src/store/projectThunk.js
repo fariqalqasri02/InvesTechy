@@ -9,14 +9,29 @@ import {
   saveProjectOverride,
 } from "../services/projectNormalizer";
 
+const extractResponseData = (response) => {
+  if (response?.data?.data) {
+    return response.data.data;
+  }
+
+  if (response?.data) {
+    return response.data;
+  }
+
+  return response;
+};
+
+const getErrorMessage = (error) => error?.data?.message || error?.message || "Request failed.";
+
 export const fetchProjects = createAsyncThunk(
   "project/fetchProjects",
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/projects");
-      return normalizeProjectList(response.data ?? []);
+      const projects = extractResponseData(response) ?? [];
+      return normalizeProjectList(projects);
     } catch (error) {
-      return rejectWithValue(error.data?.message || error.message);
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -35,7 +50,7 @@ export const createProject = createAsyncThunk(
       }
 
       const response = await api.post("/projects", payload);
-      const project = normalizeProject(response.data);
+      const project = normalizeProject(extractResponseData(response));
       const projectId = getProjectId(project);
 
       if (projectId && payload?.projectName?.trim()) {
@@ -51,7 +66,7 @@ export const createProject = createAsyncThunk(
         projectName: payload?.projectName?.trim() || project?.projectName,
       });
     } catch (error) {
-      return rejectWithValue(error.data?.message || error.message);
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -61,9 +76,9 @@ export const fetchProjectDraft = createAsyncThunk(
   async (projectId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/projects/${projectId}`);
-      return normalizeProject(response.data);
+      return normalizeProject(extractResponseData(response));
     } catch (error) {
-      return rejectWithValue(error.data?.message || error.message);
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -73,9 +88,21 @@ export const fetchProjectById = createAsyncThunk(
   async (projectId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/projects/${projectId}`);
-      return normalizeProject(response.data);
+      return normalizeProject(extractResponseData(response));
     } catch (error) {
-      return rejectWithValue(error.data?.message || error.message);
+      return rejectWithValue(getErrorMessage(error));
+    }
+  },
+);
+
+export const fetchAdminDashboard = createAsyncThunk(
+  "project/fetchAdminDashboard",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/admin/dashboard");
+      return extractResponseData(response);
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -85,9 +112,9 @@ export const updateProjectDraft = createAsyncThunk(
   async ({ projectId, payload }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/projects/${projectId}`, payload);
-      return normalizeProject(response.data);
+      return normalizeProject(extractResponseData(response));
     } catch (error) {
-      return rejectWithValue(error.data?.message || error.message);
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );
@@ -99,7 +126,7 @@ export const deleteProject = createAsyncThunk(
       await api.delete(`/projects/${projectId}`);
       return projectId;
     } catch (error) {
-      return rejectWithValue(error.data?.message || error.message);
+      return rejectWithValue(getErrorMessage(error));
     }
   },
 );

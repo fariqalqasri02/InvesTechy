@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   createProject,
+  fetchAdminDashboard,
   deleteProject,
   fetchProjectById,
   fetchProjectDraft,
@@ -10,6 +11,7 @@ import {
 
 const initialState = {
   projectList: [],
+  adminDashboard: null,
   currentProject: null,
   currentDraft: null,
   selectedProject: null,
@@ -46,6 +48,18 @@ const projectSlice = createSlice({
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to load projects.";
+      })
+      .addCase(fetchAdminDashboard.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAdminDashboard.fulfilled, (state, action) => {
+        state.loading = false;
+        state.adminDashboard = action.payload?.data ?? action.payload;
+      })
+      .addCase(fetchAdminDashboard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to load admin dashboard.";
       })
       .addCase(createProject.pending, (state) => {
         state.loading = true;

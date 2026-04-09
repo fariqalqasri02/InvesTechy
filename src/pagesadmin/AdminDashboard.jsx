@@ -1,91 +1,148 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import SidebarAdmin from "./admsidebar";
 import SummaryCard from "../components/SummaryCard";
 import ChartSection from "../components/CharSection";
-import { useAppSettings } from "../context/AppSettingsContext";
+import { fetchAdminDashboard } from "../store/projectThunk";
+import { useAdminPageTransition } from "./useAdminPageTransition";
+import "./adminTransitions.css";
 import "./AdminDashboard.css";
 
+const formatShortDate = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+  }).format(date);
+};
+
+const formatWeekRangeLabel = (startValue, endValue) => {
+  const startDate = new Date(startValue);
+  const endDate = new Date(endValue);
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return "Week";
+  }
+
+  return `${new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+  }).format(startDate).replace(",", "")}-${new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+  }).format(endDate)}`;
+};
+
+const normalizeChartData = (items = [], getLabel) =>
+  (items || []).map((item) => ({
+    label: getLabel(item),
+    rawValue: item.total || 0,
+  }));
+
 export default function AdminDashboard() {
-  const [filter, setFilter] = useState("WEEKLY");
-  const { t } = useAppSettings();
+  const dispatch = useDispatch();
+  const [filter, setFilter] = useState("LAST_7_DAYS");
+  const { adminDashboard, loading, error } = useSelector((state) => state.project);
+  const dashboardData = adminDashboard?.data ?? adminDashboard ?? null;
+  const { transitionClassName } = useAdminPageTransition();
 
-  const dataWeekly = [
-    { label: "MON", value: 30 },
-    { label: "TUE", value: 45 },
-    { label: "WED", value: 60 },
-    { label: "THU", value: 40 },
-    { label: "FRI", value: 70 },
-    { label: "SAT", value: 90 },
-    { label: "SUN", value: 55 },
-  ];
+  useEffect(() => {
+    dispatch(fetchAdminDashboard());
+  }, [dispatch]);
 
-  const dataMonthly = [
-    { label: "JAN", value: 40 },
-    { label: "FEB", value: 65 },
-    { label: "MAR", value: 82 },
-    { label: "APR", value: 95 },
-    { label: "MAY", value: 105 },
-  ];
+  const dailyChartData = useMemo(
+    () => normalizeChartData(dashboardData?.dailyLast7Days, (item) => formatShortDate(item.date)),
+    [dashboardData],
+  );
+
+  const weeklyChartData = useMemo(
+    () => normalizeChartData(
+      dashboardData?.weeklyLast4Weeks,
+      (item) => formatWeekRangeLabel(item.weekStart, item.weekEnd),
+    ),
+    [dashboardData],
+  );
+
+  const projectSummary = useMemo(() => ({
+    today: dashboardData?.projectsToday ?? 0,
+    last7Days: (dashboardData?.dailyLast7Days || []).reduce(
+      (total, item) => total + (item.total || 0),
+      0,
+    ),
+    last4Weeks: (dashboardData?.weeklyLast4Weeks || []).reduce(
+      (total, item) => total + (item.total || 0),
+      0,
+    ),
+    lastYear: dashboardData?.yearlyTotal ?? 0,
+  }), [dashboardData]);
+
+  const chartData = filter === "LAST_7_DAYS" ? dailyChartData : weeklyChartData;
+  const chartTitle = filter === "LAST_7_DAYS" ? "PROJECTS IN THE LAST 7 DAYS" : "PROJECTS IN THE LAST 4 WEEKS";
 
   return (
     <div className="admin-layout">
       <SidebarAdmin activeMenu="Dashboard" />
-      <main className="admin-content">
+      <main className={`admin-content ${transitionClassName}`}>
         <header className="top-bar">
-          <div className="welcome">
-            <h1>Hello, Mike!</h1>
-            <p>{t("dashboardWelcome")}</p>
-          </div>
-          <div className="top-bar-right">
-            <div className="search-wrapper">
-              <input type="text" placeholder={t("dashboardSearch")} />
-              <span className="search-icon">Search</span>
-            </div>
+          <div className="welcome dashboard-intro">
+            <h1>Project Activity Overview</h1>
+            <p>Track how many projects were created across key time ranges.</p>
           </div>
         </header>
 
+        {loading && <p className="dashboard-feedback">Loading project summary...</p>}
+        {error && <p className="dashboard-feedback error">{error}</p>}
+        {!loading && !error && !dashboardData && (
+          <p className="dashboard-feedback error">
+            Admin dashboard data is empty.
+          </p>
+        )}
+
         <div className="summary-grid">
           <SummaryCard
-            title="TOTAL USERS"
-            value="1000"
-            icon="https://img.icons8.com/?size=100&id=1Wf241bLN9LO&format=png&color=00381e"
+            title="PROJECTS TODAY"
+            value={projectSummary.today}
+            icon="https://img.icons8.com/?size=100&id=nGCq83WiIaj1&format=png&color=00381e"
           />
           <SummaryCard
-            title="TOTAL PROJECTS"
-            value="1500"
-            icon="https://img.icons8.com/?size=100&id=xhmDNaoYW1Mf&format=png&color=00381e"
+            title="LAST 7 DAYS"
+            value={projectSummary.last7Days}
+            icon="https://img.icons8.com/?size=100&id=FEvoAE6bQo0Q&format=png&color=00381e"
           />
           <SummaryCard
-            title="ACTIVITY"
-            value="550"
-            icon="https://img.icons8.com/?size=100&id=IOdrUofMto8h&format=png&color=00381e"
+            title="LAST 4 WEEKS"
+            value={projectSummary.last4Weeks}
+            icon="https://img.icons8.com/?size=100&id=70110&format=png&color=00381e"
           />
           <SummaryCard
-            title="CONSULTANTS"
-            value="5"
-            icon="https://img.icons8.com/?size=100&id=fT3liaAJWLmA&format=png&color=00381e"
+            title="LAST 1 YEAR"
+            value={projectSummary.lastYear}
+            icon="https://img.icons8.com/?size=100&id=9emOgiekluvM&format=png&color=00381e"
           />
         </div>
 
         <div className="chart-wrapper">
           <div className="chart-header-row">
-            <h2>TOTAL PROJECTS</h2>
+            <h2>{chartTitle}</h2>
             <div className="toggle-buttons">
               <button
-                className={filter === "WEEKLY" ? "active" : ""}
-                onClick={() => setFilter("WEEKLY")}
+                className={filter === "LAST_7_DAYS" ? "active" : ""}
+                onClick={() => setFilter("LAST_7_DAYS")}
               >
-                WEEKLY
+                LAST 7 DAYS
               </button>
               <button
-                className={filter === "MONTH" ? "active" : ""}
-                onClick={() => setFilter("MONTH")}
+                className={filter === "LAST_4_WEEKS" ? "active" : ""}
+                onClick={() => setFilter("LAST_4_WEEKS")}
               >
-                MONTH
+                LAST 4 WEEKS
               </button>
             </div>
           </div>
-          <ChartSection data={filter === "WEEKLY" ? dataWeekly : dataMonthly} type="admin" />
+          <ChartSection data={chartData} type="admin" />
         </div>
       </main>
     </div>
