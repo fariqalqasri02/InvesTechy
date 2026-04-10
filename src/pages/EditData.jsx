@@ -162,13 +162,55 @@ const formatShortNumber = (value) => {
   }).format(amount);
 };
 
+const getNumericValue = (value) => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  if (typeof value === "string") return toNumberValue(value);
+  if (value && typeof value === "object") {
+    return toNumberValue(
+      value?.value ?? value?.score ?? value?.average ?? value?.amount ?? value?.nominal ?? 0,
+    );
+  }
+  return 0;
+};
+
+const buildScoreEntries = (scores, preferredKeys = []) => {
+  if (!scores || typeof scores !== "object" || Array.isArray(scores)) {
+    return [];
+  }
+
+  const entries = Object.entries(scores);
+  const usedKeys = new Set();
+  const orderedEntries = [];
+
+  preferredKeys.forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(scores, key)) {
+      usedKeys.add(key);
+      orderedEntries.push([key, scores[key]]);
+    }
+  });
+
+  entries.forEach(([key, value]) => {
+    if (!usedKeys.has(key)) {
+      orderedEntries.push([key, value]);
+    }
+  });
+
+  return orderedEntries
+    .map(([label, rawValue]) => ({
+      label,
+      value: getNumericValue(rawValue),
+    }))
+    .filter((entry) => entry.label);
+};
+
 const normalizeBreakEvenRows = (rows = []) =>
   Array.isArray(rows)
     ? rows.map((row) => ({
         year: row?.year,
-        netCashFlow: row?.netCashFlow ?? row?.net ?? 0,
+        netCashFlow: row?.netCashFlow ?? row?.net ?? row?.cashFlow ?? 0,
         cumulativeCashFlow:
           row?.cumulativeCashFlow ??
+          row?.cumulativeNetCashFlow ??
           ((Number(row?.cumulativeBenefit) || 0) - (Number(row?.cumulativeCost) || 0)) ??
           0,
       }))
@@ -194,6 +236,72 @@ const stripMarkdown = (value) =>
 const cleanChatMessage = (value) => stripMarkdown(value).replace(/[ \t]+\n/g, "\n").trim();
 
 const CHATBOT_ENDPOINT = (projectId) => `/projects/${projectId}/chatbot`;
+const AI_HELPY_HISTORY_KEY = "investechy_ai_helpy_history";
+const AI_HELPY_MAX_HISTORY = 40;
+
+const readAiHelpyHistory = () => {
+  try {
+    const raw = localStorage.getItem(AI_HELPY_HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeAiHelpyHistory = (entries) => {
+  try {
+    localStorage.setItem(AI_HELPY_HISTORY_KEY, JSON.stringify(entries));
+  } catch {
+    // Ignore storage write errors.
+  }
+};
+
+const buildHistoryPreview = (text) => {
+  const cleaned = cleanChatMessage(text).replace(/\s+/g, " ").trim();
+  if (cleaned.length <= 68) return cleaned;
+  return `${cleaned.slice(0, 68).trim()}...`;
+};
+
+const formatHistoryDate = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+};
+
+const saveAiHelpyHistoryEntry = (entry) => {
+  if (!entry?.preview) return readAiHelpyHistory();
+
+  const nextEntries = [
+    {
+      id: entry.id || `history-${Date.now()}`,
+      projectId: entry.projectId || "",
+      projectName: entry.projectName || "Untitled Project",
+      preview: entry.preview,
+      prompt: entry.prompt || "",
+      response: entry.response || "",
+      updatedAt: entry.updatedAt || new Date().toISOString(),
+    },
+    ...readAiHelpyHistory(),
+  ]
+    .filter((item, index, array) => {
+      const duplicateIndex = array.findIndex(
+        (candidate) =>
+          candidate.projectId === item.projectId &&
+          candidate.preview === item.preview &&
+          candidate.updatedAt === item.updatedAt,
+      );
+      return duplicateIndex === index;
+    })
+    .slice(0, AI_HELPY_MAX_HISTORY);
+
+  writeAiHelpyHistory(nextEntries);
+  return nextEntries;
+};
 
 export default function EditData() {
   const { id } = useParams();
@@ -205,6 +313,7 @@ export default function EditData() {
   const [showResultCard, setShowResultCard] = useState(false);
   const [sections, setSections] = useState(createInitialSections);
   const [chatMessages, setChatMessages] = useState([]);
+  const [chatHistoryEntries, setChatHistoryEntries] = useState(() => readAiHelpyHistory());
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [chatSending, setChatSending] = useState(false);
@@ -221,6 +330,7 @@ export default function EditData() {
   const exportLocation = currentDraft?.location || "-";
   const exportQuadrant = currentDraft?.mcfarlan?.quadrant || "-";
   const exportCoordinates = currentDraft?.mcfarlan?.coordinates || {};
+  const activeProjectName = currentDraft?.projectName || "Untitled Project";
 
   useEffect(() => {
     document.body.classList.remove("page-exit");
@@ -262,6 +372,28 @@ export default function EditData() {
               },
             ],
       );
+
+      if (normalizedMessages.length > 0) {
+        const latestUserMessage = [...normalizedMessages].reverse().find((item) => item.role === "user");
+        const latestAssistantMessage = [...normalizedMessages]
+          .reverse()
+          .find((item) => item.role === "assistant");
+
+        if (latestUserMessage || latestAssistantMessage) {
+          setChatHistoryEntries(
+            saveAiHelpyHistoryEntry({
+              projectId: id,
+              projectName: activeProjectName,
+              preview: buildHistoryPreview(
+                latestUserMessage?.content || latestAssistantMessage?.content || "",
+              ),
+              prompt: latestUserMessage?.content || "",
+              response: latestAssistantMessage?.content || "",
+              updatedAt: new Date().toISOString(),
+            }),
+          );
+        }
+      }
     } catch (error) {
       setChatMessages([]);
       const backendError = error?.data?.message || error?.message || "";
@@ -273,7 +405,7 @@ export default function EditData() {
     } finally {
       setChatLoading(false);
     }
-  }, [id]);
+  }, [activeProjectName, id]);
 
   useEffect(() => {
     if (!isChatOpen) return;
@@ -397,8 +529,14 @@ export default function EditData() {
     intangibleRows.find((row) => row.description?.trim())?.description ||
     intangibleRows.find((row) => row.item?.trim())?.item ||
     "The project is positioned to create measurable business impact with clear operational benefits.";
-  const businessScores = currentDraft?.businessDomain || {};
-  const technologyScores = currentDraft?.technologyDomain || {};
+  const businessScoreEntries = useMemo(
+    () => buildScoreEntries(currentDraft?.businessDomain, ["SM", "CA", "MI", "CR", "OR"]),
+    [currentDraft?.businessDomain],
+  );
+  const technologyScoreEntries = useMemo(
+    () => buildScoreEntries(currentDraft?.technologyDomain, ["SA", "DU", "TU", "IR"]),
+    [currentDraft?.technologyDomain],
+  );
 
   const buildDraftPayload = () => {
     const mapRows = (title) =>
@@ -586,15 +724,26 @@ export default function EditData() {
         response?.text ||
         response?.data?.content ||
         "AI Helpy belum memberikan jawaban.";
+      const cleanedReply = cleanChatMessage(replyText);
 
       setChatMessages((prev) => [
         ...prev,
         {
           id: `assistant-${Date.now()}`,
           role: "assistant",
-          content: cleanChatMessage(replyText),
+          content: cleanedReply,
         },
       ]);
+      setChatHistoryEntries(
+        saveAiHelpyHistoryEntry({
+          projectId: id,
+          projectName: activeProjectName,
+          preview: buildHistoryPreview(trimmedMessage),
+          prompt: trimmedMessage,
+          response: cleanedReply,
+          updatedAt: new Date().toISOString(),
+        }),
+      );
       await loadChatHistory();
     } catch (error) {
       setChatMessages((prev) => [
@@ -605,6 +754,16 @@ export default function EditData() {
           content: "Maaf, AI Helpy belum bisa merespons sekarang.",
         },
       ]);
+      setChatHistoryEntries(
+        saveAiHelpyHistoryEntry({
+          projectId: id,
+          projectName: activeProjectName,
+          preview: buildHistoryPreview(trimmedMessage),
+          prompt: trimmedMessage,
+          response: "Maaf, AI Helpy belum bisa merespons sekarang.",
+          updatedAt: new Date().toISOString(),
+        }),
+      );
       const backendError = error?.data?.message || error?.message || "";
       setChatError(
         /fetch failed/i.test(backendError)
@@ -743,19 +902,61 @@ export default function EditData() {
 
     <div className={`ai-chat ${isChatOpen ? "open" : ""}`}>
         <div className="chat-header">
-          <div className="chat-title">
-            AI <span>Helpy</span>
+          <div className="chat-title-wrap">
+            <div className="chat-title">
+              AI <span>Helpy</span>
+            </div>
+            <button type="button" className="chat-open-pill">
+              Open AI Helpy Chat
+            </button>
           </div>
           <div className="chat-header-actions">
             <button type="button" className="chat-refresh-btn" onClick={loadChatHistory} disabled={chatLoading}>
               {chatLoading ? "..." : "Refresh"}
             </button>
-            <button onClick={() => setIsChatOpen(false)}>x</button>
+            <button
+              type="button"
+              className="chat-close-btn"
+              onClick={() => setIsChatOpen(false)}
+              aria-label="Close AI Helpy"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
           </div>
         </div>
 
         <div className="chat-body">
-          <div className="chat-history-title">Riwayat Chat</div>
+          <div className="chat-history-panel">
+            <div className="chat-history-title">Chat history</div>
+            <div className="chat-history-list">
+              {chatHistoryEntries.length === 0 ? (
+                <p className="chat-state">Belum ada riwayat yang tersimpan.</p>
+              ) : (
+                chatHistoryEntries.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className={`chat-history-item ${entry.projectId === id ? "active" : ""}`}
+                  >
+                    <div className="chat-history-icon">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 6v6l4 2" />
+                        <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+                      </svg>
+                    </div>
+                    <div className="chat-history-copy">
+                      <strong>{entry.preview}</strong>
+                      <span>{entry.projectName}</span>
+                    </div>
+                    <time>{formatHistoryDate(entry.updatedAt)}</time>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="chat-conversation-head">Current conversation</div>
           {chatLoading ? <p className="chat-state">Loading chat history...</p> : null}
           {!chatLoading && chatMessages.length === 0 ? (
             <p className="chat-state">Belum ada chat history. Coba mulai pertanyaan baru.</p>
@@ -833,28 +1034,36 @@ export default function EditData() {
                 <div className="pdf-stack">
                   <div className="pdf-card pdf-scores-card">
                     <h3>Business Domain Scores</h3>
-                    <div className="pdf-score-list">
-                      {Object.entries(businessScores).slice(0, 5).map(([label, value]) => (
-                        <div key={label} className="pdf-score-row">
-                          <span>{label}</span>
-                          <div className="pdf-score-bar"><i style={{ width: `${((Number(value) || 0) / 5) * 100}%` }} /></div>
-                          <strong>{formatShortNumber(value)}</strong>
-                        </div>
-                      ))}
-                    </div>
+                    {businessScoreEntries.length > 0 ? (
+                      <div className="pdf-score-list">
+                        {businessScoreEntries.slice(0, 5).map(({ label, value }) => (
+                          <div key={label} className="pdf-score-row">
+                            <span>{label}</span>
+                            <div className="pdf-score-bar"><i style={{ width: `${(value / 5) * 100}%` }} /></div>
+                            <strong>{formatShortNumber(value)}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="pdf-empty-state">No business domain score data available.</p>
+                    )}
                   </div>
 
                   <div className="pdf-card pdf-scores-card">
                     <h3>Technology Domain Scores</h3>
-                    <div className="pdf-score-list">
-                      {Object.entries(technologyScores).slice(0, 4).map(([label, value]) => (
-                        <div key={label} className="pdf-score-row">
-                          <span>{label}</span>
-                          <div className="pdf-score-bar"><i style={{ width: `${((Number(value) || 0) / 5) * 100}%` }} /></div>
-                          <strong>{formatShortNumber(value)}</strong>
-                        </div>
-                      ))}
-                    </div>
+                    {technologyScoreEntries.length > 0 ? (
+                      <div className="pdf-score-list">
+                        {technologyScoreEntries.slice(0, 4).map(({ label, value }) => (
+                          <div key={label} className="pdf-score-row">
+                            <span>{label}</span>
+                            <div className="pdf-score-bar"><i style={{ width: `${(value / 5) * 100}%` }} /></div>
+                            <strong>{formatShortNumber(value)}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="pdf-empty-state">No technology domain score data available.</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1001,13 +1210,21 @@ export default function EditData() {
                         </tr>
                       </thead>
                       <tbody>
-                        {breakEvenRows.slice(0, 5).map((row, index) => (
-                          <tr key={`${row?.year || index}`}>
-                            <td>Year {row?.year || index + 1}</td>
-                            <td>{formatCurrencyText(row?.netCashFlow)}</td>
-                            <td>{formatCurrencyText(row?.cumulativeCashFlow)}</td>
+                        {breakEvenRows.length > 0 ? (
+                          breakEvenRows.slice(0, 5).map((row, index) => (
+                            <tr key={`${row?.year || index}`}>
+                              <td>Year {row?.year || index + 1}</td>
+                              <td>{formatCurrencyText(row?.netCashFlow)}</td>
+                              <td>{formatCurrencyText(row?.cumulativeCashFlow)}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="3" className="pdf-empty-table">
+                              No break-even analysis data available.
+                            </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
