@@ -8,6 +8,18 @@ import {
 } from "../services/api";
 import "../components/auth.css";
 
+const decodeParamValue = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
 const parseUserParam = (rawUser) => {
   if (!rawUser) {
     return null;
@@ -16,7 +28,27 @@ const parseUserParam = (rawUser) => {
   try {
     return JSON.parse(rawUser);
   } catch {
+    try {
+      return JSON.parse(decodeParamValue(rawUser));
+    } catch {
+      return null;
+    }
+  }
+};
+
+const parseJsonParam = (rawValue) => {
+  if (!rawValue) {
     return null;
+  }
+
+  try {
+    return JSON.parse(rawValue);
+  } catch {
+    try {
+      return JSON.parse(decodeParamValue(rawValue));
+    } catch {
+      return null;
+    }
   }
 };
 
@@ -26,21 +58,38 @@ export default function GoogleAuthCallback() {
   const [error, setError] = useState("");
 
   const authPayload = useMemo(() => {
-    const rawUser = searchParams.get("user");
-    const parsedUser = parseUserParam(rawUser);
+    const hashParams = new URLSearchParams(
+      window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : window.location.hash,
+    );
+    const getParam = (key) => searchParams.get(key) || hashParams.get(key) || null;
 
-    return extractAuthSession({
+    const rawUser = getParam("user");
+    const rawData = getParam("data");
+    const parsedUser = parseUserParam(rawUser);
+    const parsedData = parseJsonParam(rawData);
+    const session = extractAuthSession({
       token:
-        searchParams.get("token") ||
-        searchParams.get("accessToken") ||
+        getParam("token") ||
+        getParam("accessToken") ||
+        getParam("access_token") ||
+        getParam("idToken") ||
+        getParam("id_token") ||
         null,
       user: parsedUser,
-      data: parsedUser
-        ? {
-            user: parsedUser,
-          }
-        : null,
+      data: parsedData || (parsedUser ? { user: parsedUser } : null),
     });
+
+    return {
+      ...session,
+      error:
+        getParam("error") ||
+        getParam("message") ||
+        parsedData?.error ||
+        parsedData?.message ||
+        null,
+    };
   }, [searchParams]);
 
   useEffect(() => {
@@ -48,6 +97,10 @@ export default function GoogleAuthCallback() {
 
     const completeGoogleLogin = async () => {
       try {
+        if (authPayload.error) {
+          throw new Error(authPayload.error);
+        }
+
         if (authPayload.token) {
           setSession({
             token: authPayload.token,
@@ -65,6 +118,8 @@ export default function GoogleAuthCallback() {
           token: authPayload.token || undefined,
           user: currentUser,
         });
+
+        window.history.replaceState({}, document.title, window.location.pathname);
 
         if (!isMounted) {
           return;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logoImg from "../assets/InvesTechy.jpg";
-import api, { extractAuthSession, GOOGLE_AUTH_URL, setSession } from "../services/api";
+import api, { extractAuthSession, getGoogleAuthURL, setSession } from "../services/api";
 import "../components/auth.css";
 
 const Login = () => {
@@ -65,8 +65,15 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    document.body.classList.add("auth-page-exit");
-    window.location.assign(GOOGLE_AUTH_URL);
+    try {
+      document.body.classList.add("auth-page-exit");
+      const googleAuthUrl = getGoogleAuthURL("/auth/google/callback");
+      window.location.href = googleAuthUrl;
+    } catch (err) {
+      document.body.classList.remove("auth-page-exit");
+      setError("Gagal membuka Google login. Coba lagi.");
+      console.error("Google auth error:", err);
+    }
   };
 
   return (

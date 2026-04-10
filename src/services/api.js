@@ -1,7 +1,18 @@
 const DEFAULT_BASE_URL = "/api";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || DEFAULT_BASE_URL;
-export const GOOGLE_AUTH_URL = `${API_BASE_URL}/auth/google`;
+
+export const getGoogleAuthURL = (callbackPath = "/auth/google/callback") => {
+  const currentOrigin =
+    typeof window !== "undefined" ? window.location.origin : "";
+  const redirectUri = `${currentOrigin}${callbackPath}`;
+  const params = new URLSearchParams({
+    redirect_uri: redirectUri,
+  });
+  return `${API_BASE_URL}/auth/google?${params.toString()}`;
+};
+
+export const GOOGLE_AUTH_URL = getGoogleAuthURL();
 
 const TOKEN_KEY = "investechy_token";
 const USER_KEY = "investechy_user";
@@ -26,16 +37,29 @@ export const extractAuthSession = (payload) => {
 
   const token =
     payload.token ||
+    payload.access_token ||
     payload.accessToken ||
+    payload.idToken ||
+    payload.id_token ||
     payload.data?.token ||
+    payload.data?.access_token ||
     payload.data?.accessToken ||
+    payload.data?.idToken ||
+    payload.data?.id_token ||
     payload.data?.data?.token ||
+    payload.data?.data?.access_token ||
+    payload.data?.data?.accessToken ||
+    payload.data?.data?.idToken ||
+    payload.data?.data?.id_token ||
     null;
 
   const userCandidate =
     payload.user ||
+    payload.profile ||
     payload.data?.user ||
+    payload.data?.profile ||
     payload.data?.data?.user ||
+    payload.data?.data?.profile ||
     payload.data ||
     null;
 
