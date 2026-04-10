@@ -1,15 +1,20 @@
 const DEFAULT_BASE_URL = "/api";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL?.replace(/\/+$/, "") || DEFAULT_BASE_URL;
+const DEFAULT_GOOGLE_AUTH_BASE_URL =
+  "https://unvicarious-camelia-porky.ngrok-free.dev/api";
+const GOOGLE_AUTH_BASE_URL =
+  import.meta.env.VITE_GOOGLE_AUTH_URL?.replace(/\/+$/, "") ||
+  (API_BASE_URL === DEFAULT_BASE_URL ? DEFAULT_GOOGLE_AUTH_BASE_URL : API_BASE_URL);
 
-export const getGoogleAuthURL = (callbackPath = "/auth/google/callback") => {
+export const getGoogleAuthURL = (callbackPath = "/auth/google") => {
   const currentOrigin =
     typeof window !== "undefined" ? window.location.origin : "";
   const redirectUri = `${currentOrigin}${callbackPath}`;
   const params = new URLSearchParams({
     redirect_uri: redirectUri,
   });
-  return `${API_BASE_URL}/auth/google?${params.toString()}`;
+  return `${GOOGLE_AUTH_BASE_URL}/auth/google?${params.toString()}`;
 };
 
 export const GOOGLE_AUTH_URL = getGoogleAuthURL();

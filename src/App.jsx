@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from "./pages/Home";
 import Login from './pages/Login';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
+import GoogleAuthFailure from './pages/GoogleAuthFailure';
 import Dashboard from './pages/Dashboard'; // Dashboard User
 import AdminDashboard from './pagesadmin/AdminDashboard'; // Dashboard Admin
 import Register from './pages/Register';
@@ -38,7 +39,9 @@ function App() {
           {/* Landing & Auth */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/google" element={<GoogleAuthCallback />} />
           <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+          <Route path="/auth/failure" element={<GoogleAuthFailure />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />

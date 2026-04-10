@@ -111,7 +111,7 @@ export default function GoogleAuthCallback() {
         const currentUser = await fetchCurrentUser().catch(() => authPayload.user || getStoredUser());
 
         if (!currentUser) {
-          throw new Error("Google login belum mengembalikan data user ke aplikasi.");
+          throw new Error("Google login did not return user data to the app.");
         }
 
         setSession({
@@ -138,7 +138,7 @@ export default function GoogleAuthCallback() {
 
         setError(
           loginError?.message ||
-            "Google login belum berhasil diselesaikan.",
+            "Google login could not be completed.",
         );
       }
     };
@@ -160,7 +160,7 @@ export default function GoogleAuthCallback() {
               <p style={{ color: "#b42318", marginTop: "16px" }}>{error}</p>
             ) : (
               <p style={{ marginTop: "16px", color: "#4A5568" }}>
-                Menyelesaikan login Google...
+                Completing Google sign-in...
               </p>
             )}
           </div>

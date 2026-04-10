@@ -67,7 +67,7 @@ const Login = () => {
   const handleGoogleLogin = () => {
     try {
       document.body.classList.add("auth-page-exit");
-      const googleAuthUrl = getGoogleAuthURL("/auth/google/callback");
+      const googleAuthUrl = getGoogleAuthURL("/auth/google");
       window.location.href = googleAuthUrl;
     } catch (err) {
       document.body.classList.remove("auth-page-exit");
